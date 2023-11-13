@@ -1,19 +1,32 @@
 {
   "name": "reportscript",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
   "description": "report generation library",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/canyon-trail/reports-js"
+    "url": "https://github.com/canyon-trail/reportscript"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/canyon-trail/reports-js/issues"
+    "url": "https://github.com/canyon-trail/reportscript/issues"
   },
-  "homepage": "https://github.com/canyon-trail/reports-js#readme"
+  "homepage": "https://github.com/canyon-trail/reportscript#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "semantic-release": "^22.0.7",
+    "typescript": "^5.2.2"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "pdfkit": "^0.14.0"
+  }
 }
