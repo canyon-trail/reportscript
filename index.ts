@@ -62,7 +62,7 @@ function renderDocument(
   const measuredDoc = measure(normalizeDoc, reportDocument);
   const paginatedDocument = paginate(
     measuredDoc,
-    reportDocument.info.CreationDate
+    reportDocument.info.CreationDate as Date
   );
   render(paginatedDocument, reportDocument);
   reportDocument.end();
