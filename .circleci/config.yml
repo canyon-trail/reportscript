@@ -92,8 +92,8 @@ workflows:
   ci:
     jobs:
       - reportscript-node-install:
-        context:
-          - Slack
+          context:
+            - Slack
       - reportscript-format-tests:
           context:
             - Slack
