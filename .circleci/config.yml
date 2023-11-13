@@ -85,6 +85,8 @@ jobs:
             - reportscript
       - notify-fail
   ci-jobs-completed:
+    docker:
+      - image: cimg/base:stable
     steps:
       - notify-success
 workflows:
