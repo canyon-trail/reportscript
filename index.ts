@@ -1,11 +1,11 @@
 import PDFDocument from "pdfkit";
-import { Document, PaginatedRow, PaginatedDocument } from "./types/types";
-import { PdfKitApi, SnapshottingDocument } from "./types/reportDocument";
-import { margin, measure } from "./functions/measuring";
+import { Document, PaginatedRow, PaginatedDocument } from "./src/types/types";
+import { PdfKitApi, SnapshottingDocument } from "./src/types/reportDocument";
+import { margin, measure } from "./src/functions/measuring";
 import _ from "lodash";
-import { renderWatermark, writeRow } from "./functions/rendering";
-import { paginate } from "./functions/pagination";
-import { normalize } from "./functions/normalize";
+import { renderWatermark, writeRow } from "./src/functions/rendering";
+import { paginate } from "./src/functions/pagination";
+import { normalize } from "./src/functions/normalize";
 import fs from "fs";
 
 type SnapshotResult = {
@@ -69,7 +69,7 @@ function renderDocument(
   return reportDocument;
 }
 
-export function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
+function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
   doc.pages.forEach((p, idx) => {
     const rows: PaginatedRow[] = p.rows.map((x) => ({ ...x, start: 0 }));
 
