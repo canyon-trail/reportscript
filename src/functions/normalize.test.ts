@@ -28,7 +28,7 @@ import {
   parseColumnSetting,
   validateCellSpan,
   normalizePageBreakRows,
-} from "../functions/normalize";
+} from "./normalize";
 
 describe("normalizeCell", () => {
   it("normalize string", () => {

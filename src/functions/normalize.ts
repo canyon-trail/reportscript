@@ -94,15 +94,15 @@ export function normalizeCell(cell: Cell | CellValue): Cell {
   };
 
   if (_.isString(cell)) {
-    return { value: cell, ...defaultProps };
+    return { value: cell as string, ...defaultProps };
   } else if (_.isNumber(cell)) {
-    return { value: cell, ...defaultProps };
-  } else if (cell && "image" in cell) {
+    return { value: cell as number, ...defaultProps };
+  } else if (cell && "image" in (cell as Cell)) {
     return {
       ...defaultProps,
       ...cell,
     };
-  } else if (cell && "value" in cell && cell.value) {
+  } else if (cell && "value" in  (cell as Cell) &&  (cell.value as Cell)) {
     return {
       ...defaultProps,
       ...cell,
