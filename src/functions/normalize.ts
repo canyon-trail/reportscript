@@ -21,7 +21,6 @@ import {
   HorizontalAlignment,
   PageBreakRows,
   NormalizedPageBreakRows,
-  TextCell,
 } from "../types/types";
 
 export function normalize(document: Document): NormalizedDocument {
@@ -97,13 +96,13 @@ export function normalizeCell(cell: Cell | CellValue): Cell {
   if (_.isString(cell)) {
     return { value: cell as string, ...defaultProps };
   } else if (_.isNumber(cell)) {
-    return { value: cell , ...defaultProps };
+    return { value: cell, ...defaultProps };
   } else if (cell && "image" in (cell as Cell)) {
     return {
       ...defaultProps,
       ...cell,
     };
-  } else if (cell && "value" in cell && cell.value ) {
+  } else if (cell && "value" in cell && cell.value) {
     return {
       ...defaultProps,
       ...cell,
