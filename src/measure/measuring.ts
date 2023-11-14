@@ -1,23 +1,22 @@
+import { Layout, Cell, Watermark } from "../types";
+import { UndefinedCellError } from "./types";
+import { PdfKitApi } from "../reportDocument";
+import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
-  MeasuredRow,
-  MeasuredDocument,
-  MeasuredSection,
-  Layout,
-  Cell,
-  UndefinedCellError,
   NormalizedDocument,
+  NormalizedHeaderFooter,
+  NormalizedPageBreakRows,
   NormalizedRow,
   NormalizedSection,
-  NormalizedHeaderFooter,
-  MeasuredTable,
   NormalizedTable,
-  NormalizedPageBreakRows,
-  Watermark,
+} from "../normalize/types";
+import {
+  MeasuredDocument,
+  MeasuredRow,
+  MeasuredSection,
+  MeasuredTable,
   MeasuredWatermark,
-} from "../types/types";
-import { PdfKitApi } from "../types/reportDocument";
-import { calculateColumnWidths } from "./calculateColumnWidths";
-
+} from "./types";
 export const ptsPerInch = 72;
 export const margin = ptsPerInch / 4;
 export const defaultFontSize = 7;

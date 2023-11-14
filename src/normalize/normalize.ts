@@ -4,10 +4,6 @@ import {
   CellStyle,
   CellValue,
   ColumnSetting,
-  NormalizedDocument,
-  NormalizedSection,
-  NormalizedRow,
-  NormalizedTable,
   Row,
   Section,
   Table,
@@ -15,13 +11,19 @@ import {
   Document,
   HeaderFooters,
   Unit,
-  NormalizedWidth as NormalizedWidth,
-  NormalizedColumnSetting,
-  NormalizedHeaderFooter,
   HorizontalAlignment,
   PageBreakRows,
+} from "../types";
+import {
+  NormalizedColumnSetting,
+  NormalizedDocument,
+  NormalizedHeaderFooter,
   NormalizedPageBreakRows,
-} from "../types/types";
+  NormalizedRow,
+  NormalizedSection,
+  NormalizedTable,
+  NormalizedWidth,
+} from "./types";
 
 export function normalize(document: Document): NormalizedDocument {
   const { headers, sections, footers, pageBreakRows } = document;

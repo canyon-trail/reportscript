@@ -1,13 +1,13 @@
 import PDFDocument from "pdfkit";
-import { Document, PaginatedRow, PaginatedDocument } from "./src/types/types";
-import { PdfKitApi, SnapshottingDocument } from "./src/types/reportDocument";
-import { margin, measure } from "./src/functions/measuring";
+import { PaginatedRow, PaginatedDocument } from "./paginate/types";
+import { PdfKitApi, SnapshottingDocument } from "./reportDocument";
+import { margin, measure } from "./measure/measuring";
 import _ from "lodash";
-import { renderWatermark, writeRow } from "./src/functions/rendering";
-import { paginate } from "./src/functions/pagination";
-import { normalize } from "./src/functions/normalize";
+import { renderWatermark, writeRow } from "./render/rendering";
+import { paginate } from "./paginate/pagination";
+import { normalize } from "./normalize/normalize";
 import fs from "fs";
-
+import { Document } from "./types";
 type SnapshotResult = {
   snapshot: string;
   rendered: string;
@@ -32,9 +32,9 @@ export function renderSnapshot(
     fs.writeFileSync(path, rendered);
     snapshot = rendered;
   } else {
-    snapshot = fs.readFileSync(path, { encoding: "utf8", flag: "r" });
-    snapshot = JSON.parse(snapshot);
-    snapshot = JSON.stringify(snapshot, null, 2);
+    const rawSnapshot = fs.readFileSync(path, { encoding: "utf8", flag: "r" });
+    const parsedSnapshot = JSON.parse(rawSnapshot);
+    snapshot = JSON.stringify(parsedSnapshot, null, 2);
   }
   return { snapshot, rendered };
 }

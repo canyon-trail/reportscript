@@ -1,4 +1,5 @@
-import { NormalizedColumnSetting, Unit } from "../types/types";
+import { NormalizedColumnSetting } from "../normalize/types";
+import { Unit } from "../types";
 import { calculateColumnWidths } from "./calculateColumnWidths";
 
 describe("calculateColumnWidths", () => {

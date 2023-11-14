@@ -1,22 +1,19 @@
-import {
-  MeasuredDocument,
-  MeasuredTable,
-  MeasuredSection,
-  MeasuredRow,
-  Page,
-  PaginatedDocument,
-  Cell,
-  TextCell,
-} from "../types/types";
+import { Cell, TextCell } from "../types";
 import {
   exampleDocumentFooterRow,
   getPageDimensions,
   margin,
-} from "./measuring";
+} from "../measure/measuring";
 import _ from "lodash";
-import { calculateCellLeftCoords } from "./measuring";
+import { calculateCellLeftCoords } from "../measure/measuring";
 import { calculateColumnWidths } from "./calculateColumnWidths";
-
+import {
+  MeasuredDocument,
+  MeasuredRow,
+  MeasuredSection,
+  MeasuredTable,
+} from "../measure/types";
+import { Page, PaginatedDocument } from "./types";
 export type PaginatingDoc = MeasuredDocument & {
   remaining: MeasuredSection[];
   pages: Page[];

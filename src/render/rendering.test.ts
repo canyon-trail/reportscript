@@ -7,15 +7,15 @@ import {
   NormalizedRow,
   NormalizedColumnSetting,
   MeasuredWatermark,
-} from "../types/types";
-import { SnapshottingDocument } from "../types/reportDocument";
+} from "../types";
+import { SnapshottingDocument } from "../reportDocument";
 import {
   calculateCellLeftCoords,
   defaultFontSize,
   lineGap,
   margin,
   textHPadding,
-} from "./measuring";
+} from "../measure/measuring";
 import {
   defaultBoldFace,
   defaultFontFace,
@@ -31,7 +31,7 @@ import {
   getImageXOffset,
   renderWatermark,
 } from "./rendering";
-import { calculateColumnWidths } from "./calculateColumnWidths";
+import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 
 const mockMoveTo = jest.spyOn(PDFDocument.prototype, "moveTo");
 const mockLineTo = jest.spyOn(PDFDocument.prototype, "lineTo");

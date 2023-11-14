@@ -1,16 +1,4 @@
-import {
-  Cell,
-  MeasuredDocument,
-  MeasuredWatermark,
-  NormalizedColumnSetting,
-  NormalizedDocument,
-  NormalizedPageBreakRows,
-  NormalizedRow,
-  Table,
-  TextCell,
-  Watermark,
-} from "../types/types";
-
+import { Cell, Table, TextCell, Watermark } from "../types";
 import PDFDocument from "pdfkit";
 import {
   measureCellHeights,
@@ -24,21 +12,27 @@ import {
   getColumnWidthsForRow,
   getPageDimensions,
 } from "./measuring";
-import { Image } from "../types/types";
+import { Image } from "../types";
 import {
   normalizeHeaderFooter,
   normalizeSection,
   normalizeTable,
-} from "./normalize";
-import { calculateColumnWidths } from "./calculateColumnWidths";
-import { SnapshottingDocument } from "../types/reportDocument";
+} from "../normalize/normalize";
+import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
+import {
+  NormalizedRow,
+  NormalizedPageBreakRows,
+  NormalizedColumnSetting,
+  NormalizedDocument,
+} from "../normalize/types";
+import { MeasuredDocument, MeasuredWatermark } from "./types";
 
 describe("measuring functions", () => {
   describe("getRowHeight", () => {
-    let doc: SnapshottingDocument;
+    let doc;
 
     beforeEach(() => {
-      doc = new SnapshottingDocument(
+      doc = new PDFDocument(
         new PDFDocument({
           layout: "landscape",
           margin: 0,
@@ -112,10 +106,10 @@ describe("measuring functions", () => {
   });
 
   describe("getCellHeightWithText", () => {
-    let doc: SnapshottingDocument;
+    let doc;
 
     beforeEach(() => {
-      doc = new SnapshottingDocument(
+      doc = new PDFDocument(
         new PDFDocument({
           layout: "landscape",
           margin: 0,
@@ -156,9 +150,9 @@ describe("measuring functions", () => {
   });
 
   describe("getCellHeight", () => {
-    let doc: SnapshottingDocument;
+    let doc;
     beforeEach(() => {
-      doc = new SnapshottingDocument(
+      doc = new PDFDocument(
         new PDFDocument({
           layout: "landscape",
           margin: 0,
@@ -280,10 +274,10 @@ describe("measuring functions", () => {
     });
   });
   describe("measure", () => {
-    let doc: SnapshottingDocument;
+    let doc;
 
     beforeEach(() => {
-      doc = new SnapshottingDocument(
+      doc = new PDFDocument(
         new PDFDocument({
           layout: "landscape",
           margin: 0,

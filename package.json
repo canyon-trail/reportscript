@@ -2,7 +2,7 @@
   "name": "reportscript",
   "version": "0.0.0-development",
   "description": "report generation library",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "test": "jest",
     "semantic-release": "semantic-release",

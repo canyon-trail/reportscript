@@ -8,13 +8,9 @@ import {
   Section,
   Document,
   HeaderFooters,
-  NormalizedColumnSetting,
-  HorizontalAlignment,
-  NormalizedTable,
   PageBreakRows,
-  NormalizedDocument,
-  NormalizedPageBreakRows,
-} from "../types/types";
+  HorizontalAlignment,
+} from "../types";
 import {
   computeCellAlignments,
   normalizeAlignment,
@@ -29,7 +25,12 @@ import {
   validateCellSpan,
   normalizePageBreakRows,
 } from "./normalize";
-
+import {
+  NormalizedColumnSetting,
+  NormalizedDocument,
+  NormalizedPageBreakRows,
+  NormalizedTable,
+} from "./types";
 describe("normalizeCell", () => {
   it("normalize string", () => {
     expect(normalizeCell("value")).toEqual({ value: "value", columnSpan: 1 });

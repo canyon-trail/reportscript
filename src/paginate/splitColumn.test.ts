@@ -1,8 +1,4 @@
-import {
-  splitColumn,
-  continuedOn,
-  continuedFrom,
-} from "../functions/splitColumn";
+import { splitColumn, continuedOn, continuedFrom } from "./splitColumn";
 
 const newlineSample = `a short line
 and another short line

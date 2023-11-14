@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { NormalizedColumnSetting } from "../types/types";
+import { NormalizedColumnSetting } from "../normalize/types";
 
 export function calculateColumnWidths(
   columns: NormalizedColumnSetting[],

@@ -10,6 +10,12 @@
     "noImplicitReturns": true,
   },
   "include": [
-    "src/functions/**/*"
-, "src/types"  ]
+    "src/render/**/*", 
+    "src/normalize/**/*", 
+    "src/measure/**/*", 
+    "src/paginate/**/*", 
+    "src/index.ts", 
+    "src/types.ts", 
+    "src/reportDocument.ts"
+      ]
 }

@@ -1,4 +1,3 @@
-import PDFKit from "pdfkit";
 export type DocumentCall = {
   functionName: string;
   args?: Record<string, any>;

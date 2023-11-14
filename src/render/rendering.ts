@@ -1,12 +1,5 @@
-import {
-  PaginatedRow,
-  Image,
-  Cell,
-  ImageCell,
-  TextCell,
-  MeasuredWatermark,
-} from "../types/types";
-import { PdfKitApi } from "../types/reportDocument";
+import { Image, Cell, ImageCell, TextCell } from "../types";
+import { PdfKitApi } from "../reportDocument";
 import {
   defaultFontSize,
   getCellAlign,
@@ -14,7 +7,9 @@ import {
   lineGap,
   margin,
   textHPadding,
-} from "./measuring";
+} from "../measure/measuring";
+import { PaginatedRow } from "../paginate/types";
+import { MeasuredWatermark } from "../measure/types";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";

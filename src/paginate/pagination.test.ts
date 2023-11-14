@@ -1,18 +1,16 @@
 import {
+  MeasuredDocument,
+  MeasuredWatermark,
+  MeasuredSection,
+  MeasuredRow,
+  MeasuredTable,
+} from "../measure/types";
+import {
   exampleDocumentFooterRow,
   getPageDimensions,
   margin,
-} from "./measuring";
-import {
-  Cell,
-  MeasuredDocument,
-  MeasuredRow,
-  MeasuredSection,
-  MeasuredTable,
-  MeasuredWatermark,
-  PaginatedDocument,
-  TextCell,
-} from "../types/types";
+} from "../measure/measuring";
+import { Cell, TextCell } from "../types";
 import {
   paginate,
   splitSection,
@@ -24,6 +22,7 @@ import {
   PaginatingDoc,
 } from "./pagination";
 import { continuedOn, splitColumn } from "./splitColumn";
+import { PaginatedDocument } from "./types";
 
 const measureTextHeight = () => 0;
 const creationDate = new Date("July 20, 69 00:20:18 GMT+00:00");
