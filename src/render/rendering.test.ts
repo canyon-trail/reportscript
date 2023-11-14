@@ -1,12 +1,8 @@
 import PDFDocument from "pdfkit";
 import {
   Cell,
-  PaginatedRow,
   Image,
   ImageCell,
-  NormalizedRow,
-  NormalizedColumnSetting,
-  MeasuredWatermark,
 } from "../types";
 import { SnapshottingDocument } from "../reportDocument";
 import {
@@ -32,6 +28,9 @@ import {
   renderWatermark,
 } from "./rendering";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
+import { MeasuredWatermark } from "../measure/types";
+import { NormalizedColumnSetting, NormalizedRow } from "../normalize/types";
+import { PaginatedRow } from "../paginate/types";
 
 const mockMoveTo = jest.spyOn(PDFDocument.prototype, "moveTo");
 const mockLineTo = jest.spyOn(PDFDocument.prototype, "lineTo");

@@ -30,15 +30,14 @@ import { MeasuredDocument, MeasuredWatermark } from "./types";
 describe("measuring functions", () => {
   describe("getRowHeight", () => {
     let doc;
-
     beforeEach(() => {
-      doc = new PDFDocument(
+      doc = 
         new PDFDocument({
           layout: "landscape",
           margin: 0,
           bufferPages: true,
         })
-      );
+      ;
     });
 
     it("returns the height of largest string plus half lineGap", () => {
@@ -109,13 +108,13 @@ describe("measuring functions", () => {
     let doc;
 
     beforeEach(() => {
-      doc = new PDFDocument(
+      doc = 
         new PDFDocument({
           layout: "landscape",
           margin: 0,
           bufferPages: true,
         })
-      );
+      ;
     });
 
     it("returns the height of each column", () => {
@@ -152,13 +151,13 @@ describe("measuring functions", () => {
   describe("getCellHeight", () => {
     let doc;
     beforeEach(() => {
-      doc = new PDFDocument(
+      doc = 
         new PDFDocument({
           layout: "landscape",
           margin: 0,
           bufferPages: true,
         })
-      );
+      ;
     });
 
     it("uses image height if defined", () => {
@@ -277,13 +276,13 @@ describe("measuring functions", () => {
     let doc;
 
     beforeEach(() => {
-      doc = new PDFDocument(
+      doc = 
         new PDFDocument({
           layout: "landscape",
           margin: 0,
           bufferPages: true,
         })
-      );
+      ;
 
       measuredSimpleSingleTableDocument = {
         layout: "landscape",
