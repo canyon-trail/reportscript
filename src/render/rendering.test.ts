@@ -1,9 +1,5 @@
 import PDFDocument from "pdfkit";
-import {
-  Cell,
-  Image,
-  ImageCell,
-} from "../types";
+import { Cell, Image, ImageCell } from "../types";
 import { SnapshottingDocument } from "../reportDocument";
 import {
   calculateCellLeftCoords,
