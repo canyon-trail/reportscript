@@ -92,3 +92,26 @@ function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
     }
   });
 }
+
+export {
+  Document,
+  Image,
+  Table,
+  Row,
+  RowOptions,
+  Section,
+  Layout,
+  Watermark,
+  TimeStampPageNumberFontSetting,
+  HeaderFooters,
+  Unit,
+  ColumnSetting,
+  ColumnSplitFn,
+  PageBreakRows,
+  VerticalAlignment,
+  HorizontalAlignment,
+  CellStyle,
+  TableStyle,
+  Cell,
+  CellValue,
+} from "./types";
