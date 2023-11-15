@@ -7,7 +7,7 @@ import {
   lineGap,
   margin,
   textHPadding,
-} from "../measure/measuring";
+} from "../measure";
 import {
   defaultBoldFace,
   defaultFontFace,
@@ -22,7 +22,7 @@ import {
   getTextYOffset,
   getImageXOffset,
   renderWatermark,
-} from "./rendering";
+} from ".";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import { MeasuredWatermark } from "../measure/types";
 import { NormalizedColumnSetting, NormalizedRow } from "../normalize/types";

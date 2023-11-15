@@ -7,7 +7,7 @@ import {
   lineGap,
   margin,
   textHPadding,
-} from "../measure/measuring";
+} from "../measure";
 import { PaginatedRow } from "../paginate/types";
 import { MeasuredWatermark } from "../measure/types";
 

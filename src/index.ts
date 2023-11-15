@@ -1,11 +1,11 @@
 import PDFDocument from "pdfkit";
 import { PaginatedRow, PaginatedDocument } from "./paginate/types";
 import { PdfKitApi, SnapshottingDocument } from "./reportDocument";
-import { margin, measure } from "./measure/measuring";
+import { margin, measure } from "./measure";
 import _ from "lodash";
-import { renderWatermark, writeRow } from "./render/rendering";
-import { paginate } from "./paginate/pagination";
-import { normalize } from "./normalize/normalize";
+import { renderWatermark, writeRow } from "./render";
+import { paginate } from "./paginate";
+import { normalize } from "./normalize";
 import fs from "fs";
 import { Document } from "./types";
 type SnapshotResult = {
@@ -93,7 +93,7 @@ function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
   });
 }
 
-export {
+export type {
   Document,
   Image,
   Table,

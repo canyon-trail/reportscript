@@ -3,9 +3,9 @@ import {
   exampleDocumentFooterRow,
   getPageDimensions,
   margin,
-} from "../measure/measuring";
+} from "../measure";
 import _ from "lodash";
-import { calculateCellLeftCoords } from "../measure/measuring";
+import { calculateCellLeftCoords } from "../measure";
 import { calculateColumnWidths } from "./calculateColumnWidths";
 import {
   MeasuredDocument,

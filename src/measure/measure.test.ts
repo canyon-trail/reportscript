@@ -11,13 +11,13 @@ import {
   getCellHeight,
   getColumnWidthsForRow,
   getPageDimensions,
-} from "./measuring";
+} from ".";
 import { Image } from "../types";
 import {
   normalizeHeaderFooter,
   normalizeSection,
   normalizeTable,
-} from "../normalize/normalize";
+} from "../normalize";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
   NormalizedRow,

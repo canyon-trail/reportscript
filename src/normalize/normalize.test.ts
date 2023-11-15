@@ -24,7 +24,7 @@ import {
   parseColumnSetting,
   validateCellSpan,
   normalizePageBreakRows,
-} from "./normalize";
+} from ".";
 import {
   NormalizedColumnSetting,
   NormalizedDocument,

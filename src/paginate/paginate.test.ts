@@ -9,7 +9,7 @@ import {
   exampleDocumentFooterRow,
   getPageDimensions,
   margin,
-} from "../measure/measuring";
+} from "../measure";
 import { Cell, TextCell } from "../types";
 import {
   paginate,
@@ -20,7 +20,7 @@ import {
   TableSplitResult,
   addHeadersAndFooters,
   PaginatingDoc,
-} from "./pagination";
+} from ".";
 import { continuedOn, splitColumn } from "./splitColumn";
 import { PaginatedDocument } from "./types";
 
