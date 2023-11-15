@@ -120,14 +120,14 @@ workflows:
       - release:
           context:
             - Slack
-          filter:
-            branches:
-              only:
-                - main
           requires:
             - reportscript-node-install
             - reportscript-format-tests
             - reportscript-tests
+          filters:
+            branches:
+              only:
+                - main
       - ci-jobs-completed:
           context:
             - Slack
