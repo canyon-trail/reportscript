@@ -134,6 +134,7 @@ workflows:
           requires:
             - reportscript-format-tests
             - reportscript-tests
+            - release
           filters:
             branches:
               ignore:
