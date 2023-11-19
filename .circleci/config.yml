@@ -72,9 +72,7 @@ jobs:
             - v2-deps-{{ checksum "package.json" }}
             - v2-deps-
       - run:
-          command: | 
-            npm install
-            node --version
+          command: npm install
       - save_cache:
           key: v2-deps-{{ checksum "package.json" }}
           paths:
