@@ -89,6 +89,17 @@ jobs:
       - image: cimg/base:stable
     steps:
       - notify-success
+  release:
+    docker:
+      - image: node:16
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: /workspace
+      - run:
+          command: npm semantic-release
+          working_directory: /workspace/reportscript
+      - notify-fail
 workflows:
   version: 2
   ci:
@@ -106,12 +117,24 @@ workflows:
             - Slack
           requires:
             - reportscript-node-install
+      - release:
+          context:
+            - Slack
+          requires:
+            - reportscript-node-install
+            - reportscript-format-tests
+            - reportscript-tests
+          filters:
+            branches:
+              only:
+                - main
       - ci-jobs-completed:
           context:
             - Slack
           requires:
             - reportscript-format-tests
             - reportscript-tests
+            - release
           filters:
             branches:
               ignore:
