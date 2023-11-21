@@ -189,6 +189,7 @@ function handlePageNumTimestamp(
     columnSpan: 1,
     fontFace: doc?.timeStampPageNumberFontSetting?.fontFace,
     fontSize: doc?.timeStampPageNumberFontSetting?.fontSize,
+    color: doc?.timeStampPageNumberFontSetting?.color,
   };
   const { availableWidth } = getPageDimensions(doc.layout);
   if (docFooterText.length) {
