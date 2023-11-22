@@ -103,6 +103,7 @@ export type Document = {
 export type TimeStampPageNumberFontSetting = {
   fontFace?: string;
   fontSize?: number;
+  color?: string;
 };
 
 export type Watermark = {

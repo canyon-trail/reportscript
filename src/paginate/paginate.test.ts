@@ -792,7 +792,11 @@ describe("pagination", () => {
       documentFooterHeight: rowHeight,
       timestamp: true,
       pageNumbers: true,
-      timeStampPageNumberFontSetting: { fontFace: "Times-Roman", fontSize: 8 },
+      timeStampPageNumberFontSetting: {
+        fontFace: "Times-Roman",
+        fontSize: 8,
+        color: "black",
+      },
     };
 
     const result = paginate(input, creationDate);
@@ -815,6 +819,7 @@ describe("pagination", () => {
                   ...timeStampPageNumRow[0].data[0],
                   fontFace: "Times-Roman",
                   fontSize: 8,
+                  color: "black",
                 } as Cell,
               ],
             },
@@ -835,6 +840,7 @@ describe("pagination", () => {
                   ...timeStampPageNumRow[1].data[0],
                   fontFace: "Times-Roman",
                   fontSize: 8,
+                  color: "black",
                 } as Cell,
               ],
             },
