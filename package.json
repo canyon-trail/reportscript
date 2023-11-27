@@ -45,7 +45,7 @@
     "tslint-config-prettier": "^1.18.0"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   },
   "dependencies": {
     "@types/lodash": "^4.14.178",
