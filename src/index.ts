@@ -102,7 +102,6 @@ export type {
   Section,
   Layout,
   Watermark,
-  TimeStampPageNumberFontSetting,
   HeaderFooters,
   Unit,
   ColumnSetting,
@@ -114,4 +113,5 @@ export type {
   TableStyle,
   Cell,
   CellValue,
+  FontSetting
 } from "./types";

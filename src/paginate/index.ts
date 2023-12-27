@@ -182,14 +182,12 @@ function handlePageNumTimestamp(
     pageSectionCount,
     creationDate
   );
-
+  const timeStampPageNumFontSetting = doc?.timeStampPageNumberFontSetting;
   const dataCell: Cell = {
     value: docFooterText,
     align: "right",
     columnSpan: 1,
-    fontFace: doc?.timeStampPageNumberFontSetting?.fontFace,
-    fontSize: doc?.timeStampPageNumberFontSetting?.fontSize,
-    color: doc?.timeStampPageNumberFontSetting?.color,
+    ...timeStampPageNumFontSetting
   };
   const { availableWidth } = getPageDimensions(doc.layout);
   if (docFooterText.length) {
