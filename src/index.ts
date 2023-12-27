@@ -113,5 +113,5 @@ export type {
   TableStyle,
   Cell,
   CellValue,
-  FontSetting
+  FontSetting,
 } from "./types";

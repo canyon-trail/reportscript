@@ -20,14 +20,13 @@ export type TextCell = {
   value: CellValue;
 } & CellStyle;
 
-export type TableStyle =FontSetting & {
+export type TableStyle = FontSetting & {
   grid?: boolean;
   border?: boolean;
   gridColor?: string;
   backgroundColor?: string;
   lineGap?: number;
   bottomBorder?: boolean;
-
 };
 
 export type RowOptions = TableStyle;
@@ -95,7 +94,10 @@ export type Document = {
   watermark?: Watermark;
 };
 
-export type Watermark = Omit<FontSetting,"fontSize" | "bold" | "boldFace" | "underline"> &{
+export type Watermark = Omit<
+  FontSetting,
+  "fontSize" | "bold" | "boldFace" | "underline"
+> & {
   text: string;
 };
 
@@ -106,4 +108,4 @@ export type FontSetting = {
   boldFace?: string;
   underline?: boolean;
   bold?: boolean;
-}
+};

@@ -754,20 +754,19 @@ describe("tableGap", () => {
     };
     expect(result).toEqual(expected);
   });
-})
+});
 
 describe("page numbers and timestamp", () => {
-  
   let pageInnerHeight: number;
   let rowHeight: number;
-  let timeStampPageNumRow
+  let timeStampPageNumRow;
   type sectionParam = {
     index: number;
     rowCount: number;
-  }
-  const createSection = (param:sectionParam) => ({
+  };
+  const createSection = (param: sectionParam) => ({
     ...emptySection,
-    index:param.index,
+    index: param.index,
     tables: [
       {
         ...emptyTable,
@@ -783,13 +782,13 @@ describe("page numbers and timestamp", () => {
     jest.useFakeTimers().setSystemTime(creationDate);
     const dimension = getPageDimensions();
     pageInnerHeight = dimension.pageInnerHeight;
-    rowHeight = pageInnerHeight / 3
+    rowHeight = pageInnerHeight / 3;
     timeStampPageNumRow = createPageNumberTimeStampRow({
       footerHeight: rowHeight,
       pageNum: 2,
       creationDate,
     });
-  })
+  });
   it("handles section page numbers", () => {
     const firstSectionPageNumberRow = createPageNumberTimeStampRow({
       footerHeight: rowHeight,
@@ -801,8 +800,8 @@ describe("page numbers and timestamp", () => {
       pageNum: 2,
       creationDate,
     });
-    const firstSection = createSection({index:0, rowCount:3});
-    const secondSection = createSection({index:1, rowCount:2});
+    const firstSection = createSection({ index: 0, rowCount: 3 });
+    const secondSection = createSection({ index: 1, rowCount: 2 });
     const input: MeasuredDocument = {
       ...emptyMeasuredDoc,
       sections: [firstSection, secondSection],
@@ -810,47 +809,52 @@ describe("page numbers and timestamp", () => {
       timestamp: true,
       sectionPageNumbers: true,
     };
-    const firstSectionPages =firstSection.tables[0].rows.map((row,index) => ({
+    const firstSectionPages = firstSection.tables[0].rows.map((row, index) => ({
       sectionIndex: 0,
       rows: [
         row,
         { ...defaultTableGapRow, height: rowHeight },
         firstSectionPageNumberRow[index],
       ],
-    }))
-    const secondSectionPages =secondSection.tables[0].rows.map((row,index) => ({
-      sectionIndex: 1,
-      rows: [
-        row,
-        { ...defaultTableGapRow, height: rowHeight },
-        secondSectionPageNumberRow[index],
-      ],
-    }))
+    }));
+    const secondSectionPages = secondSection.tables[0].rows.map(
+      (row, index) => ({
+        sectionIndex: 1,
+        rows: [
+          row,
+          { ...defaultTableGapRow, height: rowHeight },
+          secondSectionPageNumberRow[index],
+        ],
+      })
+    );
 
     const result = paginate(input, creationDate);
-    
+
     const expected: PaginatedDocument = {
       layout: "landscape",
-      pages: [
-        ...firstSectionPages,
-        ...secondSectionPages
-      ],
+      pages: [...firstSectionPages, ...secondSectionPages],
     };
-  
+
     expect(result).toEqual(expected);
   });
 
   it("throws if both pageNumbers and sectionPageNumbers true", () => {
-    const doc = { pageNumbers: true, sectionPageNumbers: true } as PaginatingDoc;
+    const doc = {
+      pageNumbers: true,
+      sectionPageNumbers: true,
+    } as PaginatingDoc;
     expect(() => addHeadersAndFooters(doc, creationDate)).toThrowError(
       "A document cannot have both pageNumbers and sectionPageNumbers set to true"
     );
   });
-  
+
   it("adds document page numbers", () => {
     const footerRowHeight = rowHeight / 2;
-    const docFooter = createRow({ rowHeight: footerRowHeight, value: "footer" });
-    const section =  createSection({index:0, rowCount:2})
+    const docFooter = createRow({
+      rowHeight: footerRowHeight,
+      value: "footer",
+    });
+    const section = createSection({ index: 0, rowCount: 2 });
     const pageNumberRow = createPageNumberTimeStampRow({
       footerHeight: rowHeight / 2,
       pageNum: 2,
@@ -858,13 +862,11 @@ describe("page numbers and timestamp", () => {
     const input: MeasuredDocument = {
       ...emptyMeasuredDoc,
       footers: [docFooter],
-      sections: [
-        section
-      ],
+      sections: [section],
       documentFooterHeight: footerRowHeight,
       pageNumbers: true,
     };
-    const expectedPages = section.tables[0].rows.map((row,index) => ({
+    const expectedPages = section.tables[0].rows.map((row, index) => ({
       sectionIndex: 0,
       rows: [
         row,
@@ -872,12 +874,12 @@ describe("page numbers and timestamp", () => {
         docFooter,
         pageNumberRow[index],
       ],
-  }))
+    }));
     const result = paginate(input, creationDate);
-    
+
     const expected: PaginatedDocument = {
       layout: "landscape",
-      pages: expectedPages
+      pages: expectedPages,
     };
 
     expect(result).toEqual(expected);
@@ -888,12 +890,10 @@ describe("page numbers and timestamp", () => {
       footerHeight: rowHeight,
       creationDate: creationDate,
     });
-    const section = createSection({index:0, rowCount:1})
+    const section = createSection({ index: 0, rowCount: 1 });
     const input: MeasuredDocument = {
       ...emptyMeasuredDoc,
-      sections: [
-        section
-      ],
+      sections: [section],
       documentFooterHeight: rowHeight,
       timestamp: true,
     };
@@ -918,24 +918,22 @@ describe("page numbers and timestamp", () => {
   });
 
   it("adds page numbers and timestamp", () => {
-    const section = createSection({index:0, rowCount:2})
+    const section = createSection({ index: 0, rowCount: 2 });
     const input: MeasuredDocument = {
       ...emptyMeasuredDoc,
-      sections: [
-        section
-      ],
+      sections: [section],
       documentFooterHeight: rowHeight,
       timestamp: true,
       pageNumbers: true,
     };
-    const expectedPages = section.tables[0].rows.map((row,index) => ({
+    const expectedPages = section.tables[0].rows.map((row, index) => ({
       sectionIndex: 0,
       rows: [
         row,
         { ...defaultTableGapRow, height: rowHeight },
         timeStampPageNumRow[index],
       ],
-    }))
+    }));
 
     const result = paginate(input, creationDate);
 
@@ -948,58 +946,55 @@ describe("page numbers and timestamp", () => {
   });
 
   it("adds page numbers and timestamp with timeStampPageNumberFontSetting set", () => {
-    const section = createSection({index:0, rowCount:2})
+    const section = createSection({ index: 0, rowCount: 2 });
     const fontSetting = {
-    fontFace: "Times-Roman",
-    fontSize: 8,
-    color: "black",
-    underline:true
-  }
+      fontFace: "Times-Roman",
+      fontSize: 8,
+      color: "black",
+      underline: true,
+    };
     const input: MeasuredDocument = {
       ...emptyMeasuredDoc,
-      sections: [
-       section
-      ],
+      sections: [section],
       documentFooterHeight: rowHeight,
       timestamp: true,
       pageNumbers: true,
       timeStampPageNumberFontSetting: fontSetting,
     };
 
-    const expectedPages = section.tables[0].rows.map((row,index) => ({
-        sectionIndex: 0,
-        rows: [
-          row,
-          {
-            ...defaultTableGapRow,
-            height: rowHeight,
-          },
-          {
-            ...timeStampPageNumRow[index],
-            data: [
-              {
-                ...timeStampPageNumRow[index].data[0],
-                fontFace: "Times-Roman",
-                fontSize: 8,
-                color: "black",
-                underline:true
-              } as Cell,
-            ],
-          },
-        ],
-
-    }))
+    const expectedPages = section.tables[0].rows.map((row, index) => ({
+      sectionIndex: 0,
+      rows: [
+        row,
+        {
+          ...defaultTableGapRow,
+          height: rowHeight,
+        },
+        {
+          ...timeStampPageNumRow[index],
+          data: [
+            {
+              ...timeStampPageNumRow[index].data[0],
+              fontFace: "Times-Roman",
+              fontSize: 8,
+              color: "black",
+              underline: true,
+            } as Cell,
+          ],
+        },
+      ],
+    }));
 
     const result = paginate(input, creationDate);
 
     const expected: PaginatedDocument = {
       layout: "landscape",
-      pages: expectedPages
+      pages: expectedPages,
     };
 
     expect(result).toEqual(expected);
   });
-})
+});
 
 describe("pagination - splitSection(...)", () => {
   it("single table spans > 1 page", () => {
