@@ -20,19 +20,13 @@ export type TextCell = {
   value: CellValue;
 } & CellStyle;
 
-export type TableStyle = {
-  fontSize?: number;
-  fontFace?: string;
-  boldFace?: string;
+export type TableStyle = FontSetting & {
   grid?: boolean;
   border?: boolean;
   gridColor?: string;
   backgroundColor?: string;
   lineGap?: number;
   bottomBorder?: boolean;
-  underline?: boolean;
-  bold?: boolean;
-  color?: string;
 };
 
 export type RowOptions = TableStyle;
@@ -95,19 +89,23 @@ export type Document = {
   repeatSectionHeaders?: boolean;
   repeatReportHeaders?: boolean;
   tableGap?: number;
-  timeStampPageNumberFontSetting?: TimeStampPageNumberFontSetting;
+  timeStampPageNumberFontSetting?: FontSetting;
   pageBreakRows?: PageBreakRows;
   watermark?: Watermark;
 };
 
-export type TimeStampPageNumberFontSetting = {
+export type Watermark = Omit<
+  FontSetting,
+  "fontSize" | "bold" | "boldFace" | "underline"
+> & {
+  text: string;
+};
+
+export type FontSetting = {
   fontFace?: string;
   fontSize?: number;
   color?: string;
-};
-
-export type Watermark = {
-  text: string;
-  fontFace?: string;
-  color?: string;
+  boldFace?: string;
+  underline?: boolean;
+  bold?: boolean;
 };

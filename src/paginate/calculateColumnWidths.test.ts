@@ -156,7 +156,6 @@ describe("calculateColumnWidths", () => {
       });
     });
   });
-
   describe("test for exceeding page width", () => {
     const testCases = [
       {
