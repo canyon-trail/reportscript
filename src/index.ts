@@ -93,7 +93,7 @@ function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
     }
   });
 }
-export {splitColumn}
+export { splitColumn };
 export type {
   Document,
   Image,
@@ -116,5 +116,5 @@ export type {
   CellValue,
   FontSetting,
   ImageCell,
-  TextCell
+  TextCell,
 } from "./types";
