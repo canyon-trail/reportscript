@@ -8,6 +8,7 @@ import { paginate } from "./paginate";
 import { normalize } from "./normalize";
 import fs from "fs";
 import { Document } from "./types";
+import { splitColumn } from "./paginate/splitColumn";
 type SnapshotResult = {
   snapshot: string;
   rendered: string;
@@ -92,7 +93,7 @@ function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
     }
   });
 }
-
+export {splitColumn}
 export type {
   Document,
   Image,
@@ -114,4 +115,6 @@ export type {
   Cell,
   CellValue,
   FontSetting,
+  ImageCell,
+  TextCell
 } from "./types";
