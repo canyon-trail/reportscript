@@ -6,6 +6,7 @@ commands:
     description: Notify failure via slack
     steps:
       - slack/notify:
+          channel: reportscript
           event: fail
           custom: |
             {
@@ -23,6 +24,7 @@ commands:
     description: Notify success via slack
     steps:
       - slack/notify:
+          channel: reportscript
           event: pass
           custom: |
             {

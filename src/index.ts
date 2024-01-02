@@ -8,6 +8,7 @@ import { paginate } from "./paginate";
 import { normalize } from "./normalize";
 import fs from "fs";
 import { Document } from "./types";
+export { splitColumn } from "./paginate/splitColumn";
 type SnapshotResult = {
   snapshot: string;
   rendered: string;
@@ -114,4 +115,6 @@ export type {
   Cell,
   CellValue,
   FontSetting,
+  ImageCell,
+  TextCell,
 } from "./types";
