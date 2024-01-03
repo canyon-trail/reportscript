@@ -110,7 +110,7 @@ jobs:
       - attach_workspace:
           at: /workspace
       - run:
-          command: npm run build
+          command: npm run build && ls
           working_directory: /workspace/reportscript
       - notify-fail
 workflows:
