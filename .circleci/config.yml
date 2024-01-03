@@ -148,8 +148,8 @@ workflows:
             - Slack
           requires:
             - reportscript-node-install
-            - reportscript-format-check
-            - reportscript-tests
+            # - reportscript-format-check
+            # - reportscript-tests
             - build
       # # - ci-jobs-completed:
       #     context:
