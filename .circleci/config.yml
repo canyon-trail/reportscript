@@ -110,9 +110,8 @@ jobs:
       - attach_workspace:
           at: /workspace
       - run:
-          command: npm run build
+          command: npm run build && pwd && ls
           working_directory: /workspace/reportscript
-      - run: cp -r dist /workspace/reportscript/dist
       - persist_to_workspace:
           root: /workspace/reportscript
           paths:
@@ -152,15 +151,15 @@ workflows:
             - reportscript-format-check
             - reportscript-tests
             - build
-      - ci-jobs-completed:
-          context:
-            - Slack
-          requires:
-            - reportscript-format-check
-            - reportscript-tests
-            - build
-            - release
-          filters:
-            branches:
-              ignore:
-                - main
+      # # - ci-jobs-completed:
+      #     context:
+      #       - Slack
+      #     requires:
+      #       - reportscript-format-check
+      #       - reportscript-tests
+      #       - build
+      #       - release
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - main
