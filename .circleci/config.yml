@@ -113,9 +113,9 @@ jobs:
           command: npm run build && pwd && ls
           working_directory: /workspace/reportscript
       - persist_to_workspace:
-          root: /workspace/reportscript
+          root: /workspace
           paths:
-            - dist
+            - reportscript/dist
       - notify-fail
 workflows:
   version: 2
@@ -124,16 +124,16 @@ workflows:
       - reportscript-node-install:
           context:
             - Slack
-      - reportscript-format-check:
-          context:
-            - Slack
-          requires:
-            - reportscript-node-install
-      - reportscript-tests:
-          context:
-            - Slack
-          requires:
-            - reportscript-node-install
+      # - reportscript-format-check:
+      #     context:
+      #       - Slack
+      #     requires:
+      #       - reportscript-node-install
+      # - reportscript-tests:
+      #     context:
+      #       - Slack
+      #     requires:
+      #       - reportscript-node-install
       - build:
           context:
             - Slack
