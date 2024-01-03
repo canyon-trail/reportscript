@@ -139,10 +139,6 @@ workflows:
             - Slack
           requires:
             - reportscript-node-install
-          filters:
-            branches:
-              ignore:
-                - main
       - release:
           context:
             - Slack
@@ -153,7 +149,8 @@ workflows:
             - build
           filters:
             branches:
-              - main
+              only:
+                - main
       - ci-jobs-completed:
           context:
             - Slack
