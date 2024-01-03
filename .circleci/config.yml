@@ -153,10 +153,6 @@ workflows:
             - reportscript-format-check
             - reportscript-tests
             - build
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
       - ci-jobs-completed:
           context:
             - Slack
