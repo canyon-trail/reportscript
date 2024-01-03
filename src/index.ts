@@ -13,7 +13,6 @@ type SnapshotResult = {
   snapshot: string;
   rendered: string;
 };
-//testing commit hook
 export function renderPdf(
   document: Document,
   response: NodeJS.WritableStream
