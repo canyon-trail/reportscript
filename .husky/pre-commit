@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx --prefix src/frontend lint-staged --concurrent false --allow-empty
+npx --prefix src/pdfgen lint-staged --concurrent false --allow-empty
