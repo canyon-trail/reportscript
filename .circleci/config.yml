@@ -99,7 +99,7 @@ jobs:
       - attach_workspace:
           at: /workspace
       - run:
-          command: ls
+          command: npm run semantic-release
           working_directory: /workspace/reportscript
       - notify-fail
   build:
@@ -110,7 +110,7 @@ jobs:
       - attach_workspace:
           at: /workspace
       - run:
-          command: npm run build && pwd && ls
+          command: npm run build
           working_directory: /workspace/reportscript
       - persist_to_workspace:
           root: /workspace
@@ -124,16 +124,16 @@ workflows:
       - reportscript-node-install:
           context:
             - Slack
-      # - reportscript-format-check:
-      #     context:
-      #       - Slack
-      #     requires:
-      #       - reportscript-node-install
-      # - reportscript-tests:
-      #     context:
-      #       - Slack
-      #     requires:
-      #       - reportscript-node-install
+      - reportscript-format-check:
+          context:
+            - Slack
+          requires:
+            - reportscript-node-install
+      - reportscript-tests:
+          context:
+            - Slack
+          requires:
+            - reportscript-node-install
       - build:
           context:
             - Slack
@@ -148,18 +148,22 @@ workflows:
             - Slack
           requires:
             - reportscript-node-install
-            # - reportscript-format-check
-            # - reportscript-tests
+            - reportscript-format-check
+            - reportscript-tests
             - build
-      # # - ci-jobs-completed:
-      #     context:
-      #       - Slack
-      #     requires:
-      #       - reportscript-format-check
-      #       - reportscript-tests
-      #       - build
-      #       - release
-      #     filters:
-      #       branches:
-      #         ignore:
-      #           - main
+          filters:
+            branches:
+              ignore:
+                - main
+      - ci-jobs-completed:
+          context:
+            - Slack
+          requires:
+            - reportscript-format-check
+            - reportscript-tests
+            - build
+            - release
+          filters:
+            branches:
+              ignore:
+                - main
