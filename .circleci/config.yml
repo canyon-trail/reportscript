@@ -112,8 +112,9 @@ jobs:
       - run:
           command: npm run build
           working_directory: /workspace/reportscript
+       - run: cp -r dist /workspace/reportscript/dist
       - persist_to_workspace:
-          root: /workspace
+          root: /workspace/reportscript
           paths:
             - dist
       - notify-fail
