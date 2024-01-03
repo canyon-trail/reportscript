@@ -153,8 +153,7 @@ workflows:
             - build
           filters:
             branches:
-              ignore:
-                - main
+              - main
       - ci-jobs-completed:
           context:
             - Slack
