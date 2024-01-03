@@ -113,16 +113,6 @@ jobs:
           command: npm run build
           working_directory: /workspace/reportscript
       - notify-fail
-    docker:
-      - image: node:20
-    resource_class: small
-    steps:
-      - attach_workspace:
-          at: /workspace
-      - run:
-          command: ls
-          working_directory: /workspace/reportscript
-      - notify-fail
 workflows:
   version: 2
   ci:
@@ -168,6 +158,7 @@ workflows:
             - reportscript-format-check
             - reportscript-tests
             - build
+            - release
           filters:
             branches:
               ignore:
