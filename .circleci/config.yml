@@ -158,7 +158,7 @@ workflows:
             - reportscript-format-check
             - reportscript-tests
             - build
-            - release
+            - build-and-release
           filters:
             branches:
               ignore:
