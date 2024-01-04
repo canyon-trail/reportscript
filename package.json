@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": ["dist/","README.md","LICENSE"],
   "scripts": {
     "test": "jest",
     "semantic-release": "semantic-release --branches main",
