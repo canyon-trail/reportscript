@@ -39,7 +39,7 @@ commands:
               ]
             }
 jobs:
-  reportscript-format-tests:
+  reportscript-format-check:
     docker:
       - image: node:20
     resource_class: large
@@ -55,7 +55,7 @@ jobs:
   reportscript-tests:
     docker:
       - image: node:20
-    resource_class: large
+    resource_class: small
     steps:
       - attach_workspace:
           at: /workspace
@@ -66,7 +66,7 @@ jobs:
   reportscript-node-install:
     docker:
       - image: node:20-alpine
-    resource_class: large
+    resource_class: small
     steps:
       - checkout
       - restore_cache:
@@ -94,7 +94,7 @@ jobs:
   release:
     docker:
       - image: node:20
-    resource_class: large
+    resource_class: small
     steps:
       - attach_workspace:
           at: /workspace
@@ -105,13 +105,17 @@ jobs:
   build:
     docker:
       - image: node:20
-    resource_class: large
+    resource_class: small
     steps:
       - attach_workspace:
           at: /workspace
       - run:
           command: npm run build
           working_directory: /workspace/reportscript
+      - persist_to_workspace:
+          root: /workspace
+          paths:
+            - reportscript/dist
       - notify-fail
 workflows:
   version: 2
@@ -120,7 +124,7 @@ workflows:
       - reportscript-node-install:
           context:
             - Slack
-      - reportscript-format-tests:
+      - reportscript-format-check:
           context:
             - Slack
           requires:
@@ -135,18 +139,12 @@ workflows:
             - Slack
           requires:
             - reportscript-node-install
-            - reportscript-format-tests
-            - reportscript-tests
-          filters:
-            branches:
-              only:
-                - main
       - release:
           context:
             - Slack
           requires:
             - reportscript-node-install
-            - reportscript-format-tests
+            - reportscript-format-check
             - reportscript-tests
             - build
           filters:
@@ -157,8 +155,9 @@ workflows:
           context:
             - Slack
           requires:
-            - reportscript-format-tests
+            - reportscript-format-check
             - reportscript-tests
+            - build
             - release
           filters:
             branches:
