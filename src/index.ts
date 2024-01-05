@@ -13,7 +13,6 @@ type SnapshotResult = {
   snapshot: string;
   rendered: string;
 };
-
 export function renderPdf(
   document: Document,
   response: NodeJS.WritableStream

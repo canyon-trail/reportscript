@@ -47,7 +47,8 @@
     "sinon": "^12.0.1",
     "ts-jest": "^27.0.4",
     "tslint-config-prettier": "^1.18.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.1",
+    "husky": "^8.0.3"
   },
   "publishConfig": {
     "access": "public"
@@ -66,5 +67,11 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "lint-staged": {
+    "*.(tsx|ts)": [
+      "prettier --check --write",
+      "eslint"
+    ]
   }
 }
