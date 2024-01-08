@@ -40,15 +40,45 @@ type pageNumberTimestampRowParam = {
   pageNum?: number;
   creationDate?: Date;
 };
+const emptyMeasuredRow = {
+  columnHeights: [],
+  columnWidths: [],
+  columnStarts: [],
+};
+
+const emptyMeasuredDoc: MeasuredDocument = {
+  layout: "landscape",
+  headers: [],
+  footers: [],
+  sections: [],
+  documentFooterHeight: 0,
+};
+
+const emptySection: MeasuredSection = {
+  headers: [],
+  tables: [],
+  index: 0,
+};
+
+const emptyTable: MeasuredTable = {
+  headers: [],
+  rows: [],
+  measureTextHeight,
+  columns: [],
+};
+
+const defaultTableGapRow: MeasuredRow = {
+  ...emptyMeasuredRow,
+  data: [],
+  height: margin,
+};
 const createRows = (params: rowsParams) => {
   const { rowHeight, length: length, value } = params;
   return [...Array(length).keys()].map((_, index) => {
     return {
+      ...emptyMeasuredRow,
       height: rowHeight,
       data: [{ value: `${value ?? ""}${index}` }],
-      columnHeights: [],
-      columnWidths: [],
-      columnStarts: [],
     };
   });
 };
@@ -56,11 +86,9 @@ const createRows = (params: rowsParams) => {
 const createRow = (params: rowParam) => {
   const { rowHeight, value } = params;
   return {
+    ...emptyMeasuredRow,
     height: rowHeight,
     data: [{ value: `${value}` }],
-    columnHeights: [],
-    columnWidths: [],
-    columnStarts: [],
   };
 };
 
@@ -91,6 +119,24 @@ const createPageNumberTimeStampRow = (param: pageNumberTimestampRowParam) => {
     };
   });
 };
+
+function makeSingleSectionMeasuredDoc(rows: MeasuredRow[]): MeasuredDocument {
+  return {
+    ...emptyMeasuredDoc,
+    sections: [
+      {
+        ...emptySection,
+        tables: [
+          {
+            ...emptyTable,
+            rows,
+          },
+        ],
+      },
+    ],
+  };
+}
+
 describe("pagination", () => {
   it("puts single section with single table onto one page", () => {
     const input = makeSingleSectionMeasuredDoc(
@@ -1006,11 +1052,9 @@ describe("pagination - splitSection(...)", () => {
       index: 0,
       headers: [
         {
+          ...emptyMeasuredRow,
           height: 0,
           data: [{ value: "i should not be copied later" }],
-          columnHeights: [],
-          columnWidths: [],
-          columnStarts: [],
         },
       ],
       tables: [
@@ -1157,8 +1201,7 @@ describe("pagination - splitSection(...)", () => {
 
     const expected: SectionSplitResult = {
       first: {
-        index: 0,
-        headers: [sectionHeader],
+        ...input,
         tables: [
           {
             ...emptyTable,
@@ -1167,8 +1210,7 @@ describe("pagination - splitSection(...)", () => {
         ],
       },
       rest: {
-        index: 0,
-        headers: [sectionHeader],
+        ...input,
         tables: [
           {
             ...emptyTable,
@@ -1479,6 +1521,12 @@ describe("pagination - paginateSection(...)", () => {
 describe("pagination - splitTable(...)", () => {
   const availableSpace = 40;
   const lineHeight = 10;
+  const pageBreakRow = {
+    ...emptyMeasuredRow,
+    columnHeights: [lineHeight],
+    data: [{ value: "page break" }],
+    height: lineHeight,
+  };
   const splitter = (
     text: string,
     measure,
@@ -1501,18 +1549,22 @@ describe("pagination - splitTable(...)", () => {
       .fill("example text")
       .map((x, idx) => `${x} ${idx + start}`)
       .join("\n");
+  const createMeasuredRows = (heightTimes: number) => ({
+    ...emptyMeasuredRow,
+    columnHeights: [lineHeight * heightTimes],
+    data: [{ value: "data" }],
+    height: lineHeight * heightTimes,
+  });
   it("splits long row", () => {
     const table: MeasuredTable = {
       ...emptyTable,
       measureTextHeight,
       rows: [
         {
+          ...emptyMeasuredRow,
           columnHeights: [lineHeight * 9],
           data: [{ value: makeLines(9) }],
           height: lineHeight * 9,
-
-          columnWidths: [],
-          columnStarts: [],
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitter }],
@@ -1563,12 +1615,10 @@ and another line that should go on the next page as well but it needs to be long
       measureTextHeight: measure,
       rows: [
         {
+          ...emptyMeasuredRow,
           columnHeights: [measure(notes)],
           data: [{ value: notes }],
           height: measure(notes),
-
-          columnWidths: [],
-          columnStarts: [],
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],
@@ -1589,12 +1639,10 @@ and another line that should go on the next page as well but it needs to be long
       measureTextHeight: measure,
       rows: [
         {
+          ...emptyMeasuredRow,
           columnHeights: [measure(col1Text), measure(splittable)],
           data: [{ value: col1Text }, { value: splittable }],
           height: measure(col1Text),
-
-          columnWidths: [],
-          columnStarts: [],
         },
       ],
       columns: [
@@ -1607,28 +1655,9 @@ and another line that should go on the next page as well but it needs to be long
   });
 
   it("split table shows a breakPage row", () => {
-    const tallRow = {
-      columnHeights: [lineHeight * 3],
-      data: [{ value: "data" }],
-      height: lineHeight * 3,
-      columnWidths: [],
-      columnStarts: [],
-    };
-    const regularRow = {
-      columnHeights: [lineHeight],
-      data: [{ value: "data" }],
-      height: lineHeight,
-      columnWidths: [],
-      columnStarts: [],
-    };
-    const pageBreakRow = {
-      columnHeights: [lineHeight],
-      data: [{ value: "page break" }],
-      height: lineHeight,
+    const tallRow = createMeasuredRows(3);
+    const regularRow = createMeasuredRows(1);
 
-      columnWidths: [],
-      columnStarts: [],
-    };
     const table: MeasuredTable = {
       ...emptyTable,
       rows: [tallRow, regularRow],
@@ -1639,12 +1668,10 @@ and another line that should go on the next page as well but it needs to be long
       first: {
         ...table,
         rows: [tallRow, pageBreakRow],
-        columns: [{ width: { value: 1, unit: "fr" } }],
       },
       rest: {
         ...table,
         rows: [regularRow],
-        columns: [{ width: { value: 1, unit: "fr" } }],
       },
     };
     const doc: MeasuredDocument = {
@@ -1654,36 +1681,9 @@ and another line that should go on the next page as well but it needs to be long
     expect(splitTable(table, availableSpace, doc)).toEqual(expected);
   });
   it("split table shows multiple breakPage rows ", () => {
-    const tallRow = {
-      columnHeights: [lineHeight * 2],
-      data: [{ value: "data" }],
-      height: lineHeight * 2,
-      columnWidths: [],
-      columnStarts: [],
-    };
-    const regularRow = {
-      columnHeights: [lineHeight],
-      data: [{ value: "data" }],
-      height: lineHeight,
-      columnWidths: [],
-      columnStarts: [],
-    };
-    const pageBreakRows = [
-      {
-        data: [{ value: "page break" }],
-        height: lineHeight,
-        columnHeights: [lineHeight],
-        columnWidths: [],
-        columnStarts: [],
-      },
-      {
-        data: [{ value: "page break" }],
-        height: lineHeight,
-        columnHeights: [lineHeight],
-        columnWidths: [],
-        columnStarts: [],
-      },
-    ];
+    const tallRow = createMeasuredRows(2);
+    const regularRow = createMeasuredRows(1);
+    const pageBreakRows = [pageBreakRow, pageBreakRow];
     const table: MeasuredTable = {
       ...emptyTable,
       rows: [tallRow, regularRow],
@@ -1694,12 +1694,10 @@ and another line that should go on the next page as well but it needs to be long
       first: {
         ...table,
         rows: [tallRow, ...pageBreakRows],
-        columns: [{ width: { value: 1, unit: "fr" } }],
       },
       rest: {
         ...table,
         rows: [regularRow],
-        columns: [{ width: { value: 1, unit: "fr" } }],
       },
     };
     const doc: MeasuredDocument = {
@@ -1709,33 +1707,16 @@ and another line that should go on the next page as well but it needs to be long
     expect(splitTable(table, availableSpace, doc)).toEqual(expected);
   });
   it("split table shows breakPage rows with a splitted long row", () => {
-    const pageBreakRows = [
-      {
-        data: [{ value: "page break" }],
-        height: lineHeight,
-        columnHeights: [lineHeight],
-        columnWidths: [],
-        columnStarts: [],
-      },
-      {
-        data: [{ value: "page break" }],
-        height: lineHeight,
-        columnHeights: [lineHeight],
-        columnWidths: [],
-        columnStarts: [],
-      },
-    ];
+    const pageBreakRows = [pageBreakRow, pageBreakRow];
     const table: MeasuredTable = {
       ...emptyTable,
       measureTextHeight,
       rows: [
         {
+          ...emptyMeasuredRow,
           columnHeights: [lineHeight * 9],
           data: [{ value: makeLines(9) }],
           height: lineHeight * 9,
-
-          columnWidths: [],
-          columnStarts: [],
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitter }],
@@ -1746,30 +1727,24 @@ and another line that should go on the next page as well but it needs to be long
         ...table,
         rows: [
           {
+            ...emptyMeasuredRow,
             columnHeights: [lineHeight * 2],
             data: [{ value: makeLines(2) }],
             height: lineHeight * 2,
-
-            columnWidths: [],
-            columnStarts: [],
           },
           ...pageBreakRows,
         ],
-        columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitter }],
       },
       rest: {
         ...table,
         rows: [
           {
+            ...emptyMeasuredRow,
             columnHeights: [lineHeight * 7],
             data: [{ value: makeLines(7, 3) }],
             height: lineHeight * 7,
-
-            columnWidths: [],
-            columnStarts: [],
           },
         ],
-        columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitter }],
       },
     };
     const doc: MeasuredDocument = {
@@ -1779,48 +1754,3 @@ and another line that should go on the next page as well but it needs to be long
     expect(splitTable(table, availableSpace, doc)).toEqual(expected);
   });
 });
-
-const emptyMeasuredDoc: MeasuredDocument = {
-  layout: "landscape",
-  headers: [],
-  footers: [],
-  sections: [],
-  documentFooterHeight: 0,
-};
-
-const emptySection: MeasuredSection = {
-  headers: [],
-  tables: [],
-  index: 0,
-};
-
-const emptyTable: MeasuredTable = {
-  headers: [],
-  rows: [],
-  measureTextHeight,
-  columns: [],
-};
-
-function makeSingleSectionMeasuredDoc(rows: MeasuredRow[]): MeasuredDocument {
-  return {
-    ...emptyMeasuredDoc,
-    sections: [
-      {
-        ...emptySection,
-        tables: [
-          {
-            ...emptyTable,
-            rows,
-          },
-        ],
-      },
-    ],
-  };
-}
-const defaultTableGapRow: MeasuredRow = {
-  data: [],
-  columnHeights: [],
-  columnWidths: [],
-  columnStarts: [],
-  height: margin,
-};
