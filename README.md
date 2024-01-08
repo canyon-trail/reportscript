@@ -1,2 +1,2 @@
-# steel-swordfish
-PDF report generation library for Typescript
+# reportscript
+PDF report generation library for Javascript and Typescript
