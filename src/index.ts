@@ -13,20 +13,28 @@ type SnapshotResult = {
   snapshot: string;
   rendered: string;
 };
+
+type RenderDocumentResult = {
+  reportDocument: PdfKitApi;
+  stream?: NodeJS.WritableStream;
+};
+
 export function renderPdf(
   document: Document,
   response: NodeJS.WritableStream
-): void {
-  renderDocument(document, undefined, response);
+): NodeJS.WritableStream {
+  const { stream } = renderDocument(document, undefined, response);
+  return stream;
 }
 
 export function renderSnapshot(
   path: string,
   document: Document
 ): SnapshotResult {
-  const reportDocument = renderDocument(document, true) as SnapshottingDocument;
+  const { reportDocument } = renderDocument(document, true);
+  const doc = reportDocument as SnapshottingDocument;
   let snapshot;
-  const rendered = JSON.stringify(reportDocument.documentCalls, null, 2);
+  const rendered = JSON.stringify(doc.documentCalls, null, 2);
 
   if (!fs.existsSync(path)) {
     fs.writeFileSync(path, rendered);
@@ -43,7 +51,8 @@ function renderDocument(
   document: Document,
   isSnapshot?: boolean,
   outStream?: NodeJS.WritableStream
-): PdfKitApi {
+): RenderDocumentResult {
+  let stream: NodeJS.WritableStream;
   const pdfDoc = new PDFDocument({
     layout: document.layout ?? "landscape",
     margin: 0,
@@ -55,7 +64,7 @@ function renderDocument(
   if (outStream) {
     // important for this to happen prior to rendering to enable streaming responses
     // for large documents that would potentially cause memory usage problems.
-    pdfDoc.pipe(outStream);
+    stream = pdfDoc.pipe(outStream);
   }
   const reportDocument = isSnapshot ? new SnapshottingDocument(pdfDoc) : pdfDoc;
   const normalizeDoc = normalize(document);
@@ -66,7 +75,7 @@ function renderDocument(
   );
   render(paginatedDocument, reportDocument);
   reportDocument.end();
-  return reportDocument;
+  return { reportDocument, stream };
 }
 
 function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {

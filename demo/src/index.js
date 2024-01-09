@@ -49,12 +49,12 @@ const documentHeader = {
 }
 
 const makePdf = (document,iframe) => {
-  const doc = new PDFDocument;
-  const stream = blobStream();
-  reportscript.renderPdf(document,stream)
-  doc.end()
+  const bobStream = blobStream();
+  const stream = reportscript.renderPdf(document,bobStream)
   const url = stream.toBlobURL('application/pdf');
-  iframe.src = url;
+  stream.on('finish', function() {
+    iframe.src = url
+  });
 }
 var iframe = document.querySelector('iframe');
 

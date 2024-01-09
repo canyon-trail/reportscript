@@ -50,14 +50,14 @@ const documentHeader = {
 }
 
 const makePdf = (document,iframe) => {
-  const doc = new PDFDocument;
-  const stream = blobStream();
-  doc.pipe(stream);   
-  console.log(stream)
-  reportscript.renderPdf(document,stream)
-  doc.end()
+  const bobStream = blobStream();
+  const stream = reportscript.renderPdf(document,bobStream)
   const url = stream.toBlobURL('application/pdf');
-  iframe.src = url;
+  console.log(stream)
+  console.log(url)
+  stream.on('finish', function() {
+    iframe.src = url
+  });
 }
 var iframe = document.querySelector('iframe');
 
@@ -1151,12 +1151,14 @@ function trySplitDelimiter(value, measure2, availableSpace, delimiter) {
 
 // src/index.ts
 function renderPdf(document, response) {
-  renderDocument(document, void 0, response);
+  const { stream } = renderDocument(document, void 0, response);
+  return stream;
 }
 function renderSnapshot(path, document) {
-  const reportDocument = renderDocument(document, true);
+  const { reportDocument } = renderDocument(document, true);
+  const doc = reportDocument;
   let snapshot;
-  const rendered = JSON.stringify(reportDocument.documentCalls, null, 2);
+  const rendered = JSON.stringify(doc.documentCalls, null, 2);
   if (!import_fs.default.existsSync(path)) {
     import_fs.default.writeFileSync(path, rendered);
     snapshot = rendered;
@@ -1169,6 +1171,7 @@ function renderSnapshot(path, document) {
 }
 function renderDocument(document, isSnapshot, outStream) {
   var _a;
+  let stream;
   const pdfDoc = new import_pdfkit.default({
     layout: (_a = document.layout) != null ? _a : "landscape",
     margin: 0,
@@ -1176,7 +1179,7 @@ function renderDocument(document, isSnapshot, outStream) {
     info: isSnapshot ? { CreationDate: /* @__PURE__ */ new Date("July 20, 69 00:20:18 GMT+00:00") } : { CreationDate: /* @__PURE__ */ new Date() }
   });
   if (outStream) {
-    pdfDoc.pipe(outStream);
+    stream = pdfDoc.pipe(outStream);
   }
   const reportDocument = isSnapshot ? new SnapshottingDocument(pdfDoc) : pdfDoc;
   const normalizeDoc = normalize(document);
@@ -1187,7 +1190,7 @@ function renderDocument(document, isSnapshot, outStream) {
   );
   render(paginatedDocument, reportDocument);
   reportDocument.end();
-  return reportDocument;
+  return { reportDocument, stream };
 }
 function render(doc, pdfDoc) {
   doc.pages.forEach((p, idx) => {
