@@ -11,7 +11,7 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
       "ecmaFeatures": {
-        "jsx": true
+        "js":true
       },
       "ecmaVersion": 12,
       "sourceType": "module",
@@ -20,9 +20,6 @@
     "plugins": [
       "@typescript-eslint",
       "deprecation"
-    ],
-    "ignorePatterns": [
-     "snapshot.json"
     ],
     "rules": {
       "prefer-spread": "off",
