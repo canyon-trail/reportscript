@@ -83,7 +83,6 @@ editor.getSession().on("change", function () {
       clearTimeout(debounceTimeout);
     }
     const fn = new Function(editor.getValue());
-    console.log(fn);
     debounceTimeout = setTimeout(() => {
       makePdf(fn(), iframe);
       debounceTimeout = undefined;
