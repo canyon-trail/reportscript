@@ -1,6 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const reportscript = require("../../dist/index.js")
-const PDFDocument = require('pdfkit');
 const blobStream = require('blob-stream');
 
 const generateDocument = () =>{
@@ -52,10 +51,8 @@ const documentHeader = {
 const makePdf = (document,iframe) => {
   const bobStream = blobStream();
   const stream = reportscript.renderPdf(document,bobStream)
-  const url = stream.toBlobURL('application/pdf');
-  console.log(stream)
-  console.log(url)
   stream.on('finish', function() {
+    const url = stream.toBlobURL('application/pdf');
     iframe.src = url
   });
 }
@@ -76,8 +73,24 @@ editor
 
 makePdf(generateDocument(),iframe)
 
+let debounceTimeout;
 
-},{"../../dist/index.js":2,"blob-stream":92,"pdfkit":237}],2:[function(require,module,exports){
+editor.getSession().on('change', function() {
+  try {
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    const fn = new Function(editor.getValue());
+    console.log(fn)
+    debounceTimeout = setTimeout(() => {
+      makePdf(fn(),iframe)
+      debounceTimeout = undefined;
+    }, 100);
+  } catch (e) {
+    console.log(e);
+  }
+});
+},{"../../dist/index.js":2,"blob-stream":92}],2:[function(require,module,exports){
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;

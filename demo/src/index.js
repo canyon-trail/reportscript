@@ -1,5 +1,4 @@
 const reportscript = require("../../dist/index.js")
-const PDFDocument = require('pdfkit');
 const blobStream = require('blob-stream');
 
 const generateDocument = () =>{
@@ -51,8 +50,8 @@ const documentHeader = {
 const makePdf = (document,iframe) => {
   const bobStream = blobStream();
   const stream = reportscript.renderPdf(document,bobStream)
-  const url = stream.toBlobURL('application/pdf');
   stream.on('finish', function() {
+    const url = stream.toBlobURL('application/pdf');
     iframe.src = url
   });
 }
@@ -73,3 +72,20 @@ editor
 
 makePdf(generateDocument(),iframe)
 
+let debounceTimeout;
+
+editor.getSession().on('change', function() {
+  try {
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    const fn = new Function(editor.getValue());
+    console.log(fn)
+    debounceTimeout = setTimeout(() => {
+      makePdf(fn(),iframe)
+      debounceTimeout = undefined;
+    }, 100);
+  } catch (e) {
+    console.log(e);
+  }
+});
