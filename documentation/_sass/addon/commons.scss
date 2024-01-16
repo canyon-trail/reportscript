@@ -1127,6 +1127,7 @@ search {
 #main-wrapper > .container > .row,
 #search-result-wrapper > .row {
   @include ml-mr(0);
+  width: 100%;
 }
 
 #tail-wrapper {
@@ -1492,9 +1493,7 @@ search {
   }
 
   #main-wrapper > .container {
-    max-width: $main-content-max-width;
-    padding-left: 1.75rem !important;
-    padding-right: 1.75rem !important;
+    max-width: 100%;
   }
 
   main.col-12,
