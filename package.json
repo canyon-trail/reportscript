@@ -20,7 +20,7 @@
     "format": "npm run prettier:fix && npm run lint:fix",
     "commit": "cz",
     "build": "tsup ./src/index.ts --format cjs,esm --dts",
-    "demo-build": "browserify ./demo/src/index.js > ./demo/bundle/bundle.js"
+    "demo-build": "browserify ./demo/src/index.js > ./documentation/bundle/bundle.js"
     
   },
   "repository": {

@@ -1,5 +1,5 @@
 ---
 layout: demo
 icon: fa fa-pencil
-order: 1
+order: 3
 ---
