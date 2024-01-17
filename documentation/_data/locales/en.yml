@@ -11,20 +11,12 @@ layout:
 tabs:
   # format: <filename_without_extension>: <value>
   home: Home
-  categories: Categories
-  tags: Tags
-  archives: Archives
+  demo: Demo
   about: About
+  document: Document
 
-# the text displayed in the search bar & search results
-search:
-  hint: search
-  cancel: Cancel
-  no_results: Oops! No results found.
 
 panel:
-  lastmod: Recently Updated
-  trending_tags: Trending Tags
   toc: Contents
 
 copyright:
@@ -63,8 +55,8 @@ post:
   relate_posts: Further Reading
   share: Share
   button:
-    next: Newer
-    previous: Older
+    next: Next
+    previous: Previous
     copy_code:
       succeed: Copied!
     share_link:
@@ -87,5 +79,5 @@ categories:
     singular: category
     plural: categories
   post_measure:
-    singular: post
-    plural: posts
+    singular: Documentation
+    plural: Documentations

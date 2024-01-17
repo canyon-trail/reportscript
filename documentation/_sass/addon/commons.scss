@@ -1127,8 +1127,15 @@ search {
 #main-wrapper > .container > .row,
 #search-result-wrapper > .row {
   @include ml-mr(0);
-  width: 100%;
+
 }
+
+#topbar-wrapper.row-small,
+#main-wrapper > .container > .row-big,
+#search-result-wrapper > .row-big {
+  @include ml-mr(0);
+}
+
 
 #tail-wrapper {
   > :not(script) {

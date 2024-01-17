@@ -13,5 +13,4 @@ loadImg();
 imgPopup();
 initLocaleDatetime();
 initClipboard();
-toc();
 basic();
