@@ -2,7 +2,6 @@
 title: Installation
 ---
 
-
 1. Install reportscript:
 ```terminal
 npm install reportscript
@@ -10,34 +9,8 @@ npm install reportscript
 2. Import `renderPdf`:
 ```javascript
 const renderPdf = require("reportscript")
-const fs = require("fs")
-const path = require("path")
 ```
 or 
 ```javascript
 import renderPdf from 'reportscript'
-import fs from 'fs'
-import path from 'path'
-```
-3. Make your document:
-```javascript
-const document = {
-    sections: {
-        tables: [
-        {
-            rows: [{
-                data: ["hello world !!!"] 
-                }],
-            },
-        ],
-    },
-}
-```
-4. Render your PDF to a path:
-```javascript
-const path = path.join("cool_name.pdf");
-// for modules
-renderPdf.renderPdf(document,fs.createWriteStream(path))
-// for ES6
-renderPdf(document,fs.createWriteStream(path))
 ```

@@ -17,12 +17,6 @@ npm install reportscript
 ```
 2. Import `renderPdf`:
 ```javascript
-const renderPdf = require("reportscript")
-const fs = require("fs")
-const path = require("path")
-```
-or 
-```javascript
 import renderPdf from 'reportscript'
 import fs from 'fs'
 import path from 'path'
@@ -42,10 +36,8 @@ const document = {
 }
 ```
 4. Render your PDF to a path:
+
 ```javascript
 const path = path.join("cool_name.pdf");
-// for modules
-renderPdf.renderPdf(document,fs.createWriteStream(path))
-// for ES6
 renderPdf(document,fs.createWriteStream(path))
 ```
