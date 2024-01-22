@@ -19,7 +19,8 @@
     "prettier:fix": "npm run prettier -- --write",
     "format": "npm run prettier:fix && npm run lint:fix",
     "commit": "cz",
-    "build": "tsup ./src/index.ts --format cjs,esm --dts"
+    "build": "tsup ./src/index.ts --format cjs,esm --dts",
+    "build-docs": "node scripts/writeDocs.mjs"
   },
   "repository": {
     "type": "git",
@@ -52,7 +53,9 @@
     "sinon": "^12.0.1",
     "ts-jest": "^27.0.4",
     "tslint-config-prettier": "^1.18.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.1",
+    "typedoc": "^0.25.7",
+    "typedoc-plugin-markdown": "^3.17.1"
   },
   "publishConfig": {
     "access": "public"
@@ -62,8 +65,9 @@
     "@types/node": "^16.3.2",
     "@types/pdfkit": "^0.11.2",
     "blob-stream": "^0.1.3",
-
+    "cross-spawn": "^7.0.3",
     "lodash": "^4.17.21",
+    "npx": "^10.2.2",
     "pdfkit": "^0.12.1",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
@@ -72,11 +76,5 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "lint-staged": {
-    "*.(tsx|ts)": [
-      "prettier --check --write",
-      "eslint"
-    ]
   }
 }

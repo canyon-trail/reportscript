@@ -19,6 +19,7 @@
     "watch": "npx rollup -c --bundleConfigAsCjs -w",
     "test": "npx stylelint _sass/**/*.scss",
     "fixlint": "npm run test -- --fix",
+    "docs-dev": "bundle exec jekyll s",
     "demo-build": "mkdir bundle & browserify ./_javascript/demo.js > ./bundle/bundle.js"
   },
   "dependencies": {
