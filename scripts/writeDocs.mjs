@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, rmSync, readdirSync } from "fs";
+import { readFileSync, writeFileSync, rmSync } from "fs";
 import { spawnSync } from "child_process";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -18,24 +18,26 @@ spawnSync(
   ]
 );
 
-const docsPath = join(__dirname, "docs");
-const modulesFilePath = join(docsPath, "modules.md");
+const tempDocsPath = join(__dirname, "docs");
+const modulesFilePath = join(tempDocsPath, "modules.md");
 
 const contents = readFileSync(modulesFilePath, { encoding: "utf-8" });
-const date = new Date().toISOString().split("T")[0];
 
-const filename = `${date}-documentation.md`;
-const docPage = "---\ntitle: Documentation\n---\n\n" + contents.replace(/modules.md/g, "");
-const postsPath = join(__dirname, "../", "documentation", "_posts");
+const filename = "documentation.md";
 
-const currentPosts = readdirSync(postsPath);
-const oldDocs = currentPosts.find(x => x.match(/documentation.md/));
+const tabTags = [
+  "---",
+  "icon: fa-solid fa-book",
+  "order: 4",
+  "layout: post",
+  "---"
+].join("\n") + "\n";
 
-if (oldDocs) {
-  rmSync(join(postsPath, oldDocs));
-}
+const docPage = tabTags + contents.replace(/modules.md/g, "");
 
-const newDocsPath = join(postsPath, filename);
+const tabsPaths = join(__dirname, "../", "documentation", "_tabs");
+
+const newDocsPath = join(tabsPaths, filename);
 writeFileSync(newDocsPath, docPage);
 
-rmSync(docsPath, { recursive: true, force: true });
+rmSync(tempDocsPath, { recursive: true, force: true });
