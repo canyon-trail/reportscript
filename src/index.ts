@@ -19,6 +19,7 @@ type RenderDocumentResult = {
  * Writes a Document to a NodeJS.WriteableStream and returns the stream.
  *
  * Examples:
+ *
  * Writing to an Express HTTP response:
  * ```javascript
  * router.get("/" (req, res) => {
