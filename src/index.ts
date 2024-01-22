@@ -146,5 +146,5 @@ export type {
   FontSetting,
   ImageCell,
   TextCell,
-  SnapshotResult
+  SnapshotResult,
 } from "./types";
