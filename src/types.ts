@@ -5,7 +5,10 @@ export type Section = {
   watermark?: Watermark;
 };
 
-export type RenderPdf = (document: Document, response: NodeJS.WritableStream) => NodeJS.WritableStream
+export type RenderPdf = (
+  document: Document,
+  response: NodeJS.WritableStream
+) => NodeJS.WritableStream;
 
 export type Layout = "landscape" | "portrait";
 
@@ -109,7 +112,7 @@ export type HeaderFooters = {
   rows: Row[];
   columns?: ColumnSetting[];
   style?: RowOptions;
-}
+};
 
 export type Document = {
   headers?: HeaderFooters;
