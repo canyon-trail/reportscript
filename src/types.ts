@@ -354,8 +354,10 @@ export type Row = {
   image?: Image;
 };
 
+/** Set default cell styling for an entire row. Any options set at the cell level will override row options. */
 export type RowOptions = CellStyle &
   FontSetting & {
+    /** Adds a bottom border to the entire row */
     border?: boolean;
   };
 
