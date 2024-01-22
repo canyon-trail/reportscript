@@ -18,7 +18,14 @@
     "prewatch": "npx rimraf assets/js/dist",
     "watch": "npx rollup -c --bundleConfigAsCjs -w",
     "test": "npx stylelint _sass/**/*.scss",
-    "fixlint": "npm run test -- --fix"
+    "fixlint": "npm run test -- --fix",
+    "demo-build": "mkdir bundle & browserify ./_javascript/demo.js > ./bundle/bundle.js"
+  },
+  "dependencies": {
+    "brfs": "^2.0.2",
+    "browserify": "^17.0.0",
+    "pdfkit": "^0.12.1",
+    "reportscript": "^2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
