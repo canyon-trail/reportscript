@@ -1,4 +1,4 @@
-const reportscript = require("../../dist/index.js");
+const reportscript = require("reportscript");
 const blobStream = require("blob-stream");
 
 const generateDocument = () => {
