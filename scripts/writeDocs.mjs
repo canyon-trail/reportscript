@@ -1,11 +1,11 @@
 import { readFileSync, writeFileSync, rmSync } from "fs";
-import { spawnSync } from "child_process";
+import spawn from "cross-spawn";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-spawnSync(
+spawn.sync(
   "npx",
   [
     "typedoc",
