@@ -47,7 +47,7 @@ title: Documentation
 
 #### Defined in
 
-[types.ts:17](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L17)
+[types.ts:17](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L17)
 
 ___
 
@@ -77,7 +77,7 @@ ___
 
 #### Defined in
 
-[types.ts:51](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L51)
+[types.ts:51](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L51)
 
 ___
 
@@ -87,7 +87,7 @@ ___
 
 #### Defined in
 
-[types.ts:15](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L15)
+[types.ts:15](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L15)
 
 ___
 
@@ -105,7 +105,7 @@ ___
 
 #### Defined in
 
-[types.ts:103](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L103)
+[types.ts:103](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L103)
 
 ___
 
@@ -131,7 +131,7 @@ ___
 
 #### Defined in
 
-[types.ts:97](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L97)
+[types.ts:97](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L97)
 
 ___
 
@@ -159,7 +159,7 @@ ___
 
 #### Defined in
 
-[types.ts:117](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L117)
+[types.ts:117](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L117)
 
 ___
 
@@ -180,7 +180,7 @@ ___
 
 #### Defined in
 
-[types.ts:139](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L139)
+[types.ts:139](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L139)
 
 ___
 
@@ -198,7 +198,7 @@ ___
 
 #### Defined in
 
-[types.ts:111](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L111)
+[types.ts:111](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L111)
 
 ___
 
@@ -208,7 +208,7 @@ ___
 
 #### Defined in
 
-[types.ts:69](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L69)
+[types.ts:69](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L69)
 
 ___
 
@@ -226,7 +226,7 @@ ___
 
 #### Defined in
 
-[types.ts:85](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L85)
+[types.ts:85](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L85)
 
 ___
 
@@ -251,7 +251,7 @@ ___
 
 #### Defined in
 
-[types.ts:19](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L19)
+[types.ts:19](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L19)
 
 ___
 
@@ -261,7 +261,7 @@ ___
 
 #### Defined in
 
-[types.ts:13](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L13)
+[types.ts:13](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L13)
 
 ___
 
@@ -279,7 +279,7 @@ ___
 
 #### Defined in
 
-[types.ts:79](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L79)
+[types.ts:79](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L79)
 
 ___
 
@@ -297,7 +297,7 @@ ___
 
 #### Defined in
 
-[types.ts:91](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L91)
+[types.ts:91](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L91)
 
 ___
 
@@ -324,7 +324,7 @@ ___
 
 #### Defined in
 
-[types.ts:36](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L36)
+[types.ts:36](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L36)
 
 ___
 
@@ -343,7 +343,7 @@ ___
 
 #### Defined in
 
-[types.ts:1](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L1)
+[types.ts:1](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L1)
 
 ___
 
@@ -360,7 +360,7 @@ ___
 
 #### Defined in
 
-[types.ts:148](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L148)
+[types.ts:148](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L148)
 
 ___
 
@@ -379,7 +379,7 @@ ___
 
 #### Defined in
 
-[types.ts:72](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L72)
+[types.ts:72](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L72)
 
 ___
 
@@ -389,7 +389,7 @@ ___
 
 #### Defined in
 
-[types.ts:32](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L32)
+[types.ts:32](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L32)
 
 ___
 
@@ -399,7 +399,7 @@ ___
 
 #### Defined in
 
-[types.ts:109](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L109)
+[types.ts:109](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L109)
 
 ___
 
@@ -409,7 +409,7 @@ ___
 
 #### Defined in
 
-[types.ts:70](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L70)
+[types.ts:70](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L70)
 
 ___
 
@@ -427,7 +427,7 @@ ___
 
 #### Defined in
 
-[types.ts:133](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/types.ts#L133)
+[types.ts:133](https://github.com/canyon-trail/reportscript/blob/823e894/src/types.ts#L133)
 
 ## Functions
 
@@ -474,7 +474,7 @@ stream.on("finish", function () {
 
 #### Defined in
 
-[index.ts:46](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/index.ts#L46)
+[index.ts:46](https://github.com/canyon-trail/reportscript/blob/823e894/src/index.ts#L46)
 
 ___
 
@@ -495,7 +495,7 @@ ___
 
 #### Defined in
 
-[index.ts:54](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/index.ts#L54)
+[index.ts:54](https://github.com/canyon-trail/reportscript/blob/823e894/src/index.ts#L54)
 
 ___
 
@@ -517,4 +517,4 @@ ___
 
 #### Defined in
 
-[paginate/splitColumn.ts:4](https://github.com/canyon-trail/reportscript/blob/0df6ef6/src/paginate/splitColumn.ts#L4)
+[paginate/splitColumn.ts:4](https://github.com/canyon-trail/reportscript/blob/823e894/src/paginate/splitColumn.ts#L4)
