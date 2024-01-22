@@ -3,7 +3,6 @@ import {
   ColumnSetting,
   Row,
   RowOptions,
-  TableStyle,
   Table,
   Section,
   Document,
@@ -85,7 +84,7 @@ describe("normalizeRow", () => {
     bold: true,
     color: "white",
   };
-  const mockTableOptions: TableStyle = {
+  const mockTableOptions: RowOptions = {
     fontSize: 9,
     fontFace: "font",
     boldFace: "font",
@@ -280,7 +279,7 @@ describe("validateCellSpan", () => {
   });
 });
 describe("normalizeTable", () => {
-  const tableStyle: TableStyle = {
+  const tableStyle: RowOptions = {
     fontSize: 9,
     color: "white",
   };
@@ -533,7 +532,7 @@ describe("normalizeTable", () => {
   });
 });
 describe("normalizeHeaderFooter", () => {
-  const headerStyle: TableStyle = {
+  const headerStyle: RowOptions = {
     fontSize: 9,
     color: "white",
   };

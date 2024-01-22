@@ -20,8 +20,8 @@
     "format": "npm run prettier:fix && npm run lint:fix",
     "commit": "cz",
     "build": "tsup ./src/index.ts --format cjs,esm --dts",
-    "demo-build": "browserify ./demo/src/index.js > ./documentation/bundle/bundle.js"
-    
+    "demo-build": "browserify ./demo/src/index.js > ./documentation/bundle/bundle.js",
+    "build-docs": "node scripts/writeDocs.mjs"
   },
   "repository": {
     "type": "git",
@@ -54,7 +54,9 @@
     "sinon": "^12.0.1",
     "ts-jest": "^27.0.4",
     "tslint-config-prettier": "^1.18.0",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.1",
+    "typedoc": "^0.25.7",
+    "typedoc-plugin-markdown": "^3.17.1"
   },
   "publishConfig": {
     "access": "public"
@@ -75,11 +77,5 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "lint-staged": {
-    "*.(tsx|ts)": [
-      "prettier --check --write",
-      "eslint"
-    ]
   }
 }
