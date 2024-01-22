@@ -40,4 +40,4 @@ const tabsPaths = join(__dirname, "../", "documentation", "_tabs");
 const newDocsPath = join(tabsPaths, filename);
 writeFileSync(newDocsPath, docPage);
 
-// rmSync(tempDocsPath, { recursive: true, force: true });
+rmSync(tempDocsPath, { recursive: true, force: true });
