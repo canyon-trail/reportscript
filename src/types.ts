@@ -1,11 +1,11 @@
 export type Cell = ImageCell | TextCell;
 
-export interface CellOptions {
+export type CellOptions = {
   align?: HorizontalAlignment;
   columnSpan?: number;
-}
+};
 
-export interface CellStyle {
+export type CellStyle = {
   verticalAlign?: VerticalAlignment;
   noWrap?: boolean;
   grid?: boolean;
@@ -13,7 +13,7 @@ export interface CellStyle {
   backgroundColor?: string;
   lineGap?: number;
   bottomBorder?: boolean;
-}
+};
 
 export type CellValue = string | number;
 
@@ -68,10 +68,11 @@ export type Image = {
   image: Buffer | string;
 };
 
-export interface ImageCell extends CellStyle, CellOptions {
-  image: Image;
-  align: HorizontalAlignment;
-}
+export type ImageCell = CellStyle &
+  CellOptions & {
+    image: Image;
+    align: HorizontalAlignment;
+  };
 
 export type Layout = "landscape" | "portrait";
 
