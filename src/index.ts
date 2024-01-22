@@ -141,6 +141,7 @@ export type {
   PageBreakRows,
   VerticalAlignment,
   HorizontalAlignment,
+  CellOptions,
   CellStyle,
   Cell,
   CellValue,

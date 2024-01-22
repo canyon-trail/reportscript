@@ -13,6 +13,7 @@ import {
   Unit,
   HorizontalAlignment,
   PageBreakRows,
+  CellOptions,
 } from "../types";
 import {
   NormalizedColumnSetting,
@@ -91,7 +92,7 @@ export function normalizeAlignment(
 }
 
 export function normalizeCell(cell: Cell | CellValue): Cell {
-  const defaultProps: CellStyle = {
+  const defaultProps: CellOptions = {
     columnSpan: 1,
   };
 
