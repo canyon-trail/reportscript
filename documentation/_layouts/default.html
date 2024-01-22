@@ -2,10 +2,15 @@
 layout: compress
 ---
 
+{% assign include_tail = true%}
+{% if page.include_tail == false%} 
+{% assign include_tail = false%}
+{% endif %}
+
 {% assign row_type = "row-big"%}
-{% assign content_row_class = "{{row_type}}"%}
+{% assign content_row_class = "row-big"%}
 {% assign content_class = "px-md-4"%}
-{% if layout.side_bar %}
+{% if layout.side_bar or page.side_bar %}
   {% assign row_type = "row"%}
   {% assign content_row_class = "row flex-grow-1"%}
   {% assign content_class = "col-12 col-lg-11 col-xl-9 px-md-4"%}
@@ -39,25 +44,25 @@ layout: compress
               {{ content }}
             {% endif %}
           </main>
-          {% if layout.side_bar %}
+          {% if layout.side_bar%}
           <aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 mb-5 text-muted">
-            {% for _include in layout.panel_includes %}
-              {% assign _include_path = _include | append: '.html' %}
-              {% include {{ _include_path }} lang=lang %}
-            {% endfor %}
+            {% include table_content.html %}
           </aside>
           {% endif %}
         </div>
 
-        <div class="{{row_type}}">
+        <div class={{row_type}}>
           <!-- tail  -->
           <div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4">
-            {% for _include in layout.tail_includes %}
-              {% assign _include_path = _include | append: '.html' %}
-              {% include {{ _include_path }} lang=lang %}
-            {% endfor %}
 
+            {% if include_tail%}
+              {% for _include in layout.tail_includes %}
+                {% assign _include_path = _include | append: '.html' %}
+                {% include {{ _include_path }} lang=lang %}
+              {% endfor %}
+           
             {% include_cached footer.html lang=lang %}
+            {% endif %}
           </div>
         </div>
 
