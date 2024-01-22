@@ -265,10 +265,31 @@ export type HeaderFooters = {
 
 export type HorizontalAlignment = "left" | "center" | "right";
 
+/**
+ * A data object for adding an image to a row or cell. Accepts either a Buffer or string path.
+ *
+ * Examples:
+ *
+ * ```javascript
+ * const imageFromBuffer = {
+ *   image: fs.readFileSync("./my-image.png"),
+ *   height: 50,
+ *   width: 50
+ * }
+ *
+ * const imageFromPath = {
+ *   image: "./my-image.png",
+ *   height: 50,
+ *   width: 50
+ * }
+ * ```
+ */
 export type Image = {
+  /** Sets the image from a buffer or path string. */
+  image: Buffer | string;
+  /** An image requires a height value (see {@link Document | “Document size and measurements”}). */
   height: number;
   width?: number;
-  image: Buffer | string;
 };
 
 /**
