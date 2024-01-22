@@ -15,7 +15,7 @@
     "semantic-release": "semantic-release --branches main",
     "lint": "npx eslint src",
     "lint:fix": "npm run lint -- --fix --color",
-    "prettier": "npx prettier src documentation --check",
+    "prettier": "npx prettier src --check",
     "prettier:fix": "npm run prettier -- --write",
     "format": "npm run prettier:fix && npm run lint:fix",
     "commit": "cz",
