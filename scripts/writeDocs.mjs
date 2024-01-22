@@ -1,8 +1,7 @@
 import { readFileSync, writeFileSync, rmSync } from "fs";
-import spawn from "cross-spawn";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-
+import spawn from "cross-spawn"
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 spawn.sync(
