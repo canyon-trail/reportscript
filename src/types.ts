@@ -5,6 +5,8 @@ export type Section = {
   watermark?: Watermark;
 };
 
+export type RenderPdf = (document: Document, response: NodeJS.WritableStream) => NodeJS.WritableStream
+
 export type Layout = "landscape" | "portrait";
 
 export type CellValue = string | number;
@@ -14,28 +16,51 @@ export type Cell = ImageCell | TextCell;
 export type ImageCell = {
   image: Image;
   align: HorizontalAlignment;
-} & Omit<CellStyle, "fontSize" | "fontFace" | "boldFace" | "bold" | "color">;
-
-export type TextCell = {
-  value: CellValue;
-} & CellStyle;
-
-export type TableStyle = FontSetting & {
+  columnSpan?: number;
+  verticalAlign?: VerticalAlignment;
+  noWrap?: boolean;
   grid?: boolean;
-  border?: boolean;
   gridColor?: string;
   backgroundColor?: string;
   lineGap?: number;
   bottomBorder?: boolean;
 };
 
-export type RowOptions = TableStyle;
+export type TextCell = {
+  value: CellValue;
+} & CellStyle;
 
-export type CellStyle = Omit<TableStyle, "border"> & {
+export type RowOptions = {
+  grid?: boolean;
+  border?: boolean;
+  gridColor?: string;
+  backgroundColor?: string;
+  lineGap?: number;
+  bottomBorder?: boolean;
+  fontFace?: string;
+  fontSize?: number;
+  color?: string;
+  boldFace?: string;
+  underline?: boolean;
+  bold?: boolean;
+};
+
+export type CellStyle = {
   align?: HorizontalAlignment;
   columnSpan?: number;
   verticalAlign?: VerticalAlignment;
   noWrap?: boolean;
+  grid?: boolean;
+  gridColor?: string;
+  backgroundColor?: string;
+  lineGap?: number;
+  bottomBorder?: boolean;
+  fontFace?: string;
+  fontSize?: number;
+  color?: string;
+  boldFace?: string;
+  underline?: boolean;
+  bold?: boolean;
 };
 
 export type HorizontalAlignment = "left" | "center" | "right";
@@ -45,10 +70,14 @@ export type Table = {
   rows: Row[];
   headers?: Row[];
   columns?: ColumnSetting[];
-  style?: TableStyle;
+  style?: RowOptions;
 };
 
-export type PageBreakRows = Omit<Table, "headers">;
+export type PageBreakRows = {
+  rows: Row[];
+  columns?: ColumnSetting[];
+  style?: RowOptions;
+};
 
 export type Image = {
   height: number;
@@ -76,7 +105,11 @@ export type ColumnSetting = {
 
 export type Unit = "fr" | "%" | "pt";
 
-export type HeaderFooters = Omit<Table, "headers">;
+export type HeaderFooters = {
+  rows: Row[];
+  columns?: ColumnSetting[];
+  style?: RowOptions;
+}
 
 export type Document = {
   headers?: HeaderFooters;
@@ -94,11 +127,10 @@ export type Document = {
   watermark?: Watermark;
 };
 
-export type Watermark = Omit<
-  FontSetting,
-  "fontSize" | "bold" | "boldFace" | "underline"
-> & {
+export type Watermark = {
   text: string;
+  fontFace?: string;
+  color?: string;
 };
 
 export type FontSetting = {
@@ -108,4 +140,9 @@ export type FontSetting = {
   boldFace?: string;
   underline?: boolean;
   bold?: boolean;
+};
+
+export type SnapshotResult = {
+  snapshot: string;
+  rendered: string;
 };

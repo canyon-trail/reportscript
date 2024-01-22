@@ -7,18 +7,40 @@ import { renderWatermark, writeRow } from "./render";
 import { paginate } from "./paginate";
 import { normalize } from "./normalize";
 import fs from "fs";
-import { Document } from "./types";
+import { Document, SnapshotResult } from "./types";
 export { splitColumn } from "./paginate/splitColumn";
-type SnapshotResult = {
-  snapshot: string;
-  rendered: string;
-};
 
 type RenderDocumentResult = {
   reportDocument: PdfKitApi;
   stream?: NodeJS.WritableStream;
 };
 
+/**
+ * Writes a Document to a NodeJS.WriteableStream and returns the stream.
+ *
+ * Examples:
+ * Writing to an Express HTTP response:
+ * ```javascript
+ * router.get("/" (req, res) => {
+ *   const document = tranformData(req);
+ *   renderPdf(document, res);
+ * }
+ *
+ * function tranformData(req: Request): Document {...}
+ * ```
+ *
+ * Writing to a blob stream and displaying in an iframe:
+ * ```javascript
+ * import blobStream from "blob-stream";
+ *
+ * const blob = blobStream();
+ * const stream = reportscript.renderPdf(document, blob);
+ * stream.on("finish", function () {
+ *   const url = stream.toBlobURL("application/pdf");
+ *   iframe.src = url;
+ * });
+ * ```
+ */
 export function renderPdf(
   document: Document,
   response: NodeJS.WritableStream
@@ -119,10 +141,10 @@ export type {
   VerticalAlignment,
   HorizontalAlignment,
   CellStyle,
-  TableStyle,
   Cell,
   CellValue,
   FontSetting,
   ImageCell,
   TextCell,
+  SnapshotResult
 } from "./types";

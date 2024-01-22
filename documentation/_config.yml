@@ -16,7 +16,7 @@ timezone: Asia/Shanghai
 
 title: Reportscript # the main title
 
-tagline: Report your your report with report...script # it will display as the sub-title
+tagline: PDF report generation library for Javascript and Typescript # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
   A minimal, responsive and feature-rich Jekyll theme for technical writing.

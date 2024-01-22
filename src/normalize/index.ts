@@ -7,7 +7,7 @@ import {
   Row,
   Section,
   Table,
-  TableStyle,
+  RowOptions,
   Document,
   HeaderFooters,
   Unit,
@@ -120,7 +120,7 @@ export function normalizeCell(cell: Cell | CellValue): Cell {
 }
 export function normalizeRow(
   row: Row,
-  tableStyle?: TableStyle,
+  tableStyle?: RowOptions,
   settingsFromTable?: NormalizedColumnSetting[]
 ): NormalizedRow {
   const { data, options } = row;
