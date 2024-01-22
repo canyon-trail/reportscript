@@ -1,6 +1,28 @@
 export const continuedOn = " (continued on next page)";
 export const continuedFrom = "(continued from prev page) ";
 
+/**
+ * Use this function for the 'splitFn' {@link ColumnSetting} prop for a
+ * column that may have a variable height for its text, such as
+ * long notes text.
+ *
+ * If a row is taller than the available vertical space on a page,
+ * this function splits the column text at a line break or space. Also,
+ * '(continued on next page)' is inserted before the page break, and
+ * '(continued from previous page)' is inserted after the page break.
+ *
+ * Example:
+ *
+ * ```javascript
+ * import { splitColumn } from "report-script";
+ *
+ * const columnSettings = [
+ *   { width: "1fr" },
+ *   { width: "2fr", splitFn: splitColumn, align: "left" },
+ *   { width: "1fr" },
+ * ]
+ * ```
+ */
 export function splitColumn(
   value: string,
   measure: (text: string) => number,

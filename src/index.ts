@@ -50,6 +50,25 @@ export function renderPdf(
   return stream;
 }
 
+/**
+ * Creates and returns a new JSON snapshot of a given document rendering
+ * or returns the existing snapshot at a designated path,
+ * as well as returning the current rendering of the document.
+ * This is useful for seeing how new changes to a document compare to a previous state.
+ *
+ * Example:
+ *
+ * ```javascript
+ * // create a new snapshot file for the document at its current state
+ * renderSnapshot("my-path/snapshot.json", document);
+ *
+ * // using jest to assert later refactoring of the document did not change the output
+ * it("did not change document output", () => {
+ *   const { rendered, snapshot } = renderSnapshot("my-path/snapshot.json", document);
+ *   expect(rendered).toEqual(snapshot);
+ * });
+ * ```
+ */
 export function renderSnapshot(
   path: string,
   document: Document
