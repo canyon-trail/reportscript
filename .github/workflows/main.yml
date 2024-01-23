@@ -18,9 +18,8 @@ jobs:
         run: |
           npm install
           npm run build-docs
-      - name: Build Docs
-        run: |
-          cd documentation
-      - name: Build Docs
+      - name: Build Demo Bundle 
+        working-directory: ./documentation
         run: |
           ls
+          npm install
