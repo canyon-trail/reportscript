@@ -4,6 +4,7 @@ import {
   imgPopup,
   initLocaleDatetime,
   initClipboard,
+  toc
 } from './modules/plugins';
 
 initSidebar();
@@ -12,4 +13,5 @@ loadImg();
 imgPopup();
 initLocaleDatetime();
 initClipboard();
+toc();
 basic();
