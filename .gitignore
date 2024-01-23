@@ -6,3 +6,4 @@ dist/
 package-lock.json
 demo/bundle
 docs/assets
+.DS_Store
