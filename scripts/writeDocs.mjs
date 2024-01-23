@@ -40,5 +40,3 @@ const newDocsPath = join(tabsPaths, filename);
 writeFileSync(newDocsPath, docPage);
 
 rmSync(tempDocsPath, { recursive: true, force: true });
-
-console.log("HEHE I am building docs")
