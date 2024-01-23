@@ -19,7 +19,6 @@ package-lock.json
 .vscode
 
 # Misc
-assets/
 _tabs/documentation.md
 bundle/
 _posts/
