@@ -1,14 +1,14 @@
 export type Cell = ImageCell | TextCell;
 
 export type CellOptions = {
-  /** Sets the horizontal alignment of the contents within a cell. */
+  /** Sets the horizontal alignment of the contents within a cell. Default is "center". */
   align?: HorizontalAlignment;
   /** Sets how many columns within a row a cell will span. Default is 1. */
   columnSpan?: number;
 };
 
 export type CellStyle = {
-  /** Sets the vertical alignment of a cell's contents within the table row. */
+  /** Sets the vertical alignment of a cell's contents within the table row. Default is "center". */
   verticalAlign?: VerticalAlignment;
   /** Prevents a text from wrapping within a cell. If true, adds an ellipsis ("...") at the end of the text if cutoff. */
   noWrap?: boolean;
@@ -43,12 +43,19 @@ export type ColumnSplitFn = (
   availableSpace: number
 ) => [string, string] | [string];
 
+/** Sets optional column settings for table rows. */
+export type ColumnSetting = {
+  /** Sets the horizontal alignment of the contents in each column.  Default is “center”. */
+  align?: HorizontalAlignment;
+  width?: ColumnWidth;
+  /** **Note**: Setting a splitFn on a column containing an image will throw an error. */
+  splitFn?: ColumnSplitFn;
+};
+
 /**
- * Sets optional column settings for table rows.
- *
  * The width of a column can be set using the following unit options:
  *
- * **fr - fractional unit:** - Sets column widths as relative parts of the available row width, where "1fr" equals 1 part.
+ * **fr - fractional unit:** Sets column widths as relative parts of the available row width, where "1fr" equals 1 part.
  *
  * Examples:
  *
@@ -68,7 +75,7 @@ export type ColumnSplitFn = (
  * ]
  * ```
  *
- * **% - percentage unit:** - Sets the column width as a percentage of the available width. An error will be thrown if
+ * **% - percentage unit:** Sets the column width as a percentage of the available width. An error will be thrown if
  * the sum of all column percentages exceeds 100%.
  *
  * Examples:
@@ -89,7 +96,7 @@ export type ColumnSplitFn = (
  * ]
  * ```
  *
- * **pt - point unit:** - Sets the column width as points on the page. An error will be thrown if the total points
+ * **pt - point unit:** Sets the column width as points on the page. An error will be thrown if the total points
  * exceeds the available page width (See {@link Document | “Document size and measurements”}).
  *
  * Examples:
@@ -117,7 +124,7 @@ export type ColumnSplitFn = (
  * ]
  * ```
  *
- * **Combining units:** - Units can also be combined, as long as the total combined width does not exceed the
+ * **Combining units:** Units can also be combined, as long as the total combined width does not exceed the
  * available row width.
  *
  * Examples:
@@ -130,8 +137,8 @@ export type ColumnSplitFn = (
  *   { width: "1fr" },
  *   { width: "350pt" },
  * ]
-
-* const columnSettings2 = [
+ *
+ * const columnSettings2 = [
  *   { width: "1fr" },
  *   { width: "2fr" },
  *   { width: "250pt" },
@@ -151,14 +158,7 @@ export type ColumnSplitFn = (
  * ]
  * ```
  */
-export type ColumnSetting = {
-  /** Sets the horizontal alignment of the contents in each column.  Default is “center”. */
-  align?: HorizontalAlignment;
-  /** See examples above. */
-  width?: string;
-  /** **Note**: Setting a splitFn on a column containing an image will throw an error. */
-  splitFn?: ColumnSplitFn;
-};
+export type ColumnWidth = string;
 
 /**
  * A document is the main data object that gets passed to {@link renderPdf}.

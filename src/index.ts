@@ -157,6 +157,7 @@ export type {
   Unit,
   ColumnSetting,
   ColumnSplitFn,
+  ColumnWidth,
   PageBreakRows,
   VerticalAlignment,
   HorizontalAlignment,
