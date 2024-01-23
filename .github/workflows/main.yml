@@ -14,13 +14,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@8575951200e472d5f2d95c625da0c7bec8217c42
-        working-directory: ./documentation
-        with:
-          ruby-version: '3.1' 
-          bundler-cache: true 
-          cache-version:
       - name: Build Docs
         run: |
           npm install
@@ -31,17 +24,27 @@ jobs:
           ls _tabs
           npm install
           npm run demo-build
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v4
-      - name: Build with Jekyll
-        # Outputs to the './_site' directory by default
-        run: bundle exec jekyll build --baseurl reportscript
-        env:
-          JEKYLL_ENV: production
-      - name: Upload artifact
-        # Automatically uploads an artifact from the './_site' directory by default
-        uses: actions/upload-pages-artifact@v3
+      - name: Build something
+        run: |
+          ls 
+      # - name: Setup Ruby
+      #   uses: ruby/setup-ruby@8575951200e472d5f2d95c625da0c7bec8217c42
+      #   working-directory: ./documentation
+      #   with:
+      #     ruby-version: '3.1' 
+      #     bundler-cache: true 
+      #     cache-version: 0
+      # - name: Setup Pages
+      #   id: pages
+      #   uses: actions/configure-pages@v4
+      # - name: Build with Jekyll
+      #   # Outputs to the './_site' directory by default
+      #   run: bundle exec jekyll build --baseurl reportscript
+      #   env:
+      #     JEKYLL_ENV: production
+      # - name: Upload artifact
+      #   # Automatically uploads an artifact from the './_site' directory by default
+      #   uses: actions/upload-pages-artifact@v3
   deploy:
     environment:
       name: github-pages
