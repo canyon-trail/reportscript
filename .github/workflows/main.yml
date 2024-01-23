@@ -45,6 +45,7 @@ jobs:
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default
         working-directory: ./documentation
+        run: ls
         uses: actions/upload-pages-artifact@v3
   deploy:
     environment:
