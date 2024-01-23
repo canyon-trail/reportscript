@@ -35,7 +35,6 @@ jobs:
         id: pages
         uses: actions/configure-pages@v4
       - name: Build with Jekyll
-        # Outputs to the './_site' directory by default
         working-directory: ./documentation
         run: |
           bundle install
@@ -43,10 +42,10 @@ jobs:
         env:
           JEKYLL_ENV: production
       - name: Upload artifact
-        # Automatically uploads an artifact from the './_site' directory by default
-        working-directory: ./documentation
         run: ls
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./documentation
   deploy:
     environment:
       name: github-pages
@@ -55,6 +54,7 @@ jobs:
     needs: build
     steps:
       - name: Deploy to GitHub Pages
-        working-directory: ./documentation
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          path: ./documentation
