@@ -18,3 +18,9 @@ jobs:
         run: |
           npm install
           npm run build-docs
+      - name: Build Docs
+        run: |
+          cd
+      - name: Build Docs
+        run: |
+          ls
