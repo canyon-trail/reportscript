@@ -20,7 +20,7 @@ jobs:
           npm run build-docs
       - name: Build Docs
         run: |
-          cd
+          cd documentation
       - name: Build Docs
         run: |
           ls
