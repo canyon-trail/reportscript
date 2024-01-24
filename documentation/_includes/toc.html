@@ -2,7 +2,7 @@
   {% if page.content contains '<h2' or page.content contains '<h3' %}
     {% assign enable_toc = true %}
 {% endif %}
-{{ enable_toc}}
+
 {% if enable_toc %}
   <section id="toc-wrapper" class="ps-0 pe-4">
     <h2 class="panel-heading ps-3 pt-2 mb-2">{{- site.data.locales[include.lang].panel.toc -}}</h2>
