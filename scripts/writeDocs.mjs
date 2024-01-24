@@ -34,11 +34,12 @@ const tabTags = [
   "---"
 ].join("\n") + "\n";
 
-const docPage = tabTags + modifiedContents.replace(/modules.md/g, "");
-const bro = docPage.replace(/[reportscript](README.md) \/ Exports/g, "");
+const docPage = tabTags + modifiedContents
+  .replace(/modules.md/g, "")
+
 const tabsPaths = join(__dirname, "../", "documentation", "_tabs");
 
 const newDocsPath = join(tabsPaths, filename);
-writeFileSync(newDocsPath, bro);
+writeFileSync(newDocsPath, docPage);
 
 rmSync(tempDocsPath, { recursive: true, force: true });
