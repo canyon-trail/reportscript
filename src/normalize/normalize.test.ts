@@ -49,8 +49,14 @@ describe("normalizeCell", () => {
       columnSpan: 1,
     });
   });
-  it("normalize null ", () => {
+  it("normalize null", () => {
     expect(normalizeCell(null)).toEqual({ value: "", columnSpan: 1 });
+  });
+  it("allows 0 value", () => {
+    expect(normalizeCell({ value: 0 })).toEqual({
+      value: 0,
+      columnSpan: 1,
+    });
   });
   it("normalize cell override columnSpan", () => {
     expect(normalizeCell({ value: "value", columnSpan: 2 })).toEqual({
