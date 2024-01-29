@@ -1,7 +1,8 @@
 import { HorizontalAlignment, VerticalAlignment } from "types/alignment";
 import { FontSetting } from "./font";
+import { Chart } from "./chart";
 
-export type Cell = ImageCell | TextCell;
+export type Cell = ImageCell | TextCell | ChartCell;
 
 /**
  * An Image can be added to a row cell with optional styles.
@@ -22,8 +23,11 @@ export type ImageCell = CellStyle &
   CellOptions & {
     /** An ImageCell requires an Image data object. */
     image: Image;
-    /** An ImageCell requires a horizontal alignment value. */
-    align: HorizontalAlignment;
+  };
+
+export type ChartCell = CellOptions &
+  CellStyle & {
+    chart: Chart;
   };
 
 /**
@@ -47,8 +51,6 @@ export type TextCell = CellStyle &
   };
 
 export type CellStyle = {
-  /** Sets the vertical alignment of a cell's contents within the table row. Default is "center". */
-  verticalAlign?: VerticalAlignment;
   /** Prevents a text from wrapping within a cell. If true, adds an ellipsis ("...") at the end of the text if cutoff. */
   noWrap?: boolean;
   /** Adds a border around the cell. */
@@ -68,9 +70,18 @@ export type CellStyle = {
 
 export type CellValue = string | number;
 
+/**
+ * Specifies the layout properties of a cell.
+ * @deprecated Needs to be renamed to CellLayout or similar
+ */
 export type CellOptions = {
-  /** Sets the horizontal alignment of the contents within a cell. Default is "center". */
+  /**
+   * Sets the horizontal alignment of the contents within a cell. Default is "center".
+   * @deprecated Needs to be renamed to horizontalAlignment
+   * */
   align?: HorizontalAlignment;
+  /** Sets the vertical alignment of a cell's contents within the table row. Default is "center". */
+  verticalAlign?: VerticalAlignment;
   /** Sets how many columns within a row a cell will span. Default is 1. */
   columnSpan?: number;
 };

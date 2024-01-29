@@ -114,8 +114,6 @@ export type PageBreakRows = {
   style?: RowOptions;
 };
 
-
-
 /**
  * A data object for displaying a diagonal text watermark on a page.
  *

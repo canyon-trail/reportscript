@@ -1,4 +1,3 @@
-
 /** Style text font */
 export type FontSetting = {
   /** Default is "Helvetica" */
