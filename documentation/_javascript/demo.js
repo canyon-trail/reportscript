@@ -45,23 +45,6 @@ const generateDocument = () => {
       style: { bold: true }
     };
 
-    const dataRows = [...new Array(30).keys()].map(x => {
-      const quantity = Math.floor(Math.random() * 10);
-      const rate = (Math.random() * 100) * (quantity === 1 ? -1 : 1);
-      const total = rate * quantity;
-      const color = total < 0 ? "red" : "black";
-      const bold = total > 500;
-
-      return {
-        data: [
-          { value: `Description ${x}`, align: "left" },
-          rate.toFixed(2),
-            quantity,
-          { value: total.toFixed(2), color, bold }
-        ]
-      }
-    });
-
     const loremText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 
     const dataSection = {
@@ -81,7 +64,7 @@ const generateDocument = () => {
               options: { bold: true, align: "center" },
             },
           ],
-          rows: dataRows,
+          rows: createDataRows(),
           style: {
             fontSize: 13,
             grid: true,
@@ -164,6 +147,25 @@ const generateDocument = () => {
         }]
       }
     };
+  }
+
+  function createDataRows() {
+    return [...new Array(30).keys()].map(x => {
+      const quantity = Math.floor(Math.random() * 10);
+      const rate = (Math.random() * 100) * (quantity === 1 ? -1 : 1);
+      const total = rate * quantity;
+      const color = total < 0 ? "red" : "black";
+      const bold = total > 500;
+
+      return {
+        data: [
+          { value: `Description ${x}`, align: "left" },
+          rate.toFixed(2),
+            quantity,
+          { value: total.toFixed(2), color, bold }
+        ]
+      }
+    });
   }
 
   function getDocument() {
