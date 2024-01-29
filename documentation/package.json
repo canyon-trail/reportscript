@@ -20,6 +20,7 @@
     "test": "npx stylelint _sass/**/*.scss",
     "fixlint": "npm run test -- --fix",
     "docs-dev": "bundle exec jekyll s",
+    "predemo-build": "mkdir ./bundle",
     "demo-build": "browserify ./_javascript/demo.js > ./bundle/bundle.js"
   },
   "dependencies": {

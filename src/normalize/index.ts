@@ -105,7 +105,11 @@ export function normalizeCell(cell: Cell | CellValue): Cell {
       ...defaultProps,
       ...cell,
     };
-  } else if (cell && "value" in cell && cell.value) {
+  } else if (
+    cell &&
+    "value" in cell &&
+    ![undefined, null].includes(cell.value)
+  ) {
     return {
       ...defaultProps,
       ...cell,
