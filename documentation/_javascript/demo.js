@@ -10,8 +10,7 @@ const generateDocument = () => {
             {
               image: {
                 image,
-                height: 100,
-                width: 100
+                height: 100
               },
               align: "left"
             },
@@ -122,7 +121,6 @@ const generateDocument = () => {
               image: {
                 image,
                 height: 300,
-                width: 300
               },
             }
           ],
