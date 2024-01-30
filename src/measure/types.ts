@@ -19,10 +19,15 @@ export type MeasuredSection = {
   watermark?: MeasuredWatermark;
 };
 
+export type VerticalMeasure = {
+  minHeight: number;
+  maxHeight: number;
+};
+
 export type MeasuredRow = Omit<NormalizedRow, "data"> & {
   height: number;
   data: Cell[];
-  columnHeights: number[];
+  columnHeights: VerticalMeasure[];
   columnWidths: number[];
   columnStarts: number[];
 };

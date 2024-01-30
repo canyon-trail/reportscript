@@ -170,7 +170,8 @@ export function writeCellContents(
   const x = columnStarts[index] + textHPadding;
   const cellHeight = getCellHeight(data[index], columnWidths[index], doc);
 
-  const y = start + lineGap + getTextYOffset(data[index], cellHeight, height);
+  const y =
+    start + lineGap + getTextYOffset(data[index], cellHeight.maxHeight, height);
 
   const align = getCellAlign(data[index]);
   const maxTextWidth = columnWidths[index] - textHPadding * 2;

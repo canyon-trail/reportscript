@@ -365,7 +365,7 @@ function canSplitRow(
   }
 
   for (let columnIdx = 0; columnIdx < row.data.length; columnIdx++) {
-    if (row.columnHeights[columnIdx] <= availableSpace) {
+    if (row.columnHeights[columnIdx].maxHeight <= availableSpace) {
       continue;
     }
 
@@ -400,7 +400,11 @@ function splitRow(
   row.data.forEach((d, idx) => {
     const splitFn = table.columns[idx]?.splitFn;
 
-    if (splitFn && row.columnHeights[idx] > availableSpace && "value" in d) {
+    if (
+      splitFn &&
+      row.columnHeights[idx].maxHeight > availableSpace &&
+      "value" in d
+    ) {
       if (row.image) {
         throw new Error("A row cannot be split with an image");
       }
@@ -410,15 +414,21 @@ function splitRow(
       const [next, remaining] = splitFn(`${d.value}`, measure, availableSpace);
 
       (first.data[idx] as TextCell).value = next;
-      first.columnHeights[idx] = measure(next);
+      first.columnHeights[idx].maxHeight = measure(next);
+      first.columnHeights[idx].minHeight = first.columnHeights[idx].maxHeight;
 
       (rest.data[idx] as TextCell).value = remaining;
-      rest.columnHeights[idx] = measure(remaining);
+      rest.columnHeights[idx].maxHeight = measure(remaining);
+      console.log(first.columnHeights);
+      rest.columnHeights[idx].minHeight = rest.columnHeights[idx].maxHeight;
+      console.log(first.columnHeights);
     }
   });
+  const firstHeights = first.columnHeights.map((x) => x.maxHeight);
+  const restHeights = rest.columnHeights.map((x) => x.maxHeight);
 
-  first.height = Math.max(...first.columnHeights);
-  rest.height = Math.max(...rest.columnHeights);
+  first.height = Math.max(...firstHeights);
+  rest.height = Math.max(...restHeights);
 
   return [first, rest];
 }
