@@ -617,6 +617,8 @@ renderPdf(document,fs.createWriteStream(path))
 * Write to browser
 To write to browers you will need to use [Browserify](https://browserify.org/) or [webpack](https://webpack.js.org/). You can use a [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob) object, which can be used to store binary data, and get URLs to this data in order to display PDF output inside an iframe, or upload to a server, etc. In order to get a Blob from the output of PDFKit, you can use the [blob-stream](https://github.com/devongovett/blob-stream) module.
 
+Note, if you use Browserify, you will need to install brfs module with npm. Browserify will throw error if not installed.
+
 ```javascript
 import blobStream from "blob-stream";
 
