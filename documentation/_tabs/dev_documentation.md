@@ -47,7 +47,7 @@ renderPdf(reportDocument, outputStream);
 
 The above document produces a report that looks like this:
 
-![example output of above doc](../assets/img../devguide-first-doc.png)
+![example output of above doc](../assets/img/devguide-first-doc.png)
 
 Some key features to note:
 
