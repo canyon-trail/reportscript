@@ -187,7 +187,7 @@ export function writeCellContents(
       .clip()
       .image(image, imageStart, y, { ...size })
       .restore();
-  } else {
+  } else if (!("chart" in cell)) {
     doc.text(`${cell.value}`.replace(/\t/g, "    "), x, y, {
       width: maxTextWidth,
       underline: options?.underline ?? undefined,
