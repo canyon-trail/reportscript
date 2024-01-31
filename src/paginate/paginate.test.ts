@@ -142,7 +142,7 @@ function makeSingleSectionMeasuredDoc(rows: MeasuredRow[]): MeasuredDocument {
 }
 
 describe("pagination", () => {
-  xit("puts single section with single table onto one page", () => {
+  it("puts single section with single table onto one page", () => {
     const input = makeSingleSectionMeasuredDoc(
       Array(4).fill({ ...defaultTableGapRow, height: 10 })
     );
@@ -162,7 +162,7 @@ describe("pagination", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("splits single table across pages", () => {
+  it("splits single table across pages", () => {
     const { pageInnerHeight } = getPageDimensions();
 
     const rowHeight = pageInnerHeight / 4;
@@ -192,7 +192,7 @@ describe("pagination", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("handles portrait layout", () => {
+  it("handles portrait layout", () => {
     const { pageInnerHeight } = getPageDimensions("portrait");
 
     const rowHeight = pageInnerHeight / 4;
@@ -225,7 +225,7 @@ describe("pagination", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("adds spacing between tables on same page", () => {
+  it("adds spacing between tables on same page", () => {
     const firstTableRow = createRow({ rowHeight: 10, value: "row 0" });
     const secondTableRow = createRow({ rowHeight: 10, value: "row 1" });
     const input = {
@@ -260,7 +260,7 @@ describe("pagination", () => {
     expect(paginate(input, creationDate)).toEqual(expected);
   });
 
-  xit("splits single section's tables evenly across two pages", () => {
+  it("splits single section's tables evenly across two pages", () => {
     const { pageInnerHeight } = getPageDimensions();
     const rowHeight = pageInnerHeight / 4;
     const firstTableRows = createRows({ rowHeight: rowHeight, length: 4 });
@@ -301,7 +301,7 @@ describe("pagination", () => {
     expect(paginate(input, creationDate)).toEqual(expected);
   });
 
-  xit("single section, first table fits, second table needs split", () => {
+  it("single section, first table fits, second table needs split", () => {
     const { pageInnerHeight } = getPageDimensions();
     const rowHeight = pageInnerHeight / 4;
     const firstTableRows = createRows({ rowHeight: rowHeight, length: 2 });
@@ -342,7 +342,7 @@ describe("pagination", () => {
     expect(paginate(input, creationDate)).toEqual(expected);
   });
 
-  xit("starts new section on new page", () => {
+  it("starts new section on new page", () => {
     const { pageInnerHeight } = getPageDimensions();
 
     const rowHeight = pageInnerHeight / 8;
@@ -403,7 +403,7 @@ describe("pagination", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("should split second table when section headers are present", () => {
+  it("should split second table when section headers are present", () => {
     const { pageInnerHeight } = getPageDimensions();
 
     const sectionHeaderHeight = pageInnerHeight / 4;
@@ -489,7 +489,7 @@ describe("pagination", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("does not repeat report header by default", () => {
+  it("does not repeat report header by default", () => {
     const { pageInnerHeight } = getPageDimensions();
 
     const rowHeight = pageInnerHeight / 3;
@@ -538,7 +538,7 @@ describe("pagination", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("accounts for report header in splitting sections", () => {
+  it("accounts for report header in splitting sections", () => {
     const { pageInnerHeight } = getPageDimensions();
 
     const rowHeight = pageInnerHeight / 3;
@@ -588,7 +588,7 @@ describe("pagination", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("accounts for report footer in splitting sections", () => {
+  it("accounts for report footer in splitting sections", () => {
     const { pageInnerHeight } = getPageDimensions();
 
     const rowHeight = pageInnerHeight / 3;
@@ -640,7 +640,7 @@ describe("pagination", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("adds water mark", () => {
+  it("adds water mark", () => {
     const { pageInnerHeight } = getPageDimensions();
     const watermark: MeasuredWatermark = {
       text: "waterMark",
@@ -700,7 +700,7 @@ describe("pagination", () => {
 });
 describe("tableGap", () => {
   const rowHeight = 100;
-  xit("handle tableGap between tables and section headers", () => {
+  it("handle tableGap between tables and section headers", () => {
     const tableRows = createRows({
       rowHeight: rowHeight,
       length: 2,
@@ -752,7 +752,7 @@ describe("tableGap", () => {
 
     expect(result).toEqual(expected);
   });
-  xit("handle tableGap with on multiple pages while tableGap set at section", () => {
+  it("handle tableGap with on multiple pages while tableGap set at section", () => {
     const firstTableRows = createRows({
       rowHeight: rowHeight,
       length: 6,
@@ -839,7 +839,7 @@ describe("page numbers and timestamp", () => {
       creationDate,
     });
   });
-  xit("handles section page numbers", () => {
+  it("handles section page numbers", () => {
     const firstSectionPageNumberRow = createPageNumberTimeStampRow({
       footerHeight: rowHeight,
       pageNum: 3,
@@ -888,7 +888,7 @@ describe("page numbers and timestamp", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("throws if both pageNumbers and sectionPageNumbers true", () => {
+  it("throws if both pageNumbers and sectionPageNumbers true", () => {
     const doc = {
       pageNumbers: true,
       sectionPageNumbers: true,
@@ -898,7 +898,7 @@ describe("page numbers and timestamp", () => {
     );
   });
 
-  xit("adds document page numbers", () => {
+  it("adds document page numbers", () => {
     const footerRowHeight = rowHeight / 2;
     const docFooter = createRow({
       rowHeight: footerRowHeight,
@@ -935,7 +935,7 @@ describe("page numbers and timestamp", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("adds timestamp", () => {
+  it("adds timestamp", () => {
     const timeStampRow = createPageNumberTimeStampRow({
       footerHeight: rowHeight,
       creationDate: creationDate,
@@ -967,7 +967,7 @@ describe("page numbers and timestamp", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("adds page numbers and timestamp", () => {
+  it("adds page numbers and timestamp", () => {
     const section = createSection({ index: 0, rowCount: 2 });
     const input: MeasuredDocument = {
       ...emptyMeasuredDoc,
@@ -995,7 +995,7 @@ describe("page numbers and timestamp", () => {
     expect(result).toEqual(expected);
   });
 
-  xit("adds page numbers and timestamp with timeStampPageNumberFontSetting set", () => {
+  it("adds page numbers and timestamp with timeStampPageNumberFontSetting set", () => {
     const section = createSection({ index: 0, rowCount: 2 });
     const fontSetting = {
       fontFace: "Times-Roman",
@@ -1047,7 +1047,7 @@ describe("page numbers and timestamp", () => {
 });
 
 describe("pagination - splitSection(...)", () => {
-  xit("single table spans > 1 page", () => {
+  it("single table spans > 1 page", () => {
     const { pageInnerHeight } = getPageDimensions();
 
     const rowHeight = pageInnerHeight / 4;
@@ -1095,7 +1095,7 @@ describe("pagination - splitSection(...)", () => {
     ).toEqual(expected);
   });
 
-  xit("multiple tables, second needs split", () => {
+  it("multiple tables, second needs split", () => {
     const { pageInnerHeight } = getPageDimensions();
     const rowHeight = pageInnerHeight / 4;
     const firstTableRows = createRows({ rowHeight: rowHeight, length: 2 });
@@ -1144,7 +1144,7 @@ describe("pagination - splitSection(...)", () => {
     );
   });
 
-  xit("does not split to create widow", () => {
+  it("does not split to create widow", () => {
     const pageHeight = 100;
     const headerHeight = 15;
 
@@ -1183,7 +1183,7 @@ describe("pagination - splitSection(...)", () => {
     expect(splitSection(input, pageHeight, emptyMeasuredDoc)).toEqual(expected);
   });
 
-  xit("copies headers when repeatSectionHeaders is true", () => {
+  it("copies headers when repeatSectionHeaders is true", () => {
     const pageHeight = margin * 5;
 
     const doc: MeasuredDocument = {
@@ -1227,7 +1227,7 @@ describe("pagination - splitSection(...)", () => {
     expect(splitSection(input, pageHeight, doc)).toEqual(expected);
   });
 
-  xit("should account for margin between all tables", () => {
+  it("should account for margin between all tables", () => {
     const available = 300 + margin;
     const rowHeight = 20;
     const bigRowHeight = 100;
@@ -1289,7 +1289,7 @@ describe("pagination - splitSection(...)", () => {
 
     expect(splitSection(input, available, emptyMeasuredDoc)).toEqual(expected);
   });
-  xit("should account for margin between all tables with TableGap set", () => {
+  it("should account for margin between all tables with TableGap set", () => {
     const available = 300 + margin;
     const rowHeight = 20;
     const bigRowHeight = 100;
@@ -1355,7 +1355,7 @@ describe("pagination - splitSection(...)", () => {
       splitSection({ ...input, tableGap: 8 }, available, emptyMeasuredDoc)
     ).toEqual(expected);
   });
-  xit("should account for TableGap with Headers", () => {
+  it("should account for TableGap with Headers", () => {
     const available = 300 + margin;
     const rowHeight = margin;
     const bigRowHeight = 100;
@@ -1432,7 +1432,7 @@ describe("pagination - splitSection(...)", () => {
 });
 
 describe("pagination - paginateSection(...)", () => {
-  xit("paginates table headers", () => {
+  it("paginates table headers", () => {
     const tableHeader = createRow({ rowHeight: 1, value: "header" });
     const tableRows = createRows({ rowHeight: 1, length: 4, value: "row " });
     const input: MeasuredSection = {
@@ -1452,7 +1452,7 @@ describe("pagination - paginateSection(...)", () => {
     expect(paginateSection(input)).toEqual(expected);
   });
 
-  xit("paginates section headers", () => {
+  it("paginates section headers", () => {
     const sectionHeaders = createRows({
       rowHeight: 7,
       length: 2,
@@ -1478,7 +1478,7 @@ describe("pagination - paginateSection(...)", () => {
 
     expect(paginateSection(input)).toEqual(expected);
   });
-  xit("paginates section headers with lineGap", () => {
+  it("paginates section headers with lineGap", () => {
     const sectionHeaders = createRows({
       rowHeight: 7,
       length: 2,
@@ -1620,10 +1620,10 @@ describe("pagination - splitTable(...)", () => {
     expect(splitTable(table, availableSpace)).toEqual(expected);
   });
 
-  xit("doesn't leave split widow", () => {
+  it("doesn't leave split widow", () => {
     // this test checks for cases where a tiny split with no data but ${continuedOn}
-    const notes = `a long line that will wrap and will need a fair amount of space in order for xit to render appropriately
-and another line that should go on the next page as well but xit needs to be long to trigger the widow thing`;
+    const notes = `a long line that will wrap and will need a fair amount of space in order for it to render appropriately
+and another line that should go on the next page as well but it needs to be long to trigger the widow thing`;
 
     const measure = (txt): VerticalMeasure => ({
       maxHeight: Math.ceil(txt.length / 50),
@@ -1649,7 +1649,7 @@ and another line that should go on the next page as well but xit needs to be lon
     );
   });
 
-  xit("only splits row if splittable column is tallest", () => {
+  it("only splits row if splittable column is tallest", () => {
     const col1Text = Array(10).fill("123456789").join(" ");
     const splittable = Array(5).fill("123456789").join(" ");
     const measure = (txt) => ({
@@ -1676,7 +1676,7 @@ and another line that should go on the next page as well but xit needs to be lon
     expect(splitTable(table, 4).first.rows).toHaveLength(0);
   });
 
-  xit("split table shows a breakPage row", () => {
+  it("split table shows a breakPage row", () => {
     const tallRow = createMeasuredRows(3);
     const regularRow = createMeasuredRows(1);
 
@@ -1702,7 +1702,7 @@ and another line that should go on the next page as well but xit needs to be lon
     };
     expect(splitTable(table, availableSpace, doc)).toEqual(expected);
   });
-  xit("split table shows multiple breakPage rows ", () => {
+  it("split table shows multiple breakPage rows ", () => {
     const tallRow = createMeasuredRows(2);
     const regularRow = createMeasuredRows(1);
     const pageBreakRows = [pageBreakRow, pageBreakRow];
@@ -1728,7 +1728,7 @@ and another line that should go on the next page as well but xit needs to be lon
     };
     expect(splitTable(table, availableSpace, doc)).toEqual(expected);
   });
-  xit("split table shows breakPage rows with a splitted long row", () => {
+  it("split table shows breakPage rows with a splitted long row", () => {
     const pageBreakRows = [pageBreakRow, pageBreakRow];
     const table: MeasuredTable = {
       ...emptyTable,
