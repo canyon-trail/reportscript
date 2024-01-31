@@ -12,7 +12,7 @@ This guide will help you make awesome PDF reports!
 
 ## The Basics
 
-Reportscript works by turning a [Document](/documentation/#document)
+Reportscript works by turning a [Document](../documentation/#document)
 into a PDF file. Documents are simple data objects that specify what
 content should go into your report, and reportscript figures out how to render your report into as many pages as needed to display the entire contents of the provided document.
 Use the [renderPdf(...)](#renderpdf) function to transform a Document into
@@ -49,7 +49,7 @@ renderPdf(reportDocument, outputStream);
 
 The above document produces a report that looks like this:
 
-![example output of above doc](../assets/img/devguide-first-doc.png)
+![example output of above doc](../assets/img../devguide-first-doc.png)
 
 Some key features to note:
 
@@ -68,7 +68,7 @@ write PDFs to HTML5 Blobs and display them entirely in the browser with no serve
 
 ## Document
 
-A [Document](/documentation/#document) is the top-level data object that defines a report. It contains [Headers, Footers](#document-headersfooters), [Sections](#section) and many [settings](#document-settings) that can be set on the Document level.
+A [Document](../documentation/#document) is the top-level data object that defines a report. It contains [Headers, Footers](#document-headersfooters), [Sections](#section) and many [settings](#document-settings) that can be set on the Document level.
 
 Example:
 
@@ -96,7 +96,7 @@ Documents are oriented around tables. Headers and footers, as well as the conten
 
 ## Document Headers/Footers
 
-Documents have optional [headers and footers](/documentation/#headerfooters). Document headers are displayed at the top of the page. By default, the headers are only displayed on the first page. Document footers are displayed at the bottom of every page.
+Documents have optional [headers and footers](../documentation/#headerfooters). Document headers are displayed at the top of the page. By default, the headers are only displayed on the first page. Document footers are displayed at the bottom of every page.
 It contains [rows](#row), [columns](#column-settings), and [style](#styleoptions).
 
 ```javascript
@@ -129,7 +129,7 @@ const document = {
 
 ### Layout
 
-[Layout](/documentation/#layout) determines the orientation of the pdf document. The available options are "landscape" and "portrait". The default is “landscape”.
+[Layout](../documentation/#layout) determines the orientation of the pdf document. The available options are "landscape" and "portrait". The default is “landscape”.
 
 ```javascript
 const document = {
@@ -200,7 +200,7 @@ const document = {
 
 ### timeStampPageNumberFontSetting
 
-timeStampPageNumberFontSetting change the default font settings for any page numbers and timestamps. See available [font settings](/documentation/#fontsetting).
+timeStampPageNumberFontSetting change the default font settings for any page numbers and timestamps. See available [font settings](../documentation/#fontsetting).
 
 ```javascript
 const document = {
@@ -216,7 +216,7 @@ const document = {
 
 ### Watermark
 
-Displays a [watermark](/documentation/#watermark) on every page of the pdf. If a section has Watermark set, it will override the document watermark setting.
+Displays a [watermark](../documentation/#watermark) on every page of the pdf. If a section has Watermark set, it will override the document watermark setting.
 
 ```javascript
 const document = {
@@ -231,7 +231,7 @@ const document = {
 
 ### Page Break Rows
 
-[Page Break Rows](/documentation/#pagebreakrows) allow you to specify what should be displayed when there is more than one page to the document.
+[Page Break Rows](../documentation/#pagebreakrows) allow you to specify what should be displayed when there is more than one page to the document.
 
 ```javascript
 const document = {
@@ -261,7 +261,7 @@ const document = {
 
 ## Section
 
-A document can have many sections. Each [Section](/documentation/#section) can span multiple pages, and a new section will always start on a new page. Section Headers are similar to Document [Headers and Footers](#document-headersfooters). Much like documents, sections have headers that can be configured to repeat on subsequent pages. Sections contain [Tables](#table).
+A document can have many sections. Each [Section](../documentation/#section) can span multiple pages, and a new section will always start on a new page. Section Headers are similar to Document [Headers and Footers](#document-headersfooters). Much like documents, sections have headers that can be configured to repeat on subsequent pages. Sections contain [Tables](#table).
 
 Sections can override the document-level [TableGap](#table-gaps) and [Watermark](#watermark) settings.
 
@@ -289,7 +289,7 @@ renderPdf(document)
 
 ## Table
 
-Sections must have at least one [Table](/documentation/#table). Tables have Headers, [Rows](#row), [Styles](#styleoptions) (for [row style options](/documentation/#rowoptions)), and [Columns](#column-settings). The style that is set here will be applied every row in the table, unless you choose to override them at the row level (discussed later).
+Sections must have at least one [Table](../documentation/#table). Tables have Headers, [Rows](#row), [Styles](#styleoptions) (for [row style options](../documentation/#rowoptions)), and [Columns](#column-settings). The style that is set here will be applied every row in the table, unless you choose to override them at the row level (discussed later).
 
 ```javascript
 const table = {
@@ -327,7 +327,7 @@ const table = {
 
 ## Column Settings
 
-[Column Settings](/documentation/#columnsetting) specify the orientation of the data within the columns, as well as the width of the columns. By default, all columns in a row have equal widths, and content is centered horizontally.
+[Column Settings](../documentation/#columnsetting) specify the orientation of the data within the columns, as well as the width of the columns. By default, all columns in a row have equal widths, and content is centered horizontally.
 
 ```javascript
 const table = {
@@ -466,7 +466,7 @@ Set the width of the column. Currently, reportscript supports fractional unit (f
 
 ### ColumnSplitFns
 
-In some cases, it may be beneficial to allow reportscript to split a row such that portions of it display at the bottom of a page and at the top of the next page. You can import [splitColumn](/documentation/#columnsplitfn) to accomplish this, or use your own custom split function. The `splitColumn` function inserts ‘(continued on next page)’ and ‘(continued from previous page)’ into the rows before and after the page break, respectively.
+In some cases, it may be beneficial to allow reportscript to split a row such that portions of it display at the bottom of a page and at the top of the next page. You can import [splitColumn](../documentation/#columnsplitfn) to accomplish this, or use your own custom split function. The `splitColumn` function inserts ‘(continued on next page)’ and ‘(continued from previous page)’ into the rows before and after the page break, respectively.
 
 ```javascript
 import { splitColumn } from "report-script";
@@ -480,7 +480,7 @@ const columnSettings = [
 
 ## Row
 
-[Row](/documentation/#row) contains data for an entry in a table. It has options which override any table-level settings.
+[Row](../documentation/#row) contains data for an entry in a table. It has options which override any table-level settings.
 
 ```javascript
 const row = {
@@ -515,7 +515,7 @@ const table = {
 
 ### Image
 
-Adds an [image](/documentation/#image) for the entire row with no other data.
+Adds an [image](../documentation/#image) for the entire row with no other data.
 
 ```javascript
 const row = {
@@ -529,7 +529,7 @@ const row = {
 
 ## Cell
 
-As discussed in [Data](#data), you can specify certain settings for a cell. [Cell](/documentation/#cell) is another way you can embed an image in your document. Unlike [Table](#table), and [Row](#row), the settings is a part of the cell rather than a separate `style` or `option` property.
+As discussed in [Data](#data), you can specify certain settings for a cell. [Cell](../documentation/#cell) is another way you can embed an image in your document. Unlike [Table](#table), and [Row](#row), the settings is a part of the cell rather than a separate `style` or `option` property.
 
 ```javascript
 const imageBuffer = fs.readFileSync("./John-image.png");
