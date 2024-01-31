@@ -156,7 +156,7 @@ describe("measuring functions", () => {
 
     it("uses image height if defined", () => {
       const cell = { image: { height: 40, width: 40 }, lineGap: 1 } as Cell;
-      const result = getCellHeight(cell, 100, doc);
+      const result = getCellHeight(cell, 100, doc).maxHeight;
 
       expect(result).toBe(40 + lineGap + 1);
     });
@@ -176,7 +176,7 @@ describe("measuring functions", () => {
         columnSpan: 1,
         fontSize: 10,
       } as TextCell;
-      const result = getCellHeight(cell, 20, doc);
+      const result = getCellHeight(cell, 20, doc).maxHeight;
 
       const expected =
         doc.heightOfString("X", {
