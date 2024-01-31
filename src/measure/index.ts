@@ -187,6 +187,14 @@ export function getCellHeight(
       maxHeight: cell.image.height + rowLineGap + lineGap,
     };
   }
+
+  if ("chart" in cell) {
+    return {
+      minHeight: cell.chart.minHeight + rowLineGap + lineGap,
+      maxHeight: cell.chart.maxHeight + rowLineGap + lineGap,
+    };
+  }
+
   doc.fontSize(cell?.fontSize ?? defaultFontSize);
 
   const textContent = text ?? cell?.value;
