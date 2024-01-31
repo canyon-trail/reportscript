@@ -4,6 +4,7 @@ import {
   MeasuredSection,
   MeasuredRow,
   MeasuredTable,
+  VerticalMeasure,
 } from "../measure/types";
 import {
   exampleDocumentFooterRow,
@@ -24,7 +25,10 @@ import {
 import { continuedOn, splitColumn } from "./splitColumn";
 import { PaginatedDocument } from "./types";
 
-const measureTextHeight = () => 0;
+const measureTextHeight = (): VerticalMeasure => ({
+  maxHeight: 0,
+  minHeight: 0,
+});
 const creationDate = new Date("July 20, 69 00:20:18 GMT+00:00");
 type rowParam = {
   rowHeight: number;
@@ -1534,15 +1538,17 @@ describe("pagination - splitTable(...)", () => {
   ): [string, string] => {
     const lines = text.split("\n");
     const nextLines = [];
-
-    while (measure(lines.join("\n")) > availableSpace) {
+    while (measure(lines.join("\n")).maxHeight > availableSpace) {
       nextLines.unshift(lines.pop());
     }
 
     return [lines.join("\n"), nextLines.join("\n")];
   };
-  const measureTextHeight = (text: string) => {
-    return text.split("\n").length * lineHeight;
+  const measureTextHeight = (text: string): VerticalMeasure => {
+    return {
+      maxHeight: text.split("\n").length * lineHeight,
+      minHeight: text.split("\n").length * lineHeight,
+    };
   };
   const makeLines = (n, start = 1) =>
     Array(n)
@@ -1619,18 +1625,19 @@ describe("pagination - splitTable(...)", () => {
     const notes = `a long line that will wrap and will need a fair amount of space in order for xit to render appropriately
 and another line that should go on the next page as well but xit needs to be long to trigger the widow thing`;
 
-    const measure = (txt) => Math.ceil(txt.length / 50);
+    const measure = (txt): VerticalMeasure => ({
+      maxHeight: Math.ceil(txt.length / 50),
+      minHeight: Math.ceil(txt.length / 50),
+    });
     const table: MeasuredTable = {
       ...emptyTable,
       measureTextHeight: measure,
       rows: [
         {
           ...emptyMeasuredRow,
-          columnHeights: [
-            { maxHeight: measure(notes), minHeight: measure(notes) },
-          ],
+          columnHeights: [measure(notes)],
           data: [{ value: notes }],
-          height: measure(notes),
+          height: measure(notes).maxHeight,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],
@@ -1645,19 +1652,19 @@ and another line that should go on the next page as well but xit needs to be lon
   xit("only splits row if splittable column is tallest", () => {
     const col1Text = Array(10).fill("123456789").join(" ");
     const splittable = Array(5).fill("123456789").join(" ");
-    const measure = (txt) => Math.ceil(txt.length / 10);
+    const measure = (txt) => ({
+      maxHeight: Math.ceil(txt.length / 10),
+      minHeight: Math.ceil(txt.length / 10),
+    });
     const table: MeasuredTable = {
       ...emptyTable,
       measureTextHeight: measure,
       rows: [
         {
           ...emptyMeasuredRow,
-          columnHeights: [
-            { maxHeight: measure(col1Text), minHeight: measure(col1Text) },
-            { maxHeight: measure(splittable), minHeight: measure(splittable) },
-          ],
+          columnHeights: [measure(col1Text), measure(splittable)],
           data: [{ value: col1Text }, { value: splittable }],
-          height: measure(col1Text),
+          height: measure(col1Text).maxHeight,
         },
       ],
       columns: [

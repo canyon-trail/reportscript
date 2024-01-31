@@ -1,4 +1,5 @@
 import { splitColumn, continuedOn, continuedFrom } from "./splitColumn";
+import { VerticalMeasure } from "measure/types";
 
 const newlineSample = `a short line
 and another short line
@@ -9,12 +10,16 @@ and a short line`;
 describe("splitColumn", () => {
   describe("on newlines", () => {
     const measureLine = (txt: string) => Math.ceil(txt.length / 50);
-    const measure = (txt: string) =>
-      txt
+    const measure = (txt: string): VerticalMeasure => {
+      const x = txt
         .split("\n")
         .map(measureLine)
         .reduce((acc, x) => acc + x, 0);
-
+      return {
+        maxHeight: x,
+        minHeight: x,
+      };
+    };
     const cases = [
       {
         available: 1,
@@ -48,7 +53,10 @@ describe("splitColumn", () => {
   });
 
   describe("on word boundaries", () => {
-    const measure = (txt: string) => txt.length;
+    const measure = (txt: string): VerticalMeasure => ({
+      maxHeight: txt.length,
+      minHeight: txt.length,
+    });
 
     const makeWords = (n, start = 1) =>
       Array(n)
@@ -86,7 +94,10 @@ describe("splitColumn", () => {
   describe("when it's just awful", () => {
     const longString = Array(20).fill("1234567890").join("");
 
-    const measure = (txt: string) => txt.length;
+    const measure = (txt: string): VerticalMeasure => ({
+      maxHeight: txt.length,
+      minHeight: txt.length,
+    });
 
     const cases = [
       {

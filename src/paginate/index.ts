@@ -376,7 +376,7 @@ function canSplitRow(
 
   const minHeight = table.measureTextHeight("X", 0, row);
 
-  return availableSpace >= minHeight;
+  return availableSpace >= minHeight.maxHeight;
 }
 
 function splitRow(
@@ -387,19 +387,18 @@ function splitRow(
   const first: MeasuredRow = {
     ...row,
     data: [...row.data.map((x) => ({ ...x }))],
-    columnHeights: [...row.columnHeights],
+    columnHeights: [],
     height: row.height,
   };
   const rest: MeasuredRow = {
     ...row,
     data: [...row.data.map((x) => ({ ...x }))],
-    columnHeights: [...row.columnHeights],
+    columnHeights: [],
     height: row.height,
   };
 
   row.data.forEach((d, idx) => {
     const splitFn = table.columns[idx]?.splitFn;
-
     if (
       splitFn &&
       row.columnHeights[idx].maxHeight > availableSpace &&
@@ -414,14 +413,10 @@ function splitRow(
       const [next, remaining] = splitFn(`${d.value}`, measure, availableSpace);
 
       (first.data[idx] as TextCell).value = next;
-      first.columnHeights[idx].maxHeight = measure(next);
-      first.columnHeights[idx].minHeight = first.columnHeights[idx].maxHeight;
+      first.columnHeights.push(measure(next));
 
       (rest.data[idx] as TextCell).value = remaining;
-      rest.columnHeights[idx].maxHeight = measure(remaining);
-      console.log(first.columnHeights);
-      rest.columnHeights[idx].minHeight = rest.columnHeights[idx].maxHeight;
-      console.log(first.columnHeights);
+      rest.columnHeights.push(measure(remaining));
     }
   });
   const firstHeights = first.columnHeights.map((x) => x.maxHeight);
@@ -429,7 +424,6 @@ function splitRow(
 
   first.height = Math.max(...firstHeights);
   rest.height = Math.max(...restHeights);
-
   return [first, rest];
 }
 

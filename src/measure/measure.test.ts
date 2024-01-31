@@ -134,9 +134,7 @@ describe("measuring functions", () => {
         options: { fontSize },
       };
       const columnWidth = new Array(7).fill(756 / 7);
-      const result = measureCellHeights(row, doc, columnWidth).map(
-        (x) => x.maxHeight
-      );
+      const result = measureCellHeights(row, doc, columnWidth);
 
       const expected = data.map((d, idx) =>
         getCellHeightWithText(row, idx, doc, d.value, columnWidth)

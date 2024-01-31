@@ -208,9 +208,9 @@ export function getCellHeightWithText(
   doc: PdfKitApi,
   text?: string | number,
   columnwidths?: number[]
-): number {
+): VerticalMeasure {
   const widths = calculateColumnWidthsWithoutPadding(columnwidths);
-  return getCellHeight(row.data[index], widths[index], doc, text).maxHeight;
+  return getCellHeight(row.data[index], widths[index], doc, text);
 }
 
 export function measureCellHeights(

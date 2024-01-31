@@ -1,3 +1,4 @@
+import { VerticalMeasure } from "measure/types";
 import { HorizontalAlignment } from "./alignment";
 import { Row, RowOptions } from "./row";
 
@@ -11,7 +12,7 @@ import { Row, RowOptions } from "./row";
  */
 export type ColumnSplitFn = (
   value: string,
-  measure: (text: string) => number,
+  measure: (text: string) => VerticalMeasure,
   availableSpace: number
 ) => [string, string] | [string];
 

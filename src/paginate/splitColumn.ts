@@ -1,3 +1,5 @@
+import { VerticalMeasure } from "measure/types";
+
 export const continuedOn = " (continued on next page)";
 export const continuedFrom = "(continued from prev page) ";
 
@@ -25,7 +27,7 @@ export const continuedFrom = "(continued from prev page) ";
  */
 export function splitColumn(
   value: string,
-  measure: (text: string) => number,
+  measure: (text: string) => VerticalMeasure,
   availableSpace: number
 ): [string, string] {
   let result = trySplitNewlines(value, measure, availableSpace);
@@ -42,7 +44,7 @@ export function splitColumn(
         continuedFrom + value.substring(splitPosition),
       ];
       splitPosition--;
-    } while (measure(result[0]) > availableSpace);
+    } while (measure(result[0]).maxHeight > availableSpace);
   }
 
   return result;
@@ -50,14 +52,14 @@ export function splitColumn(
 
 function trySplitNewlines(
   value: string,
-  measure: (text: string) => number,
+  measure: (text: string) => VerticalMeasure,
   availableSpace: number
 ): [string, string] | null {
   return trySplitDelimiter(value, measure, availableSpace, "\n");
 }
 function trySplitSpaces(
   value: string,
-  measure: (text: string) => number,
+  measure: (text: string) => VerticalMeasure,
   availableSpace: number
 ): [string, string] | null {
   return trySplitDelimiter(value, measure, availableSpace, " ");
@@ -65,7 +67,7 @@ function trySplitSpaces(
 
 function trySplitDelimiter(
   value: string,
-  measure: (text: string) => number,
+  measure: (text: string) => VerticalMeasure,
   availableSpace: number,
   delimiter: string
 ): [string, string] | null {
@@ -80,7 +82,9 @@ function trySplitDelimiter(
 
   const restParts = [parts.pop()];
 
-  while (measure(parts.join(delimiter) + continuedOn) > availableSpace) {
+  while (
+    measure(parts.join(delimiter) + continuedOn).maxHeight > availableSpace
+  ) {
     restParts.unshift(parts.pop());
   }
 

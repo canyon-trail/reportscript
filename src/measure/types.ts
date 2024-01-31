@@ -8,7 +8,7 @@ import { Cell, Layout, Row, Watermark } from "../types";
 export type MeasuredTable = {
   rows: MeasuredRow[];
   headers: MeasuredRow[];
-  measureTextHeight: (text: string, index: number, row: Row) => number;
+  measureTextHeight: (text: string, index: number, row: Row) => VerticalMeasure;
   columns: NormalizedColumnSetting[];
 };
 export type MeasuredSection = {
