@@ -365,7 +365,7 @@ function canSplitRow(
   }
 
   for (let columnIdx = 0; columnIdx < row.data.length; columnIdx++) {
-    if (row.columnHeights[columnIdx] <= availableSpace) {
+    if (row.columnHeights[columnIdx].maxHeight <= availableSpace) {
       continue;
     }
 
@@ -376,7 +376,7 @@ function canSplitRow(
 
   const minHeight = table.measureTextHeight("X", 0, row);
 
-  return availableSpace >= minHeight;
+  return availableSpace >= minHeight.maxHeight;
 }
 
 function splitRow(
@@ -387,20 +387,23 @@ function splitRow(
   const first: MeasuredRow = {
     ...row,
     data: [...row.data.map((x) => ({ ...x }))],
-    columnHeights: [...row.columnHeights],
+    columnHeights: [],
     height: row.height,
   };
   const rest: MeasuredRow = {
     ...row,
     data: [...row.data.map((x) => ({ ...x }))],
-    columnHeights: [...row.columnHeights],
+    columnHeights: [],
     height: row.height,
   };
 
   row.data.forEach((d, idx) => {
     const splitFn = table.columns[idx]?.splitFn;
-
-    if (splitFn && row.columnHeights[idx] > availableSpace && "value" in d) {
+    if (
+      splitFn &&
+      row.columnHeights[idx].maxHeight > availableSpace &&
+      "value" in d
+    ) {
       if (row.image) {
         throw new Error("A row cannot be split with an image");
       }
@@ -410,16 +413,17 @@ function splitRow(
       const [next, remaining] = splitFn(`${d.value}`, measure, availableSpace);
 
       (first.data[idx] as TextCell).value = next;
-      first.columnHeights[idx] = measure(next);
+      first.columnHeights.push(measure(next));
 
       (rest.data[idx] as TextCell).value = remaining;
-      rest.columnHeights[idx] = measure(remaining);
+      rest.columnHeights.push(measure(remaining));
     }
   });
+  const firstHeights = first.columnHeights.map((x) => x.maxHeight);
+  const restHeights = rest.columnHeights.map((x) => x.maxHeight);
 
-  first.height = Math.max(...first.columnHeights);
-  rest.height = Math.max(...rest.columnHeights);
-
+  first.height = Math.max(...firstHeights);
+  rest.height = Math.max(...restHeights);
   return [first, rest];
 }
 

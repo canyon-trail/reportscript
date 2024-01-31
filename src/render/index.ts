@@ -170,7 +170,8 @@ export function writeCellContents(
   const x = columnStarts[index] + textHPadding;
   const cellHeight = getCellHeight(data[index], columnWidths[index], doc);
 
-  const y = start + lineGap + getTextYOffset(data[index], cellHeight, height);
+  const y =
+    start + lineGap + getTextYOffset(data[index], cellHeight.maxHeight, height);
 
   const align = getCellAlign(data[index]);
   const maxTextWidth = columnWidths[index] - textHPadding * 2;
@@ -186,7 +187,7 @@ export function writeCellContents(
       .clip()
       .image(image, imageStart, y, { ...size })
       .restore();
-  } else {
+  } else if (!("chart" in cell)) {
     doc.text(`${cell.value}`.replace(/\t/g, "    "), x, y, {
       width: maxTextWidth,
       underline: options?.underline ?? undefined,
