@@ -170,7 +170,7 @@ const generateDocument = () => {
 
   function getDocument() {
     return fetch(
-      "/assets/canyon-mission.jpeg",
+      "/reportscript/assets/canyon-mission.jpeg",
       { mode: "no-cors", method: "get" }
     )
     .then(response => response.arrayBuffer())

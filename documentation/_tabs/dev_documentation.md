@@ -5,8 +5,6 @@ layout: post
 title: Developer Guide
 ---
 
-# Developer Guide
-
 Below is a guide to key elements of reportscript.
 This guide will help you make awesome PDF reports!
 
