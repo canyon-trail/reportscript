@@ -4,6 +4,7 @@ import {
   MeasuredSection,
   MeasuredRow,
   MeasuredTable,
+  VerticalMeasure,
 } from "../measure/types";
 import {
   exampleDocumentFooterRow,
@@ -24,7 +25,10 @@ import {
 import { continuedOn, splitColumn } from "./splitColumn";
 import { PaginatedDocument } from "./types";
 
-const measureTextHeight = () => 0;
+const measureTextHeight = (): VerticalMeasure => ({
+  maxHeight: 0,
+  minHeight: 0,
+});
 const creationDate = new Date("July 20, 69 00:20:18 GMT+00:00");
 type rowParam = {
   rowHeight: number;
@@ -1523,7 +1527,7 @@ describe("pagination - splitTable(...)", () => {
   const lineHeight = 10;
   const pageBreakRow = {
     ...emptyMeasuredRow,
-    columnHeights: [lineHeight],
+    columnHeights: [{ maxHeight: lineHeight, minHeight: lineHeight }],
     data: [{ value: "page break" }],
     height: lineHeight,
   };
@@ -1534,15 +1538,17 @@ describe("pagination - splitTable(...)", () => {
   ): [string, string] => {
     const lines = text.split("\n");
     const nextLines = [];
-
-    while (measure(lines.join("\n")) > availableSpace) {
+    while (measure(lines.join("\n")).maxHeight > availableSpace) {
       nextLines.unshift(lines.pop());
     }
 
     return [lines.join("\n"), nextLines.join("\n")];
   };
-  const measureTextHeight = (text: string) => {
-    return text.split("\n").length * lineHeight;
+  const measureTextHeight = (text: string): VerticalMeasure => {
+    return {
+      maxHeight: text.split("\n").length * lineHeight,
+      minHeight: text.split("\n").length * lineHeight,
+    };
   };
   const makeLines = (n, start = 1) =>
     Array(n)
@@ -1551,7 +1557,12 @@ describe("pagination - splitTable(...)", () => {
       .join("\n");
   const createMeasuredRows = (heightTimes: number) => ({
     ...emptyMeasuredRow,
-    columnHeights: [lineHeight * heightTimes],
+    columnHeights: [
+      {
+        maxHeight: lineHeight * heightTimes,
+        minHeight: lineHeight * heightTimes,
+      },
+    ],
     data: [{ value: "data" }],
     height: lineHeight * heightTimes,
   });
@@ -1562,7 +1573,9 @@ describe("pagination - splitTable(...)", () => {
       rows: [
         {
           ...emptyMeasuredRow,
-          columnHeights: [lineHeight * 9],
+          columnHeights: [
+            { maxHeight: lineHeight * 9, minHeight: lineHeight * 9 },
+          ],
           data: [{ value: makeLines(9) }],
           height: lineHeight * 9,
         },
@@ -1575,10 +1588,11 @@ describe("pagination - splitTable(...)", () => {
         ...table,
         rows: [
           {
-            columnHeights: [lineHeight * 4],
+            columnHeights: [
+              { maxHeight: lineHeight * 4, minHeight: lineHeight * 4 },
+            ],
             data: [{ value: makeLines(4) }],
             height: lineHeight * 4,
-
             columnWidths: [],
             columnStarts: [],
           },
@@ -1589,7 +1603,9 @@ describe("pagination - splitTable(...)", () => {
         ...table,
         rows: [
           {
-            columnHeights: [lineHeight * 5],
+            columnHeights: [
+              { maxHeight: lineHeight * 5, minHeight: lineHeight * 5 },
+            ],
             data: [{ value: makeLines(5, 5) }],
             height: lineHeight * 5,
 
@@ -1609,7 +1625,10 @@ describe("pagination - splitTable(...)", () => {
     const notes = `a long line that will wrap and will need a fair amount of space in order for it to render appropriately
 and another line that should go on the next page as well but it needs to be long to trigger the widow thing`;
 
-    const measure = (txt) => Math.ceil(txt.length / 50);
+    const measure = (txt): VerticalMeasure => ({
+      maxHeight: Math.ceil(txt.length / 50),
+      minHeight: Math.ceil(txt.length / 50),
+    });
     const table: MeasuredTable = {
       ...emptyTable,
       measureTextHeight: measure,
@@ -1618,7 +1637,7 @@ and another line that should go on the next page as well but it needs to be long
           ...emptyMeasuredRow,
           columnHeights: [measure(notes)],
           data: [{ value: notes }],
-          height: measure(notes),
+          height: measure(notes).maxHeight,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],
@@ -1633,7 +1652,10 @@ and another line that should go on the next page as well but it needs to be long
   it("only splits row if splittable column is tallest", () => {
     const col1Text = Array(10).fill("123456789").join(" ");
     const splittable = Array(5).fill("123456789").join(" ");
-    const measure = (txt) => Math.ceil(txt.length / 10);
+    const measure = (txt) => ({
+      maxHeight: Math.ceil(txt.length / 10),
+      minHeight: Math.ceil(txt.length / 10),
+    });
     const table: MeasuredTable = {
       ...emptyTable,
       measureTextHeight: measure,
@@ -1642,7 +1664,7 @@ and another line that should go on the next page as well but it needs to be long
           ...emptyMeasuredRow,
           columnHeights: [measure(col1Text), measure(splittable)],
           data: [{ value: col1Text }, { value: splittable }],
-          height: measure(col1Text),
+          height: measure(col1Text).maxHeight,
         },
       ],
       columns: [
@@ -1714,7 +1736,9 @@ and another line that should go on the next page as well but it needs to be long
       rows: [
         {
           ...emptyMeasuredRow,
-          columnHeights: [lineHeight * 9],
+          columnHeights: [
+            { maxHeight: lineHeight * 9, minHeight: lineHeight * 9 },
+          ],
           data: [{ value: makeLines(9) }],
           height: lineHeight * 9,
         },
@@ -1728,7 +1752,9 @@ and another line that should go on the next page as well but it needs to be long
         rows: [
           {
             ...emptyMeasuredRow,
-            columnHeights: [lineHeight * 2],
+            columnHeights: [
+              { maxHeight: lineHeight * 2, minHeight: lineHeight * 2 },
+            ],
             data: [{ value: makeLines(2) }],
             height: lineHeight * 2,
           },
@@ -1740,7 +1766,9 @@ and another line that should go on the next page as well but it needs to be long
         rows: [
           {
             ...emptyMeasuredRow,
-            columnHeights: [lineHeight * 7],
+            columnHeights: [
+              { maxHeight: lineHeight * 7, minHeight: lineHeight * 7 },
+            ],
             data: [{ value: makeLines(7, 3) }],
             height: lineHeight * 7,
           },

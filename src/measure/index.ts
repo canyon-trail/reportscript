@@ -1,5 +1,5 @@
 import { Layout, Cell, Watermark } from "../types";
-import { UndefinedCellError } from "./types";
+import { UndefinedCellError, VerticalMeasure } from "./types";
 import { PdfKitApi } from "../reportDocument";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
@@ -159,7 +159,7 @@ export function getRowHeight(
     calculateColumnWidthsWithoutPadding(columnwidths);
   data.forEach((cell, idx) => {
     const height = getCellHeight(cell, widthsWithoutPadding[idx], doc);
-    rowHeight = Math.max(rowHeight, height);
+    rowHeight = Math.max(rowHeight, height.maxHeight);
   });
 
   if (image) {
@@ -173,7 +173,7 @@ export function getCellHeight(
   width: number,
   doc: PdfKitApi,
   text?: string | number
-): number {
+): VerticalMeasure {
   const gap = lineGap * 0.5;
   const rowLineGap = cell?.lineGap ?? lineGap;
 
@@ -182,7 +182,10 @@ export function getCellHeight(
   }
 
   if ("image" in cell) {
-    return cell.image.height + rowLineGap + lineGap;
+    return {
+      minHeight: cell.image.height + rowLineGap + lineGap,
+      maxHeight: cell.image.height + rowLineGap + lineGap,
+    };
   }
   doc.fontSize(cell?.fontSize ?? defaultFontSize);
 
@@ -196,7 +199,7 @@ export function getCellHeight(
     align: cell.align,
     height: cell.noWrap ? cell.fontSize : undefined,
   });
-  return height + gap;
+  return { minHeight: height + gap, maxHeight: height + gap };
 }
 
 export function getCellHeightWithText(
@@ -205,7 +208,7 @@ export function getCellHeightWithText(
   doc: PdfKitApi,
   text?: string | number,
   columnwidths?: number[]
-): number {
+): VerticalMeasure {
   const widths = calculateColumnWidthsWithoutPadding(columnwidths);
   return getCellHeight(row.data[index], widths[index], doc, text);
 }
@@ -214,7 +217,7 @@ export function measureCellHeights(
   row: NormalizedRow,
   doc: PdfKitApi,
   columnWidths: number[]
-): number[] {
+): VerticalMeasure[] {
   const widths = calculateColumnWidthsWithoutPadding(columnWidths);
   return row.data.map((cell, idx) => getCellHeight(cell, widths[idx], doc));
 }
