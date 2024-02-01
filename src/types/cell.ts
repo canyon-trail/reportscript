@@ -7,17 +7,6 @@ export type Cell = ImageCell | TextCell | ChartCell;
 /**
  * An Image can be added to a row cell with optional styles.
  *
- * Example:
- *
- * ```javascript
- * const imageBuffer = fs.readFileSync("./my-image.png");
- *
- * const imageCell = {
- *   image: { image: imageBuffer, height: 35, width: 150 },
- *   align: "center",
- *   columnSpan: 3
- * }
- * ```
  */
 export type ImageCell = CellStyle &
   CellOptions & {
@@ -32,16 +21,6 @@ export type ChartCell = CellOptions &
 
 /**
  * A text cell includes data as a string or number, as well as optional styles.
- *
- * Example:
- *
- * ```javascript
- * const cell = {
- *   value: "Project 1123",
- *   align: "left",
- *   backgroundColor: "#e6e6e6"
- * }
- * ```
  */
 export type TextCell = CellStyle &
   FontSetting &
@@ -61,8 +40,7 @@ export type CellStyle = {
   backgroundColor?: string;
   /**
    * Sets the line spacing around the cell contents.
-   * Default value is 4.5 (see {@link Document | “Document size and measurements”}).
-   */
+   *    */
   lineGap?: number;
   /** Adds a bottom border to the cell */
   bottomBorder?: boolean;
@@ -88,22 +66,6 @@ export type CellOptions = {
 
 /**
  * A data object for adding an image to a row or cell. Accepts either a Buffer or string path.
- *
- * Examples:
- *
- * ```javascript
- * const imageFromBuffer = {
- *   image: fs.readFileSync("./my-image.png"),
- *   height: 50,
- *   width: 50
- * }
- *
- * const imageFromPath = {
- *   image: "./my-image.png",
- *   height: 50,
- *   width: 50
- * }
- * ```
  */
 export type Image = {
   /** Sets the image from a buffer or path string. */
