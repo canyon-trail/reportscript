@@ -1655,7 +1655,7 @@ and another line that should go on the next page as well but it needs to be long
 
     const measure = (txt): VerticalMeasure => ({
       maxHeight: Math.ceil(txt.length / 50),
-      minHeight: lineHeight,
+      minHeight: 4,
     });
     const table: MeasuredTable = {
       ...emptyTable,
@@ -1666,7 +1666,7 @@ and another line that should go on the next page as well but it needs to be long
           columnHeights: [measure(notes)],
           data: [{ value: notes }],
           maxHeight: measure(notes).maxHeight,
-          minHeight: lineHeight,
+          minHeight: 4,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],

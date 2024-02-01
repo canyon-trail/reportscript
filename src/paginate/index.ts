@@ -364,7 +364,7 @@ function canSplitRow(
 ): boolean {
   const hasSplitFn = table.columns?.some((x) => x.splitFn);
 
-  if (!hasSplitFn) {
+  if (!hasSplitFn || row.minHeight > availableSpace) {
     return false;
   }
 
