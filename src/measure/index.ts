@@ -138,7 +138,7 @@ export function measuredRows(
     const adjustedWidths = getColumnWidthsForRow(columnwidths, r);
     return {
       ...r,
-      height: getRowHeight(r, doc, adjustedWidths),
+      ...getRowHeight(r, doc, adjustedWidths),
       columnHeights: measureCellHeights(r, doc, adjustedWidths),
       columnWidths: adjustedWidths,
       columnStarts: calculateCellLeftCoords(adjustedWidths),
@@ -152,20 +152,24 @@ export function getRowHeight(
   row: NormalizedRow,
   doc: PdfKitApi,
   columnwidths?: number[]
-): number {
+): VerticalMeasure {
   const { data, image } = row;
-  let rowHeight = 0;
+  let minHeight = -Infinity;
+  let maxHeight = -Infinity;
+
   const widthsWithoutPadding =
     calculateColumnWidthsWithoutPadding(columnwidths);
   data.forEach((cell, idx) => {
-    const height = getCellHeight(cell, widthsWithoutPadding[idx], doc);
-    rowHeight = Math.max(rowHeight, height.maxHeight);
+    const heights = getCellHeight(cell, widthsWithoutPadding[idx], doc);
+    minHeight = Math.max(minHeight, heights.minHeight);
+    maxHeight = Math.max(maxHeight, heights.maxHeight);
   });
 
   if (image) {
-    rowHeight += image.height;
+    minHeight += image.height;
+    maxHeight += image.height;
   }
-  return rowHeight;
+  return { minHeight, maxHeight };
 }
 
 export function getCellHeight(
@@ -201,13 +205,25 @@ export function getCellHeight(
 
   const textVal = textContent ? (cell?.noWrap ? "X" : `${textContent}`) : "";
 
-  const height = doc.heightOfString(textVal, {
+  const heightOptions = {
     width,
     lineGap: rowLineGap,
     align: cell.align,
-    height: cell.noWrap ? cell.fontSize : undefined,
-  });
-  return { minHeight: height + gap, maxHeight: height + gap };
+  };
+
+  const minHeight =
+    doc.heightOfString("X", {
+      ...heightOptions,
+      height: cell.fontSize,
+    }) + gap;
+
+  const maxHeight =
+    doc.heightOfString(textVal, {
+      ...heightOptions,
+      height: cell.noWrap ? cell.fontSize : undefined,
+    }) + gap;
+
+  return { minHeight, maxHeight };
 }
 
 export function getCellHeightWithText(
@@ -247,7 +263,7 @@ function measureFooterHeight(
   }
   const { rows, columns } = exampleDocumentFooterRow;
   const columnwidths = calculateColumnWidths(columns, availableWidth);
-  return getRowHeight(rows[0], doc, columnwidths);
+  return getRowHeight(rows[0], doc, columnwidths).minHeight;
 }
 
 type PageDimensions = {

@@ -24,18 +24,18 @@ export function bottomBorder(
   if (!row.data[index].bottomBorder) {
     return;
   }
-  const { start, height, columnWidths, columnStarts } = row;
+  const { start, maxHeight, columnWidths, columnStarts } = row;
 
   horizontalLine(
     columnStarts[index],
-    start + height,
+    start + maxHeight,
     columnStarts[index] + columnWidths[index],
     doc
   );
 }
 
 export function writeRow(row: PaginatedRow, doc: PdfKitApi): void {
-  const { image, start, data, height } = row;
+  const { image, start, data, maxHeight } = row;
   data.forEach((cell, idx) => {
     writeCellBackground(row, doc, idx);
 
@@ -51,7 +51,7 @@ export function writeRow(row: PaginatedRow, doc: PdfKitApi): void {
   writeBorder(row, doc);
 
   if (image) {
-    const imageStart = start + height - image.height + 2;
+    const imageStart = start + maxHeight - image.height + 2;
     const { image: imageBuffer, ...size } = image;
     doc.image(imageBuffer, margin, imageStart, { ...size });
   }
@@ -62,12 +62,12 @@ export function writeCellGrids(
   doc: PdfKitApi,
   index: number
 ): void {
-  const { start, height, data, image, columnWidths, columnStarts } = row;
+  const { start, maxHeight, data, image, columnWidths, columnStarts } = row;
   if (!data[index].grid) {
     return;
   }
 
-  const dataHeight = getDataHeight(height, image);
+  const dataHeight = getDataHeight(maxHeight, image);
 
   doc.strokeColor(data[index]?.gridColor || "black");
 
@@ -93,11 +93,11 @@ export function writeCellGrids(
 }
 
 export function writeBorder(row: PaginatedRow, doc: PdfKitApi): void {
-  const { start, height, image, options } = row;
+  const { start, maxHeight, image, options } = row;
   if (!options?.border) {
     return;
   }
-  const dataHeight = getDataHeight(height, image);
+  const dataHeight = getDataHeight(maxHeight, image);
   const rowWidth = row.columnWidths.reduce((a, b) => a + b, 0);
   horizontalLine(margin, start, rowWidth + margin, doc);
   horizontalLine(margin, start + dataHeight, rowWidth + margin, doc);
@@ -128,8 +128,8 @@ export function writeCellBackground(
   doc: PdfKitApi,
   index: number
 ): void {
-  const { start, height, image, data, columnWidths, columnStarts } = row;
-  const dataHeight = getDataHeight(height, image);
+  const { start, maxHeight, image, data, columnWidths, columnStarts } = row;
+  const dataHeight = getDataHeight(maxHeight, image);
 
   const backgroundColor = data[index]?.backgroundColor ?? null;
 
@@ -160,7 +160,7 @@ export function writeCellContents(
   row: PaginatedRow,
   doc: PdfKitApi
 ): void {
-  const { start, options, data, columnWidths, columnStarts, height } = row;
+  const { start, options, data, columnWidths, columnStarts, maxHeight } = row;
   const cell = data[index];
 
   const fontSize =
@@ -171,7 +171,9 @@ export function writeCellContents(
   const cellHeight = getCellHeight(data[index], columnWidths[index], doc);
 
   const y =
-    start + lineGap + getTextYOffset(data[index], cellHeight.maxHeight, height);
+    start +
+    lineGap +
+    getTextYOffset(data[index], cellHeight.maxHeight, maxHeight);
 
   const align = getCellAlign(data[index]);
   const maxTextWidth = columnWidths[index] - textHPadding * 2;
@@ -183,7 +185,7 @@ export function writeCellContents(
 
     doc
       .save()
-      .rect(columnStarts[index], start, columnWidths[index], height)
+      .rect(columnStarts[index], start, columnWidths[index], maxHeight)
       .clip()
       .image(image, imageStart, y, { ...size })
       .restore();
