@@ -184,12 +184,12 @@ function handlePageNumTimestamp(
     pageSectionCount,
     creationDate
   );
-  const timeStampPageNumFontSetting = doc?.timeStampPageNumberFontSetting;
+  const timestampPageNumFontSetting = doc?.timestampPageNumberFontSetting;
   const dataCell: Cell = {
     value: docFooterText,
     align: "right",
     columnSpan: 1,
-    ...timeStampPageNumFontSetting,
+    ...timestampPageNumFontSetting,
   };
   const { availableWidth } = getPageDimensions(doc.layout);
   if (docFooterText.length) {
@@ -217,7 +217,7 @@ function getFooterText(
 ) {
   const page = doc.pages[index];
 
-  const timeStamp = `${creationDate.toLocaleString("en-US", {
+  const timestamp = `${creationDate.toLocaleString("en-US", {
     timeZone: "America/Chicago",
   })}`;
   const pageNum = ` Page ${index + 1} of ${doc.pages.length}`;
@@ -235,7 +235,7 @@ function getFooterText(
 
   const sectionPageText = ` Page ${pageSectionCount.sectionPage} of ${sectionPageCount}`;
 
-  return `${doc.timestamp ? `${timeStamp.split(/ GMT/)[0]}` : ""}${
+  return `${doc.timestamp ? `${timestamp.split(/ GMT/)[0]}` : ""}${
     doc.pageNumbers ? pageNum : doc.sectionPageNumbers ? sectionPageText : ""
   }`;
 }
