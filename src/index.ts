@@ -127,7 +127,7 @@ function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
     let startPos = margin;
     rows.forEach((r) => {
       r.start = startPos;
-      startPos += r.height;
+      startPos += r.maxHeight;
 
       writeRow(r, pdfDoc);
     });
