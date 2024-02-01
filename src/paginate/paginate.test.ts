@@ -99,7 +99,7 @@ const createRow = (params: rowParam) => {
 const createPageNumberTimeStampRow = (param: pageNumberTimestampRowParam) => {
   const { footerHeight, pageNum, creationDate } = param;
   return [...Array(pageNum).keys()].map((_, index) => {
-    const timeStampVal = creationDate
+    const timestampVal = creationDate
       ? `${
           `${creationDate.toLocaleString("en-US", {
             timeZone: "America/Chicago",
@@ -112,7 +112,7 @@ const createPageNumberTimeStampRow = (param: pageNumberTimestampRowParam) => {
       height: footerHeight,
       data: [
         {
-          value: `${timeStampVal}${pageNumVal}`,
+          value: `${timestampVal}${pageNumVal}`,
           align: "right",
           columnSpan: 1,
         },
@@ -809,7 +809,7 @@ describe("tableGap", () => {
 describe("page numbers and timestamp", () => {
   let pageInnerHeight: number;
   let rowHeight: number;
-  let timeStampPageNumRow;
+  let timestampPageNumRow;
   type sectionParam = {
     index: number;
     rowCount: number;
@@ -833,7 +833,7 @@ describe("page numbers and timestamp", () => {
     const dimension = getPageDimensions();
     pageInnerHeight = dimension.pageInnerHeight;
     rowHeight = pageInnerHeight / 3;
-    timeStampPageNumRow = createPageNumberTimeStampRow({
+    timestampPageNumRow = createPageNumberTimeStampRow({
       footerHeight: rowHeight,
       pageNum: 2,
       creationDate,
@@ -936,7 +936,7 @@ describe("page numbers and timestamp", () => {
   });
 
   it("adds timestamp", () => {
-    const timeStampRow = createPageNumberTimeStampRow({
+    const timestampRow = createPageNumberTimeStampRow({
       footerHeight: rowHeight,
       creationDate: creationDate,
     });
@@ -958,7 +958,7 @@ describe("page numbers and timestamp", () => {
           rows: [
             section.tables[0].rows[0],
             { ...defaultTableGapRow, height: rowHeight },
-            ...timeStampRow,
+            ...timestampRow,
           ],
         },
       ],
@@ -981,7 +981,7 @@ describe("page numbers and timestamp", () => {
       rows: [
         row,
         { ...defaultTableGapRow, height: rowHeight },
-        timeStampPageNumRow[index],
+        timestampPageNumRow[index],
       ],
     }));
 
@@ -995,7 +995,7 @@ describe("page numbers and timestamp", () => {
     expect(result).toEqual(expected);
   });
 
-  it("adds page numbers and timestamp with timeStampPageNumberFontSetting set", () => {
+  it("adds page numbers and timestamp with timestampPageNumberFontSetting set", () => {
     const section = createSection({ index: 0, rowCount: 2 });
     const fontSetting = {
       fontFace: "Times-Roman",
@@ -1009,7 +1009,7 @@ describe("page numbers and timestamp", () => {
       documentFooterHeight: rowHeight,
       timestamp: true,
       pageNumbers: true,
-      timeStampPageNumberFontSetting: fontSetting,
+      timestampPageNumberFontSetting: fontSetting,
     };
 
     const expectedPages = section.tables[0].rows.map((row, index) => ({
@@ -1021,10 +1021,10 @@ describe("page numbers and timestamp", () => {
           height: rowHeight,
         },
         {
-          ...timeStampPageNumRow[index],
+          ...timestampPageNumRow[index],
           data: [
             {
-              ...timeStampPageNumRow[index].data[0],
+              ...timestampPageNumRow[index].data[0],
               fontFace: "Times-Roman",
               fontSize: 8,
               color: "black",
