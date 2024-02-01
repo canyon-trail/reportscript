@@ -8,7 +8,7 @@ title: Developer Guide
 Below is a guide to key elements of reportscript.
 This guide will help you make awesome PDF reports!
 
-## The Basics
+# The Basics
 
 Reportscript works by turning a [Document](../documentation/#document)
 into a PDF file. Documents are simple data objects that specify what
@@ -47,7 +47,7 @@ renderPdf(reportDocument, outputStream);
 
 The above document produces a report that looks like this:
 
-![example output of above doc](../assets/img/devguide-first-doc.png)
+![example output of above doc](/assets/img/devguide-first-doc.png)
 
 Some key features to note:
 
@@ -64,7 +64,7 @@ storage in a database. In the browser, libraries like
 [blob-stream](https://www.npmjs.com/package/blob-stream) allow you to
 write PDFs to HTML5 Blobs and display them entirely in the browser with no server-side code.
 
-## Document
+# Document
 
 A [Document](../documentation/#document) is the top-level data object that defines a report. It contains [Headers, Footers](#document-headersfooters), [Sections](#section) and many [settings](#document-settings) that can be set on the Document level.
 
@@ -257,7 +257,7 @@ const document = {
 }
 ```
 
-## Section
+# Section
 
 A document can have many sections. Each [Section](../documentation/#section) can span multiple pages, and a new section will always start on a new page. Section Headers are similar to Document [Headers and Footers](#document-headersfooters). Much like documents, sections have headers that can be configured to repeat on subsequent pages. Sections contain [Tables](#table).
 
@@ -285,7 +285,7 @@ const document = {
 renderPdf(document)
 ```
 
-## Table
+# Table
 
 Sections must have at least one [Table](../documentation/#table). Tables have Headers, [Rows](#row), [Styles](#styleoptions) (for [row style options](../documentation/#rowoptions)), and [Columns](#column-settings). The style that is set here will be applied every row in the table, unless you choose to override them at the row level (discussed later).
 
@@ -476,7 +476,7 @@ const columnSettings = [
 ]
 ```
 
-## Row
+# Row
 
 [Row](../documentation/#row) contains data for an entry in a table. It has options which override any table-level settings.
 
@@ -489,7 +489,7 @@ const table = {
 }
 ```
 
-### Data
+## Data
 
 Data is an array of CellValue or Cell. Cell Value could be any strings or numbers. Cell is an object that is used when you want to specify certain setting for a cell. You can have a mix of Cell and CellValue when specify your data.
 
@@ -511,7 +511,7 @@ const table = {
 
 ```
 
-### Image
+## Image
 
 Adds an [image](../documentation/#image) for the entire row with no other data.
 
@@ -525,7 +525,7 @@ const row = {
   }
 ```
 
-## Cell
+# Cell
 
 As discussed in [Data](#data), you can specify certain settings for a cell. [Cell](../documentation/#cell) is another way you can embed an image in your document. Unlike [Table](#table), and [Row](#row), the settings is a part of the cell rather than a separate `style` or `option` property.
 
@@ -544,7 +544,7 @@ const textCell = {
 }
 ```
 
-### Text Cell
+## Text Cell
 
 A text cell includes data as a string or number, as well as optional styles. These settings will override the Row Settings for this specific cell
 
@@ -558,7 +558,7 @@ const textCell = {
 }
 ```
 
-### Image Cell
+## Image Cell
 
 An Image can be added to a row cell with optional styles. Height, image, and width is required to specify. If the measurements exceed the available space, it will throw an error.
 This allows you to have pictures and other data within the same row.
@@ -573,7 +573,7 @@ const imageCell = {
 }
 ```
 
-## Style/Options
+# Style/Options
 
 You can set certain settings at [Table](#table), [Row](#row) and [Cell](#cell) level. They do look a little different on each level. Not all settings are available through all 3 levels.
 
@@ -724,7 +724,7 @@ Number - Sets how many columns within a row a cell will span. Default is 1.
 |------|------|------|------|
 |✗|✗|✓|✓|
 
-## Default Document Measurements
+# Default Document Measurements
 
 Documents are rendered as standard 8.5in x 11in page size (or 612pt x 792pt where 1 pt = 1/72 of an inch). Some default values for the document include the following:
 
