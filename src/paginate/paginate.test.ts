@@ -1768,7 +1768,7 @@ and another line that should go on the next page as well but it needs to be long
     };
 
     expect(() => splitTable(table, availableSpace)).toThrow(
-      "A row cannot be split with a chart"
+      "A cell cannot be split with a chart"
     );
   });
 

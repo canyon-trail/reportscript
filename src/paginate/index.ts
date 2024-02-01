@@ -406,7 +406,7 @@ function splitRow(
   row.data.forEach((d, idx) => {
     const splitFn = table.columns[idx]?.splitFn;
     if ("chart" in d) {
-      throw new Error("A row cannot be split with a chart");
+      throw new Error("A cell cannot be split with a chart");
     }
 
     if (
