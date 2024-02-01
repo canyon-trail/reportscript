@@ -34,19 +34,23 @@ export function bottomBorder(
   );
 }
 
-export function writeRow(row: PaginatedRow, doc: PdfKitApi): void {
+export async function writeRow(
+  row: PaginatedRow,
+  doc: PdfKitApi
+): Promise<void> {
   const { image, start, data, maxHeight } = row;
-  data.forEach((cell, idx) => {
+
+  for (const [idx, cell] of data.entries()) {
     writeCellBackground(row, doc, idx);
 
     if ("value" in cell) {
       doc.fillColor(getCellColor(cell));
       doc.font(getCellFont(cell));
     }
-    writeCellContents(idx, row, doc);
+    await writeCellContents(idx, row, doc);
     bottomBorder(row, doc, idx);
     writeCellGrids(row, doc, idx);
-  });
+  }
 
   writeBorder(row, doc);
 
@@ -155,11 +159,11 @@ export function getCellColor(cell: TextCell): string {
   return defaultColor;
 }
 
-export function writeCellContents(
+export async function writeCellContents(
   index: number,
   row: PaginatedRow,
   doc: PdfKitApi
-): void {
+): Promise<void> {
   const { start, options, data, columnWidths, columnStarts, maxHeight } = row;
   const cell = data[index];
 
