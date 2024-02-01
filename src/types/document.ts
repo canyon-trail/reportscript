@@ -6,29 +6,6 @@ import { ColumnSetting } from "./table";
 /**
  * A document is the main data object that gets passed to {@link renderPdf}.
  *
- * Example:
- *
- * ```javascript
- * const document = {
- *   headers: {
- *     rows: [{
- *   data: ["My Header"],
- *        columns: [{ align: "left" }]
- *     }]
- *   },
- *   footers: {
- *     rows: [{
- *   data: ["My Footer"],
- *        columns: [{ align: "left" }]
- *     }]
- *   },
- *   sections: [...mySections],
- *   layout: "portrait",
- *   timestamp: true,
- *   pageNumbers: true
- * }
- * ```
- *
  * Document size and measurements:
  *
  * The document is standard letter size (8.5in x 11in) and measured in PostScript points (612 x 792), where there are 72 points per inch.
@@ -93,20 +70,6 @@ export type Layout = "landscape" | "portrait";
 
 /**
  * Adds rows at the bottom of each page where a table is split across multiple pages.
- *
- * Example:
- *
- * ```javascript
- * const document = {
- *   ...documentProperties,
- *   pageBreakRows: {
- *     rows: [{
- *       data: ["", { value: "(continued on next page)", align: "left" }]
- *     }],
- *     columns: [{ width: "1fr" }, { width: "2fr" }]
- *   }
- * }
- * ```
  */
 export type PageBreakRows = {
   rows: Row[];
@@ -116,19 +79,6 @@ export type PageBreakRows = {
 
 /**
  * A data object for displaying a diagonal text watermark on a page.
- *
- * Example:
- *
- * ```javascript
- * const document = {
- *   ...documentProperties,
- *   watermark: {
- *     text: "Draft",
- *     fontFace: "Times-Bold",
- *     color: "ff0000"
- *   }
- * }
- * ```
  */
 export type Watermark = {
   /** The watermark text */

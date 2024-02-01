@@ -17,30 +17,6 @@ type RenderDocumentResult = {
 
 /**
  * Writes a Document to a NodeJS.WriteableStream and returns the stream.
- *
- * Examples:
- *
- * Writing to an Express HTTP response:
- * ```javascript
- * router.get("/" (req, res) => {
- *   const document = tranformData(req);
- *   renderPdf(document, res);
- * }
- *
- * function tranformData(req: Request): Document {...}
- * ```
- *
- * Writing to a blob stream and displaying in an iframe:
- * ```javascript
- * import blobStream from "blob-stream";
- *
- * const blob = blobStream();
- * const stream = reportscript.renderPdf(document, blob);
- * stream.on("finish", function () {
- *   const url = stream.toBlobURL("application/pdf");
- *   iframe.src = url;
- * });
- * ```
  */
 export function renderPdf(
   document: Document,
@@ -55,19 +31,6 @@ export function renderPdf(
  * or returns the existing snapshot at a designated path,
  * as well as returning the current rendering of the document.
  * This is useful for seeing how new changes to a document compare to a previous state.
- *
- * Example:
- *
- * ```javascript
- * // create a new snapshot file for the document at its current state
- * renderSnapshot("my-path/snapshot.json", document);
- *
- * // using jest to assert later refactoring of the document did not change the output
- * it("did not change document output", () => {
- *   const { rendered, snapshot } = renderSnapshot("my-path/snapshot.json", document);
- *   expect(rendered).toEqual(snapshot);
- * });
- * ```
  */
 export function renderSnapshot(
   path: string,
@@ -127,7 +90,7 @@ function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
     let startPos = margin;
     rows.forEach((r) => {
       r.start = startPos;
-      startPos += r.height;
+      startPos += r.maxHeight;
 
       writeRow(r, pdfDoc);
     });

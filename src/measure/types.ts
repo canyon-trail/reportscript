@@ -24,13 +24,13 @@ export type VerticalMeasure = {
   maxHeight: number;
 };
 
-export type MeasuredRow = Omit<NormalizedRow, "data"> & {
-  height: number;
-  data: Cell[];
-  columnHeights: VerticalMeasure[];
-  columnWidths: number[];
-  columnStarts: number[];
-};
+export type MeasuredRow = Omit<NormalizedRow, "data"> &
+  VerticalMeasure & {
+    data: Cell[];
+    columnHeights: VerticalMeasure[];
+    columnWidths: number[];
+    columnStarts: number[];
+  };
 export type MeasuredDocument = Omit<
   NormalizedDocument,
   "headers" | "footers" | "sections" | "pageBreakRows" | "watermark"

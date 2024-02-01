@@ -4,21 +4,6 @@ import { Table } from "./table";
 /**
  * A section consists of tables and optional headers.
  * Sections can span multiple pages, and each new section begins on a new page.
- *
- * Example:
- *
- * ```javascript
- * const section = {
- *   headers: {
- *     rows: [{
- *   data: ["My Section Header"],
- *        columns: [{ align: "left" }]
- *     }]
- *   },
- *   tables: [...sectionTables],
- *   tableGap: 12
- * }
- * ```
  */
 export type Section = {
   /** A section requires an array of tables. */

@@ -38,7 +38,7 @@ describe("measuring functions", () => {
       });
     });
 
-    it("returns the height of largest string plus half lineGap", () => {
+    it("returns the min height as font size plus half lineGap and max height as height of largest string plus half lineGap", () => {
       const longString =
         "this is a really really really really really really long column string";
 
@@ -61,7 +61,15 @@ describe("measuring functions", () => {
       const columnWidth = new Array(7).fill(756 / 7);
       const result = getRowHeight(row, doc, columnWidth);
 
-      const expected =
+      const expectedMin =
+        doc.heightOfString("X", {
+          width: 756 / 7,
+          lineGap,
+          align: "center",
+        }) +
+        lineGap * 0.5;
+
+      const expectedMax =
         doc.heightOfString(longString, {
           width: 756 / 7,
           lineGap,
@@ -69,7 +77,10 @@ describe("measuring functions", () => {
         }) +
         lineGap * 0.5;
 
-      expect(result).toBe(expected);
+      expect(result).toEqual({
+        maxHeight: expectedMax,
+        minHeight: expectedMin,
+      });
     });
 
     it("includes height of image", () => {
@@ -98,7 +109,10 @@ describe("measuring functions", () => {
         lineGap * 0.5 +
         image.height;
 
-      expect(result).toBe(expected);
+      expect(result).toEqual({
+        minHeight: expected,
+        maxHeight: expected,
+      });
     });
   });
 
@@ -291,7 +305,7 @@ describe("measuring functions", () => {
                   (r) => ({
                     data: r.data,
                     options: r.options,
-                    height: getRowHeight(r, doc, tableColumnWidths),
+                    ...getRowHeight(r, doc, tableColumnWidths),
                     columnHeights: measureCellHeights(
                       r,
                       doc,
@@ -388,7 +402,7 @@ describe("measuring functions", () => {
         headers: [
           {
             options: headers.rows[0].options,
-            height: getRowHeight(headers.rows[0], doc, docHeaderColumnWidths),
+            ...getRowHeight(headers.rows[0], doc, docHeaderColumnWidths),
             columnHeights: measureCellHeights(
               headers.rows[0],
               doc,
@@ -404,7 +418,7 @@ describe("measuring functions", () => {
             headers: [
               {
                 options: sections[0].headers.rows[0].options,
-                height: getRowHeight(
+                ...getRowHeight(
                   sections[0].headers.rows[0],
                   doc,
                   sectionHeaderColumnWidths
@@ -427,7 +441,7 @@ describe("measuring functions", () => {
                 headers: [
                   {
                     options: sections[0].tables[0].headers[0].options,
-                    height: getRowHeight(table.headers[0], doc, [756]),
+                    ...getRowHeight(table.headers[0], doc, [756]),
                     columnWidths: [756],
                     columnStarts: calculateCellLeftCoords([756]),
                     columnHeights: measureCellHeights(
@@ -439,11 +453,7 @@ describe("measuring functions", () => {
                   },
                   {
                     options: sections[0].tables[0].headers[1].options,
-                    height: getRowHeight(
-                      table.headers[1],
-                      doc,
-                      tableColumnWidths
-                    ),
+                    ...getRowHeight(table.headers[1], doc, tableColumnWidths),
                     columnWidths: tableColumnWidths,
                     columnStarts: calculateCellLeftCoords(tableColumnWidths),
                     columnHeights: measureCellHeights(
@@ -457,7 +467,7 @@ describe("measuring functions", () => {
                 rows: table.rows.map((r) => ({
                   data: r.data,
                   options: r.options,
-                  height: getRowHeight(r, doc, tableColumnWidths),
+                  ...getRowHeight(r, doc, tableColumnWidths),
                   columnHeights: measureCellHeights(r, doc, tableColumnWidths),
                   columnWidths: tableColumnWidths,
                   columnStarts: calculateCellLeftCoords(tableColumnWidths),
@@ -472,7 +482,7 @@ describe("measuring functions", () => {
           {
             options: footers.rows[0].options,
             data: footers.rows[0].data,
-            height: getRowHeight(footers.rows[0], doc, docFooterColumnWidths),
+            ...getRowHeight(footers.rows[0], doc, docFooterColumnWidths),
             columnHeights: measureCellHeights(
               footers.rows[0],
               doc,
@@ -542,7 +552,7 @@ describe("measuring functions", () => {
             headers: [
               {
                 options: sections[0].headers.rows[0].options,
-                height: getRowHeight(
+                ...getRowHeight(
                   sections[0].headers.rows[0],
                   doc,
                   sectionHeaderColumnWidths
@@ -565,7 +575,7 @@ describe("measuring functions", () => {
                 headers: [
                   {
                     options: sections[0].tables[0].headers[0].options,
-                    height: getRowHeight(table.headers[0], doc, [756]),
+                    ...getRowHeight(table.headers[0], doc, [756]),
                     columnWidths: [756],
                     columnStarts: calculateCellLeftCoords([756]),
                     columnHeights: measureCellHeights(
@@ -577,11 +587,7 @@ describe("measuring functions", () => {
                   },
                   {
                     options: sections[0].tables[0].headers[1].options,
-                    height: getRowHeight(
-                      table.headers[1],
-                      doc,
-                      tableColumnWidths
-                    ),
+                    ...getRowHeight(table.headers[1], doc, tableColumnWidths),
                     columnWidths: tableColumnWidths,
                     columnStarts: calculateCellLeftCoords(tableColumnWidths),
                     columnHeights: measureCellHeights(
@@ -595,7 +601,7 @@ describe("measuring functions", () => {
                 rows: table.rows.map((r) => ({
                   data: r.data,
                   options: r.options,
-                  height: getRowHeight(r, doc, tableColumnWidths),
+                  ...getRowHeight(r, doc, tableColumnWidths),
                   columnHeights: measureCellHeights(r, doc, tableColumnWidths),
                   columnWidths: tableColumnWidths,
                   columnStarts: calculateCellLeftCoords(tableColumnWidths),
@@ -655,7 +661,7 @@ describe("measuring functions", () => {
         pageBreakRows: normalizedDocument.pageBreakRows.rows.map((r) => ({
           data: r.data,
           options: r.options,
-          height: getRowHeight(r, doc, pageBreakColumnWidths),
+          ...getRowHeight(r, doc, pageBreakColumnWidths),
           columnHeights: measureCellHeights(r, doc, pageBreakColumnWidths),
           columnWidths: pageBreakColumnWidths,
           columnStarts: calculateCellLeftCoords(pageBreakColumnWidths),

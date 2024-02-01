@@ -4,23 +4,6 @@ import { FontSetting } from "./font";
 /**
  * A row contains data for an entry in a table, and can accept options to apply a default style to each cell in the row.
  *
- * Example:
- *
- * ```javascript
- * const row = {
- *   data: [
- *     100,
- *     "",
- *     { value: "Hello", columnSpan: 2 },
- *     { value: 0, color: "red" },
- *   ],
- *   options: {
- *     grid: true,
- *     lineGap: 5,
- *     backgroundColor: "e6e6e6"
- *   }
- * }
- * ```
  */
 export type Row = {
   /** A row’s data requires an array of either ImageCell or TextCell objects, strings, or numbers. */
