@@ -59,7 +59,7 @@ describe("rendering functions", () => {
     const row = {
       image,
       data,
-      height: rowHeight,
+      maxHeight: rowHeight,
       start: margin,
 
       columnWidths: calculateColumnWidths(columns, 756),
@@ -123,7 +123,7 @@ describe("rendering functions", () => {
     const row = {
       image,
       data,
-      height: rowHeight,
+      maxHeight: rowHeight,
       start: margin,
       options: { border: true },
       columnWidths: calculateColumnWidths(columns, 756),
@@ -173,7 +173,7 @@ describe("rendering functions", () => {
     const columnWidths = calculateColumnWidths(columns, 756);
     const row = {
       data,
-      height: 12,
+      maxHeight: 12,
       start: margin,
       columnWidths,
       columnStarts: calculateCellLeftCoords(columnWidths),
@@ -200,7 +200,7 @@ describe("rendering functions", () => {
   });
 
   describe("writeRowBackground", () => {
-    const row = { start: margin, height: 15, data: [] } as PaginatedRow;
+    const row = { start: margin, maxHeight: 15, data: [] } as PaginatedRow;
 
     let doc: SnapshottingDocument;
 
@@ -332,7 +332,7 @@ describe("rendering functions", () => {
       const pagedRow = {
         ...row,
         start: margin,
-        height: 12,
+        maxHeight: 12,
         columnWidths,
         columnStarts: calculateCellLeftCoords(columnWidths),
       } as PaginatedRow;
@@ -423,7 +423,7 @@ describe("rendering functions", () => {
         ...row,
         image,
         start,
-        height: rowHeight,
+        maxHeight: rowHeight,
         columnWidths: calculateColumnWidths(columns, 756),
         columnStarts: calculateCellLeftCoords(
           calculateColumnWidths(columns, 756)

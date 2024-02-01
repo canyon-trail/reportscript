@@ -74,14 +74,16 @@ const emptyTable: MeasuredTable = {
 const defaultTableGapRow: MeasuredRow = {
   ...emptyMeasuredRow,
   data: [],
-  height: margin,
+  minHeight: margin,
+  maxHeight: margin,
 };
 const createRows = (params: rowsParams) => {
   const { rowHeight, length: length, value } = params;
   return [...Array(length).keys()].map((_, index) => {
     return {
       ...emptyMeasuredRow,
-      height: rowHeight,
+      minHeight: margin,
+      maxHeight: rowHeight,
       data: [{ value: `${value ?? ""}${index}` }],
     };
   });
@@ -91,7 +93,8 @@ const createRow = (params: rowParam) => {
   const { rowHeight, value } = params;
   return {
     ...emptyMeasuredRow,
-    height: rowHeight,
+    minHeight: margin,
+    maxHeight: rowHeight,
     data: [{ value: `${value}` }],
   };
 };
@@ -109,7 +112,8 @@ const createPageNumberTimeStampRow = (param: pageNumberTimestampRowParam) => {
     const pageNumVal = pageNum ? ` Page ${index + 1} of ${pageNum}` : "";
     return {
       ...exampleDocumentFooterRow,
-      height: footerHeight,
+      minHeight: footerHeight,
+      maxHeight: footerHeight,
       data: [
         {
           value: `${timeStampVal}${pageNumVal}`,
@@ -622,7 +626,11 @@ describe("pagination", () => {
           sectionIndex: 0,
           rows: [
             rows[0],
-            { ...defaultTableGapRow, height: rowHeight },
+            {
+              ...defaultTableGapRow,
+              maxHeight: rowHeight,
+              minHeight: rowHeight,
+            },
             docFooters,
           ],
         },
@@ -630,7 +638,11 @@ describe("pagination", () => {
           sectionIndex: 0,
           rows: [
             rows[1],
-            { ...defaultTableGapRow, height: rowHeight },
+            {
+              ...defaultTableGapRow,
+              maxHeight: rowHeight,
+              minHeight: rowHeight,
+            },
             docFooters,
           ],
         },
@@ -741,9 +753,9 @@ describe("tableGap", () => {
           sectionIndex: 0,
           rows: [
             sectionHeader,
-            { ...defaultTableGapRow, height: 10 },
+            { ...defaultTableGapRow, maxHeight: 10, minHeight: 10 },
             ...tableRows,
-            { ...defaultTableGapRow, height: 10 },
+            { ...defaultTableGapRow, maxHeight: 10, minHeight: 10 },
             ...tableRows,
           ],
         },
@@ -796,7 +808,7 @@ describe("tableGap", () => {
           sectionIndex: 0,
           rows: [
             firstTableRows[5],
-            { ...defaultTableGapRow, height: 10 },
+            { ...defaultTableGapRow, minHeight: 10, maxHeight: 10 },
             secondTableRow,
           ],
         },
@@ -863,7 +875,7 @@ describe("page numbers and timestamp", () => {
       sectionIndex: 0,
       rows: [
         row,
-        { ...defaultTableGapRow, height: rowHeight },
+        { ...defaultTableGapRow, maxHeight: rowHeight, minHeight: rowHeight },
         firstSectionPageNumberRow[index],
       ],
     }));
@@ -872,7 +884,7 @@ describe("page numbers and timestamp", () => {
         sectionIndex: 1,
         rows: [
           row,
-          { ...defaultTableGapRow, height: rowHeight },
+          { ...defaultTableGapRow, maxHeight: rowHeight, minHeight: rowHeight },
           secondSectionPageNumberRow[index],
         ],
       })
@@ -920,7 +932,7 @@ describe("page numbers and timestamp", () => {
       sectionIndex: 0,
       rows: [
         row,
-        { ...defaultTableGapRow, height: rowHeight },
+        { ...defaultTableGapRow, minHeight: rowHeight, maxHeight: rowHeight },
         docFooter,
         pageNumberRow[index],
       ],
@@ -957,7 +969,11 @@ describe("page numbers and timestamp", () => {
           sectionIndex: 0,
           rows: [
             section.tables[0].rows[0],
-            { ...defaultTableGapRow, height: rowHeight },
+            {
+              ...defaultTableGapRow,
+              minHeight: rowHeight,
+              maxHeight: rowHeight,
+            },
             ...timeStampRow,
           ],
         },
@@ -980,7 +996,7 @@ describe("page numbers and timestamp", () => {
       sectionIndex: 0,
       rows: [
         row,
-        { ...defaultTableGapRow, height: rowHeight },
+        { ...defaultTableGapRow, minHeight: rowHeight, maxHeight: rowHeight },
         timeStampPageNumRow[index],
       ],
     }));
@@ -1018,7 +1034,8 @@ describe("page numbers and timestamp", () => {
         row,
         {
           ...defaultTableGapRow,
-          height: rowHeight,
+          maxHeight: rowHeight,
+          minHeight: rowHeight,
         },
         {
           ...timeStampPageNumRow[index],
@@ -1057,7 +1074,8 @@ describe("pagination - splitSection(...)", () => {
       headers: [
         {
           ...emptyMeasuredRow,
-          height: 0,
+          minHeight: 0,
+          maxHeight: 0,
           data: [{ value: "i should not be copied later" }],
         },
       ],
@@ -1156,12 +1174,19 @@ describe("pagination - splitSection(...)", () => {
           rows: [
             {
               ...defaultTableGapRow,
-              height: pageHeight - margin - headerHeight - 1,
+              maxHeight: pageHeight - margin - headerHeight - 1,
+              minHeight: margin,
             },
           ],
         },
         {
-          headers: [{ ...defaultTableGapRow, height: headerHeight }],
+          headers: [
+            {
+              ...defaultTableGapRow,
+              maxHeight: headerHeight,
+              minHeight: margin,
+            },
+          ],
           rows: Array(4).fill({ ...defaultTableGapRow, height: 5 }),
           measureTextHeight,
           columns: [],
@@ -1472,7 +1497,7 @@ describe("pagination - paginateSection(...)", () => {
 
     const expected: MeasuredRow[] = [
       ...sectionHeaders,
-      { ...defaultTableGapRow, height: margin },
+      { ...defaultTableGapRow, minHeight: margin, maxHeight: margin },
       ...tableRows,
     ];
 
@@ -1512,9 +1537,9 @@ describe("pagination - paginateSection(...)", () => {
 
     const expected: MeasuredRow[] = [
       ...sectionHeaders,
-      { ...defaultTableGapRow, height: 2 },
+      { ...defaultTableGapRow, minHeight: 2, maxHeight: 2 },
       ...firstTableRows,
-      { ...defaultTableGapRow, height: 2 },
+      { ...defaultTableGapRow, minHeight: 2, maxHeight: 2 },
       ...secondTableRows,
     ];
 
@@ -1529,7 +1554,8 @@ describe("pagination - splitTable(...)", () => {
     ...emptyMeasuredRow,
     columnHeights: [{ maxHeight: lineHeight, minHeight: lineHeight }],
     data: [{ value: "page break" }],
-    height: lineHeight,
+    minHeight: lineHeight,
+    maxHeight: lineHeight,
   };
   const splitter = (
     text: string,
@@ -1547,7 +1573,7 @@ describe("pagination - splitTable(...)", () => {
   const measureTextHeight = (text: string): VerticalMeasure => {
     return {
       maxHeight: text.split("\n").length * lineHeight,
-      minHeight: text.split("\n").length * lineHeight,
+      minHeight: lineHeight,
     };
   };
   const makeLines = (n, start = 1) =>
@@ -1560,12 +1586,14 @@ describe("pagination - splitTable(...)", () => {
     columnHeights: [
       {
         maxHeight: lineHeight * heightTimes,
-        minHeight: lineHeight * heightTimes,
+        minHeight: lineHeight,
       },
     ],
     data: [{ value: "data" }],
-    height: lineHeight * heightTimes,
+    maxHeight: lineHeight * heightTimes,
+    minHeight: lineHeight,
   });
+
   it("splits long row", () => {
     const table: MeasuredTable = {
       ...emptyTable,
@@ -1573,11 +1601,10 @@ describe("pagination - splitTable(...)", () => {
       rows: [
         {
           ...emptyMeasuredRow,
-          columnHeights: [
-            { maxHeight: lineHeight * 9, minHeight: lineHeight * 9 },
-          ],
+          columnHeights: [{ maxHeight: lineHeight * 9, minHeight: lineHeight }],
           data: [{ value: makeLines(9) }],
-          height: lineHeight * 9,
+          maxHeight: lineHeight * 9,
+          minHeight: lineHeight,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitter }],
@@ -1589,10 +1616,11 @@ describe("pagination - splitTable(...)", () => {
         rows: [
           {
             columnHeights: [
-              { maxHeight: lineHeight * 4, minHeight: lineHeight * 4 },
+              { maxHeight: lineHeight * 4, minHeight: lineHeight },
             ],
             data: [{ value: makeLines(4) }],
-            height: lineHeight * 4,
+            maxHeight: lineHeight * 4,
+            minHeight: lineHeight,
             columnWidths: [],
             columnStarts: [],
           },
@@ -1604,11 +1632,11 @@ describe("pagination - splitTable(...)", () => {
         rows: [
           {
             columnHeights: [
-              { maxHeight: lineHeight * 5, minHeight: lineHeight * 5 },
+              { maxHeight: lineHeight * 5, minHeight: lineHeight },
             ],
             data: [{ value: makeLines(5, 5) }],
-            height: lineHeight * 5,
-
+            maxHeight: lineHeight * 5,
+            minHeight: lineHeight,
             columnWidths: [],
             columnStarts: [],
           },
@@ -1627,7 +1655,7 @@ and another line that should go on the next page as well but it needs to be long
 
     const measure = (txt): VerticalMeasure => ({
       maxHeight: Math.ceil(txt.length / 50),
-      minHeight: Math.ceil(txt.length / 50),
+      minHeight: 4,
     });
     const table: MeasuredTable = {
       ...emptyTable,
@@ -1637,7 +1665,8 @@ and another line that should go on the next page as well but it needs to be long
           ...emptyMeasuredRow,
           columnHeights: [measure(notes)],
           data: [{ value: notes }],
-          height: measure(notes).maxHeight,
+          maxHeight: measure(notes).maxHeight,
+          minHeight: 4,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],
@@ -1664,7 +1693,8 @@ and another line that should go on the next page as well but it needs to be long
           ...emptyMeasuredRow,
           columnHeights: [measure(col1Text), measure(splittable)],
           data: [{ value: col1Text }, { value: splittable }],
-          height: measure(col1Text).maxHeight,
+          maxHeight: measure(col1Text).maxHeight,
+          minHeight: lineHeight,
         },
       ],
       columns: [
@@ -1674,6 +1704,72 @@ and another line that should go on the next page as well but it needs to be long
     };
 
     expect(splitTable(table, 4).first.rows).toHaveLength(0);
+  });
+
+  it("split row throws if image in row", () => {
+    const table: MeasuredTable = {
+      ...emptyTable,
+      measureTextHeight,
+      rows: [
+        {
+          ...emptyMeasuredRow,
+          columnHeights: [
+            { minHeight: lineHeight * 9, maxHeight: lineHeight * 9 },
+          ],
+          data: [{ value: makeLines(9) }],
+          maxHeight: lineHeight * 9,
+          minHeight: lineHeight,
+          image: { image: "/test-image", height: 100 },
+        },
+      ],
+      columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],
+    };
+
+    expect(() => splitTable(table, availableSpace)).toThrow(
+      "A row cannot be split with an image"
+    );
+  });
+
+  it("split row throws if chart in column with splitFn", () => {
+    const table: MeasuredTable = {
+      ...emptyTable,
+      measureTextHeight,
+      rows: [
+        {
+          ...emptyMeasuredRow,
+          columnHeights: [
+            { minHeight: lineHeight * 9, maxHeight: lineHeight * 9 },
+          ],
+          data: [
+            {
+              chart: {
+                config: {
+                  type: "bar",
+                  data: {
+                    labels: ["test"],
+                    datasets: [
+                      {
+                        label: "test",
+                        data: [12],
+                      },
+                    ],
+                  },
+                },
+                maxHeight: lineHeight * 9,
+                minHeight: lineHeight,
+              },
+            },
+          ],
+          maxHeight: lineHeight * 9,
+          minHeight: lineHeight,
+        },
+      ],
+      columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],
+    };
+
+    expect(() => splitTable(table, availableSpace)).toThrow(
+      "A cell cannot be split with a chart"
+    );
   });
 
   it("split table shows a breakPage row", () => {
@@ -1736,11 +1832,10 @@ and another line that should go on the next page as well but it needs to be long
       rows: [
         {
           ...emptyMeasuredRow,
-          columnHeights: [
-            { maxHeight: lineHeight * 9, minHeight: lineHeight * 9 },
-          ],
+          columnHeights: [{ maxHeight: lineHeight * 9, minHeight: lineHeight }],
           data: [{ value: makeLines(9) }],
-          height: lineHeight * 9,
+          maxHeight: lineHeight * 9,
+          minHeight: lineHeight,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitter }],
@@ -1753,10 +1848,11 @@ and another line that should go on the next page as well but it needs to be long
           {
             ...emptyMeasuredRow,
             columnHeights: [
-              { maxHeight: lineHeight * 2, minHeight: lineHeight * 2 },
+              { maxHeight: lineHeight * 2, minHeight: lineHeight },
             ],
             data: [{ value: makeLines(2) }],
-            height: lineHeight * 2,
+            maxHeight: lineHeight * 2,
+            minHeight: lineHeight,
           },
           ...pageBreakRows,
         ],
@@ -1767,10 +1863,11 @@ and another line that should go on the next page as well but it needs to be long
           {
             ...emptyMeasuredRow,
             columnHeights: [
-              { maxHeight: lineHeight * 7, minHeight: lineHeight * 7 },
+              { maxHeight: lineHeight * 7, minHeight: lineHeight },
             ],
             data: [{ value: makeLines(7, 3) }],
-            height: lineHeight * 7,
+            maxHeight: lineHeight * 7,
+            minHeight: lineHeight,
           },
         ],
       },

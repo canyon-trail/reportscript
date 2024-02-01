@@ -132,7 +132,8 @@ function handleHeaders(index: number, doc: PaginatingDoc) {
   if (doc.hasHeaders && (doc.repeatReportHeaders || index === 0)) {
     page.rows.unshift({
       data: [],
-      height: margin,
+      minHeight: margin,
+      maxHeight: margin,
       columnHeights: [],
       columnWidths: [],
       columnStarts: [],
@@ -157,7 +158,8 @@ function handleFooters(
 
     page.rows.push({
       data: [],
-      height: marginSpace,
+      minHeight: marginSpace,
+      maxHeight: marginSpace,
       columnHeights: [],
       columnWidths: [],
       columnStarts: [],
@@ -198,7 +200,8 @@ function handlePageNumTimestamp(
     page.rows.push({
       ...exampleDocumentFooterRow,
       data: [dataCell],
-      height: doc.documentFooterHeight,
+      minHeight: doc.documentFooterHeight,
+      maxHeight: doc.documentFooterHeight,
       columnHeights: [],
       columnWidths: widths,
       columnStarts: calculateCellLeftCoords(widths),
@@ -329,7 +332,7 @@ export function splitTable(
   while (remainingRows.length > 0) {
     const row = remainingRows.shift();
     if (canFitRow(row, usedSpace, availableSpace)) {
-      usedSpace += row.height;
+      usedSpace += row.maxHeight;
       fitRows.push(row);
     } else if (canSplitRow(row, availableSpace - usedSpace, table)) {
       const [first, rest] = splitRow(row, availableSpace - usedSpace, table);
@@ -360,7 +363,8 @@ function canSplitRow(
   table: MeasuredTable
 ): boolean {
   const hasSplitFn = table.columns?.some((x) => x.splitFn);
-  if (!hasSplitFn) {
+
+  if (!hasSplitFn || row.minHeight > availableSpace) {
     return false;
   }
 
@@ -388,17 +392,23 @@ function splitRow(
     ...row,
     data: [...row.data.map((x) => ({ ...x }))],
     columnHeights: [],
-    height: row.height,
+    minHeight: 0,
+    maxHeight: 0,
   };
   const rest: MeasuredRow = {
     ...row,
     data: [...row.data.map((x) => ({ ...x }))],
     columnHeights: [],
-    height: row.height,
+    minHeight: 0,
+    maxHeight: 0,
   };
 
   row.data.forEach((d, idx) => {
     const splitFn = table.columns[idx]?.splitFn;
+    if ("chart" in d) {
+      throw new Error("A cell cannot be split with a chart");
+    }
+
     if (
       splitFn &&
       row.columnHeights[idx].maxHeight > availableSpace &&
@@ -419,11 +429,15 @@ function splitRow(
       rest.columnHeights.push(measure(remaining));
     }
   });
-  const firstHeights = first.columnHeights.map((x) => x.maxHeight);
-  const restHeights = rest.columnHeights.map((x) => x.maxHeight);
+  const firstMinHeights = first.columnHeights.map((x) => x.minHeight);
+  const firstMaxHeights = first.columnHeights.map((x) => x.maxHeight);
+  const restMinHeights = rest.columnHeights.map((x) => x.minHeight);
+  const restMaxHeights = rest.columnHeights.map((x) => x.maxHeight);
 
-  first.height = Math.max(...firstHeights);
-  rest.height = Math.max(...restHeights);
+  first.minHeight = Math.max(...firstMinHeights);
+  first.maxHeight = Math.max(...firstMaxHeights);
+  rest.minHeight = Math.max(...restMinHeights);
+  rest.maxHeight = Math.max(...restMaxHeights);
   return [first, rest];
 }
 
@@ -432,7 +446,7 @@ function canFitRow(
   usedSpace: number,
   availableSpace: number
 ) {
-  return row.height + usedSpace <= availableSpace;
+  return row.maxHeight + usedSpace <= availableSpace;
 }
 
 function canFitTable(table: MeasuredTable, availableSpace: number): boolean {
@@ -442,8 +456,10 @@ function canFitTable(table: MeasuredTable, availableSpace: number): boolean {
 export function paginateSection(section: MeasuredSection): MeasuredRow[] {
   const rows: MeasuredRow[] = [];
 
+  const separationHeight = section?.tableGap ?? margin;
   const separationRow = {
-    height: section?.tableGap ?? margin,
+    minHeight: separationHeight,
+    maxHeight: separationHeight,
     data: [],
     columnHeights: [],
     columnWidths: [],
@@ -467,7 +483,7 @@ export function paginateSection(section: MeasuredSection): MeasuredRow[] {
 
 function sumOfRowHeights(rows: MeasuredRow[]): number {
   return _.chain(rows)
-    .map((x) => x.height)
+    .map((x) => x.maxHeight)
     .sum()
     .value();
 }
