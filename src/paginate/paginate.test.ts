@@ -996,7 +996,7 @@ describe("page numbers and timestamp", () => {
       sectionIndex: 0,
       rows: [
         row,
-        { ...defaultTableGapRow, height: rowHeight },
+        { ...defaultTableGapRow, minHeight: rowHeight, maxHeight: rowHeight },
         timestampPageNumRow[index],
       ],
     }));
