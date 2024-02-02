@@ -77,7 +77,7 @@ function paginateStep(doc: PaginatingDoc) {
       doc.remaining.unshift(first);
     }
   } else {
-    const paginated = paginateSection(currentSection);
+    const paginated = paginateSection(currentSection, remainingSpace);
     currentPage.rows = [...currentPage.rows, ...paginated];
     currentSection?.watermark &&
       (currentPage.watermark = currentSection.watermark);
@@ -332,7 +332,7 @@ export function splitTable(
   while (remainingRows.length > 0) {
     const row = remainingRows.shift();
     if (canFitRow(row, usedSpace, availableSpace)) {
-      usedSpace += row.maxHeight;
+      usedSpace += row.minHeight;
       fitRows.push(row);
     } else if (canSplitRow(row, availableSpace - usedSpace, table)) {
       const [first, rest] = splitRow(row, availableSpace - usedSpace, table);
@@ -364,12 +364,12 @@ function canSplitRow(
 ): boolean {
   const hasSplitFn = table.columns?.some((x) => x.splitFn);
 
-  if (!hasSplitFn || row.minHeight > availableSpace) {
+  if (!hasSplitFn) {
     return false;
   }
 
   for (let columnIdx = 0; columnIdx < row.data.length; columnIdx++) {
-    if (row.columnHeights[columnIdx].maxHeight <= availableSpace) {
+    if (row.columnHeights[columnIdx].minHeight <= availableSpace) {
       continue;
     }
 
@@ -446,14 +446,17 @@ function canFitRow(
   usedSpace: number,
   availableSpace: number
 ) {
-  return row.maxHeight + usedSpace <= availableSpace;
+  return row.minHeight + usedSpace <= availableSpace;
 }
 
 function canFitTable(table: MeasuredTable, availableSpace: number): boolean {
   return getTableHeight(table) <= availableSpace;
 }
 
-export function paginateSection(section: MeasuredSection): MeasuredRow[] {
+export function paginateSection(
+  section: MeasuredSection,
+  availableSpace: number
+): MeasuredRow[] {
   const rows: MeasuredRow[] = [];
 
   const separationHeight = section?.tableGap ?? margin;
@@ -465,6 +468,7 @@ export function paginateSection(section: MeasuredSection): MeasuredRow[] {
     columnWidths: [],
     columnStarts: [],
   };
+
   section.tables.forEach((table, idx) => {
     if (idx !== 0) {
       rows.push(separationRow);
@@ -478,12 +482,29 @@ export function paginateSection(section: MeasuredSection): MeasuredRow[] {
     rows.push(...table.rows);
   });
 
+  rows.forEach((r, idx) => {
+    if (!r.maxHeight) {
+      const expandableHeight =
+        availableSpace - sumOfRowHeights(rows) + r.minHeight;
+      const isLast = idx === rows.length - 1;
+      const newHeight = isLast ? expandableHeight : r.minHeight;
+      r.minHeight = newHeight;
+      r.maxHeight = newHeight;
+
+      r.data.forEach((d) => {
+        if ("chart" in d && !d.chart.maxHeight) {
+          d.chart.maxHeight = newHeight;
+        }
+      });
+    }
+  });
+
   return rows;
 }
 
 function sumOfRowHeights(rows: MeasuredRow[]): number {
   return _.chain(rows)
-    .map((x) => x.maxHeight)
+    .map((x) => x.minHeight)
     .sum()
     .value();
 }

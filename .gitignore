@@ -7,3 +7,4 @@ package-lock.json
 demo/bundle
 docs/assets
 .DS_Store
+src/testing/example.pdf

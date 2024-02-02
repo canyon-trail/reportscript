@@ -21,16 +21,17 @@ export type MeasuredSection = {
 
 export type VerticalMeasure = {
   minHeight: number;
-  maxHeight: number;
+  maxHeight?: number;
 };
 
-export type MeasuredRow = Omit<NormalizedRow, "data"> &
-  VerticalMeasure & {
-    data: Cell[];
-    columnHeights: VerticalMeasure[];
-    columnWidths: number[];
-    columnStarts: number[];
-  };
+export type MeasuredRow = Omit<NormalizedRow, "data"> & {
+  data: Cell[];
+  columnHeights: VerticalMeasure[];
+  columnWidths: number[];
+  columnStarts: number[];
+  maxHeight?: number;
+  minHeight: number;
+};
 export type MeasuredDocument = Omit<
   NormalizedDocument,
   "headers" | "footers" | "sections" | "pageBreakRows" | "watermark"

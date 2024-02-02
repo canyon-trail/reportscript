@@ -8,9 +8,17 @@
     "outDir": "./build",
     "baseUrl": "./src",
     "noImplicitReturns": true,
+    "skipLibCheck": true,
   },
   "include": [
     "src/**/*",
     "scripts/**/*"
+  ],
+  "ts-node": {
+    "esm": true
+  },
+  "lib": [
+    "es2016",
+    "dom"
   ]
 }

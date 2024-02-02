@@ -11,7 +11,7 @@ import {
   getPageDimensions,
   margin,
 } from "../measure";
-import { Cell, TextCell } from "../types";
+import { Cell, ChartCell, TextCell } from "../types";
 import {
   paginate,
   splitSection,
@@ -82,7 +82,7 @@ const createRows = (params: rowsParams) => {
   return [...Array(length).keys()].map((_, index) => {
     return {
       ...emptyMeasuredRow,
-      minHeight: margin,
+      minHeight: rowHeight,
       maxHeight: rowHeight,
       data: [{ value: `${value ?? ""}${index}` }],
     };
@@ -93,7 +93,7 @@ const createRow = (params: rowParam) => {
   const { rowHeight, value } = params;
   return {
     ...emptyMeasuredRow,
-    minHeight: margin,
+    minHeight: rowHeight,
     maxHeight: rowHeight,
     data: [{ value: `${value}` }],
   };
@@ -1175,7 +1175,7 @@ describe("pagination - splitSection(...)", () => {
             {
               ...defaultTableGapRow,
               maxHeight: pageHeight - margin - headerHeight - 1,
-              minHeight: margin,
+              minHeight: pageHeight - margin - headerHeight - 1,
             },
           ],
         },
@@ -1184,7 +1184,7 @@ describe("pagination - splitSection(...)", () => {
             {
               ...defaultTableGapRow,
               maxHeight: headerHeight,
-              minHeight: margin,
+              minHeight: headerHeight,
             },
           ],
           rows: Array(4).fill({ ...defaultTableGapRow, height: 5 }),
@@ -1474,7 +1474,7 @@ describe("pagination - paginateSection(...)", () => {
 
     const expected: MeasuredRow[] = [tableHeader, ...tableRows];
 
-    expect(paginateSection(input)).toEqual(expected);
+    expect(paginateSection(input, 500)).toEqual(expected);
   });
 
   it("paginates section headers", () => {
@@ -1501,8 +1501,9 @@ describe("pagination - paginateSection(...)", () => {
       ...tableRows,
     ];
 
-    expect(paginateSection(input)).toEqual(expected);
+    expect(paginateSection(input, 500)).toEqual(expected);
   });
+
   it("paginates section headers with lineGap", () => {
     const sectionHeaders = createRows({
       rowHeight: 7,
@@ -1543,7 +1544,76 @@ describe("pagination - paginateSection(...)", () => {
       ...secondTableRows,
     ];
 
-    expect(paginateSection(input)).toEqual(expected);
+    expect(paginateSection(input, 500)).toEqual(expected);
+  });
+
+  it("expands last row to remaining space if has chart with undefined max height", () => {
+    const firstRow = createRows({
+      rowHeight: 100,
+      length: 1,
+    })[0];
+
+    const chartCell = {
+      chart: {
+        config: {
+          type: "bar",
+          data: {
+            labels: ["test"],
+            datasets: [
+              {
+                label: "test",
+                data: [12],
+              },
+            ],
+          },
+        },
+        minHeight: 150,
+      },
+    } as ChartCell;
+
+    const chartRow = {
+      ...createRows({
+        rowHeight: 150,
+        length: 1,
+      })[0],
+      data: [chartCell],
+      maxHeight: undefined,
+    };
+
+    const section: MeasuredSection = {
+      headers: [],
+      index: 0,
+      tables: [
+        {
+          ...emptyTable,
+          rows: [firstRow, chartRow],
+        },
+      ],
+      tableGap: 2,
+    };
+
+    const availableSpace = 400;
+
+    const expectedRowHeight = availableSpace - firstRow.minHeight;
+
+    const expected: MeasuredRow[] = [
+      firstRow,
+      {
+        ...chartRow,
+        data: [
+          {
+            chart: {
+              ...chartCell.chart,
+              maxHeight: expectedRowHeight,
+            },
+          },
+        ],
+        maxHeight: expectedRowHeight,
+        minHeight: expectedRowHeight,
+      },
+    ];
+
+    expect(paginateSection(section, availableSpace)).toEqual(expected);
   });
 });
 
@@ -1571,9 +1641,10 @@ describe("pagination - splitTable(...)", () => {
     return [lines.join("\n"), nextLines.join("\n")];
   };
   const measureTextHeight = (text: string): VerticalMeasure => {
+    const height = text.split("\n").length * lineHeight;
     return {
-      maxHeight: text.split("\n").length * lineHeight,
-      minHeight: lineHeight,
+      maxHeight: height,
+      minHeight: height,
     };
   };
   const makeLines = (n, start = 1) =>
@@ -1586,12 +1657,12 @@ describe("pagination - splitTable(...)", () => {
     columnHeights: [
       {
         maxHeight: lineHeight * heightTimes,
-        minHeight: lineHeight,
+        minHeight: lineHeight * heightTimes,
       },
     ],
     data: [{ value: "data" }],
     maxHeight: lineHeight * heightTimes,
-    minHeight: lineHeight,
+    minHeight: lineHeight * heightTimes,
   });
 
   it("splits long row", () => {
@@ -1601,10 +1672,12 @@ describe("pagination - splitTable(...)", () => {
       rows: [
         {
           ...emptyMeasuredRow,
-          columnHeights: [{ maxHeight: lineHeight * 9, minHeight: lineHeight }],
+          columnHeights: [
+            { maxHeight: lineHeight * 9, minHeight: lineHeight * 9 },
+          ],
           data: [{ value: makeLines(9) }],
           maxHeight: lineHeight * 9,
-          minHeight: lineHeight,
+          minHeight: lineHeight * 9,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitter }],
@@ -1616,11 +1689,11 @@ describe("pagination - splitTable(...)", () => {
         rows: [
           {
             columnHeights: [
-              { maxHeight: lineHeight * 4, minHeight: lineHeight },
+              { maxHeight: lineHeight * 4, minHeight: lineHeight * 4 },
             ],
             data: [{ value: makeLines(4) }],
             maxHeight: lineHeight * 4,
-            minHeight: lineHeight,
+            minHeight: lineHeight * 4,
             columnWidths: [],
             columnStarts: [],
           },
@@ -1632,11 +1705,11 @@ describe("pagination - splitTable(...)", () => {
         rows: [
           {
             columnHeights: [
-              { maxHeight: lineHeight * 5, minHeight: lineHeight },
+              { maxHeight: lineHeight * 5, minHeight: lineHeight * 5 },
             ],
             data: [{ value: makeLines(5, 5) }],
             maxHeight: lineHeight * 5,
-            minHeight: lineHeight,
+            minHeight: lineHeight * 5,
             columnWidths: [],
             columnStarts: [],
           },
@@ -1655,7 +1728,7 @@ and another line that should go on the next page as well but it needs to be long
 
     const measure = (txt): VerticalMeasure => ({
       maxHeight: Math.ceil(txt.length / 50),
-      minHeight: 4,
+      minHeight: Math.ceil(txt.length / 50),
     });
     const table: MeasuredTable = {
       ...emptyTable,
@@ -1666,7 +1739,7 @@ and another line that should go on the next page as well but it needs to be long
           columnHeights: [measure(notes)],
           data: [{ value: notes }],
           maxHeight: measure(notes).maxHeight,
-          minHeight: 4,
+          minHeight: measure(notes).maxHeight,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],
@@ -1718,7 +1791,7 @@ and another line that should go on the next page as well but it needs to be long
           ],
           data: [{ value: makeLines(9) }],
           maxHeight: lineHeight * 9,
-          minHeight: lineHeight,
+          minHeight: lineHeight * 9,
           image: { image: "/test-image", height: 100 },
         },
       ],
@@ -1756,12 +1829,12 @@ and another line that should go on the next page as well but it needs to be long
                   },
                 },
                 maxHeight: lineHeight * 9,
-                minHeight: lineHeight,
+                minHeight: lineHeight * 9,
               },
             },
           ],
           maxHeight: lineHeight * 9,
-          minHeight: lineHeight,
+          minHeight: lineHeight * 9,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitColumn }],
@@ -1835,7 +1908,7 @@ and another line that should go on the next page as well but it needs to be long
           columnHeights: [{ maxHeight: lineHeight * 9, minHeight: lineHeight }],
           data: [{ value: makeLines(9) }],
           maxHeight: lineHeight * 9,
-          minHeight: lineHeight,
+          minHeight: lineHeight * 9,
         },
       ],
       columns: [{ width: { value: 1, unit: "fr" }, splitFn: splitter }],
@@ -1848,11 +1921,11 @@ and another line that should go on the next page as well but it needs to be long
           {
             ...emptyMeasuredRow,
             columnHeights: [
-              { maxHeight: lineHeight * 2, minHeight: lineHeight },
+              { maxHeight: lineHeight * 2, minHeight: lineHeight * 2 },
             ],
             data: [{ value: makeLines(2) }],
             maxHeight: lineHeight * 2,
-            minHeight: lineHeight,
+            minHeight: lineHeight * 2,
           },
           ...pageBreakRows,
         ],
@@ -1863,11 +1936,11 @@ and another line that should go on the next page as well but it needs to be long
           {
             ...emptyMeasuredRow,
             columnHeights: [
-              { maxHeight: lineHeight * 7, minHeight: lineHeight },
+              { maxHeight: lineHeight * 7, minHeight: lineHeight * 7 },
             ],
             data: [{ value: makeLines(7, 3) }],
             maxHeight: lineHeight * 7,
-            minHeight: lineHeight,
+            minHeight: lineHeight * 7,
           },
         ],
       },

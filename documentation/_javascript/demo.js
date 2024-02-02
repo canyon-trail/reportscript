@@ -181,9 +181,9 @@ const generateDocument = () => {
 };
 
 const makePdf = (document, iframe) => {
-  document.then(x => {
+  document.then(async x => {
     const bobStream = blobStream();
-    const stream = renderPdf(x, bobStream);
+    const stream = await renderPdf(x, bobStream);
     stream.on("finish", function () {
       const url = stream.toBlobURL("application/pdf");
       iframe.src = url;

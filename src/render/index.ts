@@ -10,6 +10,10 @@ import {
 } from "../measure";
 import { PaginatedRow } from "../paginate/types";
 import { MeasuredWatermark } from "../measure/types";
+import SVGtoPDF from "svg-to-pdfkit";
+import { Chart } from "types/chart";
+import { ChartConfiguration } from "chart.js";
+import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
@@ -193,7 +197,9 @@ export async function writeCellContents(
       .clip()
       .image(image, imageStart, y, { ...size })
       .restore();
-  } else if (!("chart" in cell)) {
+  } else if ("chart" in cell) {
+    await writeChart(cell.chart, x, y, columnWidths[index], doc);
+  } else {
     doc.text(`${cell.value}`.replace(/\t/g, "    "), x, y, {
       width: maxTextWidth,
       underline: options?.underline ?? undefined,
@@ -254,4 +260,29 @@ export function renderWatermark(
   doc.fillColor(color ?? "#ff0000", 0.1);
   doc.text(`${text}`.replace(/\t/g, "    "), x, y, { align: "center" });
   doc.restore();
+}
+
+async function writeChart(
+  chart: Chart,
+  x: number,
+  y: number,
+  columnWidth: number,
+  doc: PdfKitApi
+): Promise<void> {
+  const allowableChartWidth = columnWidth - textHPadding * 2;
+  const chartWidth =
+    chart.width <= allowableChartWidth ? chart.width : allowableChartWidth;
+
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({
+    type: "svg",
+    width: chartWidth,
+    height: chart.maxHeight,
+  });
+
+  const buffer = chartJSNodeCanvas.renderToBufferSync(
+    chart.config as ChartConfiguration,
+    "image/svg+xml"
+  );
+
+  SVGtoPDF(doc, buffer.toString(), x, y);
 }
