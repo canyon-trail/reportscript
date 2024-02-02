@@ -112,6 +112,76 @@ const generateDocument = () => {
       ],
     }
 
+    const chartSection = {
+      tables: [
+        {
+          headers: [
+            {
+              data: [{
+                value: "Include charts",
+                columnSpan: 2
+              }],
+              options: {
+                bold: true,
+                align: "center",
+                fontSize: 15,
+              },
+            },
+          ],
+          rows: [
+            {
+              data: [
+                loremText,
+                {
+                  chart: {
+                    minHeight: 200,
+                    config: {
+                      type: "bar",
+                      data: {
+                        labels: chartData.map(row => row.year),
+                        datasets: [
+                          {
+                            label: "Acquisitions by year",
+                            data: chartData.map(row => row.count),
+                            backgroundColor: chartData.map(_ => "#36A2EB"),
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ],
+              options: { fontSize: 11, align: "left", grid: true },
+            },
+            {
+              data: [
+                {
+                  chart: {
+                    minHeight: 300,
+                    config: {
+                      type: "pie",
+                      data: {
+                        labels: chartData.map(row => row.year),
+                        datasets: [
+                          {
+                            label: "Acquisitions by year",
+                            data: chartData.map(row => row.count),
+                            backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00"],
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  columnSpan: 2
+                }
+              ]
+            }
+          ],
+          columns: [{ width: "1fr" },{ width: "1fr"}]
+        },
+      ],
+    };
+
     const documentFooter = {
       rows: [
         {
@@ -128,6 +198,7 @@ const generateDocument = () => {
       sections: [
         dataSection,
         textImagesSection,
+        chartSection
       ],
       repeatSectionHeaders: true,
       footers: documentFooter,
