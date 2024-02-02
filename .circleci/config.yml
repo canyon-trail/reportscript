@@ -65,7 +65,7 @@ jobs:
       - notify-fail
   reportscript-node-install:
     docker:
-      - image: cimg/python:3.8.0-node
+      - image: cimg/python:3.12.1-node
     resource_class: small
     steps:
       - checkout
@@ -79,10 +79,10 @@ jobs:
           key: v2-deps-{{ checksum "package.json" }}
           paths:
             - node_modules
-      - run: mkdir /workspace
-      - run: cp -r . /workspace/reportscript
+      - run: mkdir /home/circleci/workspace
+      - run: cp -r . /home/circleci/workspace/reportscript
       - persist_to_workspace:
-          root: /workspace
+          root: /home/circleci/workspace
           paths:
             - reportscript
       - notify-fail
@@ -97,10 +97,10 @@ jobs:
     resource_class: small
     steps:
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/workspace
       - run:
           command: npm run semantic-release
-          working_directory: /workspace/reportscript
+          working_directory: /home/circleci/workspace/reportscript
       - notify-fail
   build:
     docker:
