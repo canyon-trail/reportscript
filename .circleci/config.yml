@@ -65,7 +65,7 @@ jobs:
       - notify-fail
   reportscript-node-install:
     docker:
-      - image: node:20-alpine
+      - image: cimg/python:3.8.0-node
     resource_class: small
     steps:
       - checkout
