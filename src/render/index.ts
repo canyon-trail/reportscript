@@ -12,9 +12,8 @@ import { PaginatedRow } from "../paginate/types";
 import { MeasuredWatermark } from "../measure/types";
 import SVGtoPDF from "svg-to-pdfkit";
 import { Chart } from "types/chart";
-import { ChartConfiguration, Chart as ChartJS } from "chart.js";
-import { ChartJSNodeCanvas } from "chartjs-node-canvas";
-import { Context } from "svgcanvas";
+import { Chart as ChartJS, registerables, ChartConfiguration } from "chart.js";
+import { createCanvas } from "canvas";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
@@ -283,50 +282,34 @@ async function writeChart(
     },
   };
 
+  ChartJS.register(...registerables);
+
   if (typeof window === "undefined") {
-    const chartJSNodeCanvas = new ChartJSNodeCanvas({
-      type: "svg",
-      width: chartWidth,
+    const canvas = createCanvas(chartWidth, chart.maxHeight, "svg");
+    new ChartJS(canvas as any, config as ChartConfiguration);
+    const svg = canvas.toBuffer();
+
+    SVGtoPDF(doc, svg.toString(), x, y);
+  } else {
+    config.options.devicePixelRatio = 4;
+
+    const canvas = Object.assign(document.createElement("canvas"), {
       height: chart.maxHeight,
+      width: chartWidth,
     });
 
-    const buffer = chartJSNodeCanvas.renderToBufferSync(
-      config as ChartConfiguration,
-      "image/svg+xml"
+    new ChartJS(canvas as any, config as ChartConfiguration);
+
+    const dataUrl = canvas.toDataURL();
+    const buffer = Buffer.from(
+      dataUrl.replace("data:image/png;base64,", ""),
+      "base64"
     );
-
-    SVGtoPDF(doc, buffer.toString(), x, y);
-  } else {
-    // needed for proper svg chart scaling on pdf
-    const originalPixelRatio = window.devicePixelRatio;
-    window.devicePixelRatio = 1;
-
-    // approximately 1.33 pixels for every postscript point, leaving some margin on height
-    const ctx = new Context(chartWidth * 1.33, chart.maxHeight * 1.3);
-
-    Context.prototype.getContext = function (contextId) {
-      if (contextId == "2d" || contextId == "2D") {
-        return this;
-      }
-      return null;
-    };
-
-    Context.prototype.style = function () {
-      return this.__canvas.style;
-    };
-
-    Context.prototype.getAttribute = function (name) {
-      return this[name];
-    };
-
-    Context.prototype.addEventListener = function () {
-      return;
-    };
-
-    new ChartJS(ctx, config as ChartConfiguration);
-
-    SVGtoPDF(doc, ctx.getSvg(), x, y);
-
-    window.devicePixelRatio = originalPixelRatio;
+    doc
+      .save()
+      .rect(x, y, chartWidth, chart.maxHeight)
+      .clip()
+      .image(buffer, x, y, { height: chart.maxHeight, width: chartWidth })
+      .restore();
   }
 }
