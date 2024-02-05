@@ -26,6 +26,7 @@
   "dependencies": {
     "brfs": "^2.0.2",
     "browserify": "^17.0.0",
+    "chart.js": "^2.7.1",
     "pdfkit": "^0.12.1",
     "reportscript": "^3.0.0",
     "tocbot": "^4.25.0"

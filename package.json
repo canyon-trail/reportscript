@@ -73,6 +73,7 @@
     "lodash": "^4.17.21",
     "pdfkit": "^0.12.1",
     "svg-to-pdfkit": "^0.1.8",
+    "svgcanvas": "^2.5.0",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
   },

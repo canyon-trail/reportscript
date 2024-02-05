@@ -12,8 +12,9 @@ import { PaginatedRow } from "../paginate/types";
 import { MeasuredWatermark } from "../measure/types";
 import SVGtoPDF from "svg-to-pdfkit";
 import { Chart } from "types/chart";
-import { ChartConfiguration } from "chart.js";
+import { ChartConfiguration, Chart as ChartJS } from "chart.js";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
+import { Context } from "svgcanvas";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
@@ -273,16 +274,59 @@ async function writeChart(
   const chartWidth =
     chart.width <= allowableChartWidth ? chart.width : allowableChartWidth;
 
-  const chartJSNodeCanvas = new ChartJSNodeCanvas({
-    type: "svg",
-    width: chartWidth,
-    height: chart.maxHeight,
-  });
+  const config = {
+    ...chart.config,
+    options: {
+      ...(chart.config.options ?? {}),
+      animation: false,
+      responsive: false,
+    },
+  };
 
-  const buffer = chartJSNodeCanvas.renderToBufferSync(
-    chart.config as ChartConfiguration,
-    "image/svg+xml"
-  );
+  if (typeof window === "undefined") {
+    const chartJSNodeCanvas = new ChartJSNodeCanvas({
+      type: "svg",
+      width: chartWidth,
+      height: chart.maxHeight,
+    });
 
-  SVGtoPDF(doc, buffer.toString(), x, y);
+    const buffer = chartJSNodeCanvas.renderToBufferSync(
+      config as ChartConfiguration,
+      "image/svg+xml"
+    );
+
+    SVGtoPDF(doc, buffer.toString(), x, y);
+  } else {
+    // needed for proper svg chart scaling on pdf
+    const originalPixelRatio = window.devicePixelRatio;
+    window.devicePixelRatio = 1;
+
+    // 1.33 pixels for every postscript point
+    const ctx = new Context(chartWidth * 1.33, chart.maxHeight * 1.33);
+
+    Context.prototype.getContext = function (contextId) {
+      if (contextId == "2d" || contextId == "2D") {
+        return this;
+      }
+      return null;
+    };
+
+    Context.prototype.style = function () {
+      return this.__canvas.style;
+    };
+
+    Context.prototype.getAttribute = function (name) {
+      return this[name];
+    };
+
+    Context.prototype.addEventListener = function () {
+      return;
+    };
+
+    new ChartJS(ctx, config as ChartConfiguration);
+
+    SVGtoPDF(doc, ctx.getSvg(), x, y);
+
+    window.devicePixelRatio = originalPixelRatio;
+  }
 }
