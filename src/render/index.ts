@@ -298,7 +298,7 @@ async function writeChart(
       width: chartWidth,
     });
 
-    new ChartJS(canvas as any, config as ChartConfiguration);
+    new ChartJS(canvas, config as ChartConfiguration);
 
     const dataUrl = canvas.toDataURL();
     const buffer = Buffer.from(
