@@ -71,12 +71,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v2-deps-{{ checksum "package.json" }}
-            - v2-deps-
+            - v3-deps-{{ checksum "package.json" }}
+            - v3-deps-
       - run:
           command: npm install
       - save_cache:
-          key: v2-deps-{{ checksum "package.json" }}
+          key: v3-deps-{{ checksum "package.json" }}
           paths:
             - node_modules
       - run: mkdir /home/circleci/workspace
