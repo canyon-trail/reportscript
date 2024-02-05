@@ -7,8 +7,5 @@ module.exports = {
   testEnvironment: "node",
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
-  },
-  moduleNameMapper: {
-    "^axios$": "axios/dist/node/axios.cjs"
   }
 };

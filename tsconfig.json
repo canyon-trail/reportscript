@@ -7,8 +7,7 @@
     "moduleResolution": "node",
     "outDir": "./build",
     "baseUrl": "./src",
-    "noImplicitReturns": true,
-    "skipLibCheck": true,
+    "noImplicitReturns": true
   },
   "include": [
     "src/**/*",
@@ -16,9 +15,5 @@
   ],
   "ts-node": {
     "esm": true
-  },
-  "lib": [
-    "es2016",
-    "dom"
-  ]
+  }
 }

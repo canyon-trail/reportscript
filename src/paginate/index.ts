@@ -482,21 +482,28 @@ export function paginateSection(
     rows.push(...table.rows);
   });
 
-  rows.forEach((r, idx) => {
-    if (!r.maxHeight) {
-      const expandableHeight =
-        availableSpace - sumOfRowHeights(rows) + r.minHeight;
-      const isLast = idx === rows.length - 1;
-      const newHeight = isLast ? expandableHeight : r.minHeight;
-      r.minHeight = newHeight;
-      r.maxHeight = newHeight;
+  const expandableRows = rows.filter(
+    (x) =>
+      !x.maxHeight && x.data.some((d) => "chart" in d && !d.chart.maxHeight)
+  );
 
-      r.data.forEach((d) => {
-        if ("chart" in d && !d.chart.maxHeight) {
-          d.chart.maxHeight = newHeight;
-        }
-      });
-    }
+  const expandableRowCount = expandableRows.length;
+
+  const totalExpandableSpace = availableSpace - sumOfRowHeights(rows);
+
+  expandableRows.forEach((r) => {
+    const expandableHeight =
+      totalExpandableSpace / expandableRowCount + r.minHeight;
+
+    const newHeight = expandableHeight;
+    r.minHeight = newHeight;
+    r.maxHeight = newHeight;
+
+    r.data.forEach((d) => {
+      if ("chart" in d && !d.chart.maxHeight) {
+        d.chart.maxHeight = newHeight;
+      }
+    });
   });
 
   return rows;

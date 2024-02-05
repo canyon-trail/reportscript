@@ -301,8 +301,8 @@ async function writeChart(
     const originalPixelRatio = window.devicePixelRatio;
     window.devicePixelRatio = 1;
 
-    // 1.33 pixels for every postscript point
-    const ctx = new Context(chartWidth * 1.33, chart.maxHeight * 1.33);
+    // approximately 1.33 pixels for every postscript point, leaving some margin on height
+    const ctx = new Context(chartWidth * 1.33, chart.maxHeight * 1.3);
 
     Context.prototype.getContext = function (contextId) {
       if (contextId == "2d" || contextId == "2D") {

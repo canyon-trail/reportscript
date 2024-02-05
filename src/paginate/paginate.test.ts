@@ -1547,36 +1547,54 @@ describe("pagination - paginateSection(...)", () => {
     expect(paginateSection(input, 500)).toEqual(expected);
   });
 
-  it("expands last row to remaining space if has chart with undefined max height", () => {
+  it("splits expandable space for expandable rows", () => {
     const firstRow = createRows({
       rowHeight: 100,
       length: 1,
     })[0];
 
-    const chartCell = {
-      chart: {
-        config: {
-          type: "bar",
-          data: {
-            labels: ["test"],
-            datasets: [
-              {
-                label: "test",
-                data: [12],
-              },
-            ],
-          },
-        },
-        minHeight: 150,
-      },
-    } as ChartCell;
+    const lastRow = createRows({
+      rowHeight: 100,
+      length: 1,
+    })[0];
 
-    const chartRow = {
+    const createChartCell = (minHeight: number) =>
+      ({
+        chart: {
+          config: {
+            type: "bar",
+            data: {
+              labels: ["test"],
+              datasets: [
+                {
+                  label: "test",
+                  data: [12],
+                },
+              ],
+            },
+          },
+          minHeight,
+        },
+      } as ChartCell);
+
+    const chartCellOne = createChartCell(150);
+    const chartCellTwo = createChartCell(200);
+
+    const chartRowOne = {
       ...createRows({
         rowHeight: 150,
         length: 1,
       })[0],
-      data: [chartCell],
+      data: [chartCellOne],
+      maxHeight: undefined,
+    };
+
+    const chartRowTwo = {
+      ...createRows({
+        rowHeight: 150,
+        length: 1,
+      })[0],
+      data: [chartCellTwo],
       maxHeight: undefined,
     };
 
@@ -1586,31 +1604,55 @@ describe("pagination - paginateSection(...)", () => {
       tables: [
         {
           ...emptyTable,
-          rows: [firstRow, chartRow],
+          rows: [firstRow, chartRowOne, chartRowTwo, lastRow],
         },
       ],
       tableGap: 2,
     };
 
-    const availableSpace = 400;
+    const expandableRowCount = 2;
 
-    const expectedRowHeight = availableSpace - firstRow.minHeight;
+    const availableSpace = 600;
+    const totalExpandableSpace =
+      availableSpace -
+      firstRow.minHeight -
+      lastRow.minHeight -
+      chartRowOne.minHeight -
+      chartRowTwo.minHeight;
+    const expectedChartRowOneHeight =
+      totalExpandableSpace / expandableRowCount + chartRowOne.minHeight;
+    const expectedChartRowTwoHeight =
+      totalExpandableSpace / expandableRowCount + chartRowTwo.minHeight;
 
     const expected: MeasuredRow[] = [
       firstRow,
       {
-        ...chartRow,
+        ...chartRowOne,
         data: [
           {
             chart: {
-              ...chartCell.chart,
-              maxHeight: expectedRowHeight,
+              ...chartCellOne.chart,
+              maxHeight: expectedChartRowOneHeight,
             },
           },
         ],
-        maxHeight: expectedRowHeight,
-        minHeight: expectedRowHeight,
+        maxHeight: expectedChartRowOneHeight,
+        minHeight: expectedChartRowOneHeight,
       },
+      {
+        ...chartRowTwo,
+        data: [
+          {
+            chart: {
+              ...chartCellTwo.chart,
+              maxHeight: expectedChartRowTwoHeight,
+            },
+          },
+        ],
+        maxHeight: expectedChartRowTwoHeight,
+        minHeight: expectedChartRowTwoHeight,
+      },
+      lastRow,
     ];
 
     expect(paginateSection(section, availableSpace)).toEqual(expected);
