@@ -311,5 +311,7 @@ async function writeChart(
       .clip()
       .image(buffer, x, y, { height: chart.maxHeight, width: chartWidth })
       .restore();
+
+    canvas.remove();
   }
 }
