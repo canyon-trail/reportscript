@@ -18,11 +18,11 @@ type RenderDocumentResult = {
 /**
  * Writes a Document to a NodeJS.WriteableStream and returns the stream.
  */
-export function renderPdf(
+export async function renderPdf(
   document: Document,
   response: NodeJS.WritableStream
-): NodeJS.WritableStream {
-  const { stream } = renderDocument(document, undefined, response);
+): Promise<NodeJS.WritableStream> {
+  const { stream } = await renderDocument(document, undefined, response);
   return stream;
 }
 
@@ -32,11 +32,11 @@ export function renderPdf(
  * as well as returning the current rendering of the document.
  * This is useful for seeing how new changes to a document compare to a previous state.
  */
-export function renderSnapshot(
+export async function renderSnapshot(
   path: string,
   document: Document
-): SnapshotResult {
-  const { reportDocument } = renderDocument(document, true);
+): Promise<SnapshotResult> {
+  const { reportDocument } = await renderDocument(document, true);
   const doc = reportDocument as SnapshottingDocument;
   let snapshot;
   const rendered = JSON.stringify(doc.documentCalls, null, 2);
@@ -52,11 +52,11 @@ export function renderSnapshot(
   return { snapshot, rendered };
 }
 
-function renderDocument(
+async function renderDocument(
   document: Document,
   isSnapshot?: boolean,
   outStream?: NodeJS.WritableStream
-): RenderDocumentResult {
+): Promise<RenderDocumentResult> {
   let stream: NodeJS.WritableStream;
   const pdfDoc = new PDFDocument({
     layout: document.layout ?? "landscape",
@@ -78,22 +78,27 @@ function renderDocument(
     measuredDoc,
     reportDocument.info.CreationDate as Date
   );
-  render(paginatedDocument, reportDocument);
+  await render(paginatedDocument, reportDocument);
   reportDocument.end();
   return { reportDocument, stream };
 }
 
-function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
-  doc.pages.forEach((p, idx) => {
+async function render(
+  doc: PaginatedDocument,
+  pdfDoc: PdfKitApi
+): Promise<void> {
+  for (const [idx, p] of doc.pages.entries()) {
     const rows: PaginatedRow[] = p.rows.map((x) => ({ ...x, start: 0 }));
 
     let startPos = margin;
-    rows.forEach((r) => {
+
+    for (const r of rows) {
       r.start = startPos;
       startPos += r.maxHeight;
 
-      writeRow(r, pdfDoc);
-    });
+      await writeRow(r, pdfDoc);
+    }
+
     if (p?.watermark) {
       renderWatermark(p.watermark, pdfDoc);
     } else {
@@ -104,7 +109,7 @@ function render(doc: PaginatedDocument, pdfDoc: PdfKitApi): void {
       pdfDoc.addPage();
       pdfDoc.switchToPage(idx + 1);
     }
-  });
+  }
 }
 
 export type {
