@@ -495,13 +495,12 @@ export function paginateSection(
     const expandableHeight =
       totalExpandableSpace / expandableRowCount + r.minHeight;
 
-    const newHeight = expandableHeight;
-    r.minHeight = newHeight;
-    r.maxHeight = newHeight;
+    r.minHeight = expandableHeight;
+    r.maxHeight = expandableHeight;
 
     r.data.forEach((d) => {
       if ("chart" in d && !d.chart.maxHeight) {
-        d.chart.maxHeight = newHeight;
+        d.chart.maxHeight = expandableHeight;
       }
     });
   });
