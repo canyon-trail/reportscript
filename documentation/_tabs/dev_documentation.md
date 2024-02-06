@@ -598,21 +598,21 @@ const table = {
 
 || Table|Row|TextCell|ImageCell|
 |------|------|------|------|------|
-|[backgroundColor](#backgroundColor)|✓|✓|✓|✓|
-|[bottomBorder](#bottomBorder)|✓|✓|✓|✓|
+|[backgroundColor](#backgroundcolor)|✓|✓|✓|✓|
+|[bottomBorder](#bottomborder)|✓|✓|✓|✓|
 |[grid](#grid)|✓|✓|✓|✓|
-|[gridColor](#gridColor)|✓|✓|✓|✓|
-|[lineGap](#lineGap)|✓|✓|✓|✓|
+|[gridColor](#gridcolor)|✓|✓|✓|✓|
+|[lineGap](#linegap)|✓|✓|✓|✓|
 |[noWrap](#noWrap)|✓|✓|✓|✓|
-|[verticalAlign](#verticalAlign)|✓|✓|✓|✓|
+|[verticalAlign](#verticalalign)|✓|✓|✓|✓|
 |[bold](#bold)|✓|✓|✓|✗|
-|[boldFace](#boldFace)|✓|✓|✓|✗|
+|[boldFace](#boldface)|✓|✓|✓|✗|
 |[color](#color)|✓|✓|✓|✗|
-|[fontFace](#fontFace)|✓|✓|✓|✗|
+|[fontFace](#fontface)|✓|✓|✓|✗|
 |[underline](#underline)|✓|✓|✓|✗|
 |[border](#border)|✓|✓|✗|✗|
-|[align](#align)|✗|✗|✓|✓|
-|[columnSpan](#columnSpan)|✗|✗|✓|✓|
+|[align](#align-1)|✗|✗|✓|✓|
+|[columnSpan](#columnspan)|✗|✗|✓|✓|
 
 ## backgroundColor
 
