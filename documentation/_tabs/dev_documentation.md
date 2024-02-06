@@ -596,133 +596,88 @@ const table = {
 }
 ```
 
+|| Table|Row|TextCell|ImageCell|
+|------|------|------|------|------|
+|[backgroundColor](#backgroundcolor)|✓|✓|✓|✓|
+|[bottomBorder](#bottomborder)|✓|✓|✓|✓|
+|[grid](#grid)|✓|✓|✓|✓|
+|[gridColor](#gridcolor)|✓|✓|✓|✓|
+|[lineGap](#linegap)|✓|✓|✓|✓|
+|[noWrap](#noWrap)|✓|✓|✓|✓|
+|[verticalAlign](#verticalalign)|✓|✓|✓|✓|
+|[bold](#bold)|✓|✓|✓|✗|
+|[boldFace](#boldface)|✓|✓|✓|✗|
+|[color](#color)|✓|✓|✓|✗|
+|[fontFace](#fontface)|✓|✓|✓|✗|
+|[underline](#underline)|✓|✓|✓|✗|
+|[border](#border)|✓|✓|✗|✗|
+|[align](#align-1)|✗|✗|✓|✓|
+|[columnSpan](#columnspan)|✗|✗|✓|✓|
+
 ## backgroundColor
 
 String - Set background color (example: “yellow” or “#e6e6e6”).
-
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✓|
 
 ## bottomBorder
 
 Boolean - Adds a bottom border to the cell, or row.
 
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✓|
-
 ## grid
 
 Boolean - Adds a border around the cell.
-
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✓|
 
 ## gridColor
 
 String - Sets the color of the grid borders. Default is black.
 
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✓|
-
 ## lineGap
 
 Number - Sets the line spacing around the cell contents. Default value is 4.5.
-
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✓|
 
 ## noWrap
 
 Boolean - Prevents a text from wrapping within a cell. If true, adds an ellipsis (“…”) at the end of the text if cutoff.
 
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✓|
-
 ## verticalAlign
 
-String - Sets the vertical alignment of a cell’s contents within the table row. Default is “center”. Available options are `"top"` | `"center"` | `"bottom"`.
-
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✓|
+String - Sets the vertical alignment of a cell’s contents within the table row. Default is “center”. Available options are `"top"` `"center"` `"bottom"`.
 
 ## bold
 
 Boolean - Bold text.
 
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✗|
-
 ## boldFace
 
 String - Font when text is bold. Default value is “Helvetica-Bold”.
-
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✗|
 
 ## color
 
 String - Font color. Default value is black.
 
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✗|
-
 ## fontFace
 
 String - Font setting. Default is “Helvetica”.
-
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✗|
 
 ## fontSize
 
 Number - Font size. Default is 7.
 
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✗|
-
 ## underline
 
 Boolean - Underline text.
-
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✓|✗|
 
 ## border
 
 Boolean - Border around the table if set at Table level, and around row if set at Row level.
 
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✓|✓|✗|✗|
-
 ## align
 
-Number - Sets the horizontal alignment of the contents within a cell. Default is “center”. Available options: `"left"` | `"center"` | `"right"`.
-
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✗|✗|✓|✓|
+Number - Sets the horizontal alignment of the contents within a cell. Default is “center”. Available options: `"left"` `"center"` `"right"`.
 
 ## columnSpan
 
 Number - Sets how many columns within a row a cell will span. Default is 1.
 
-| Table|Row|TextCell|ImageCell|
-|------|------|------|------|
-|✗|✗|✓|✓|
 
 # Default Document Measurements
 
