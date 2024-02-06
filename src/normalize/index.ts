@@ -14,6 +14,7 @@ import {
   HorizontalAlignment,
   PageBreakRows,
   CellOptions,
+  FontSetting,
 } from "../types";
 import {
   NormalizedColumnSetting,
@@ -26,18 +27,37 @@ import {
   NormalizedWidth,
 } from "./types";
 
+export const defaultFontFace = "Helvetica";
+export const defaultBoldFace = "Helvetica-Bold";
+
 export function normalize(document: Document): NormalizedDocument {
-  const { headers, sections, footers, pageBreakRows } = document;
+  const { headers, sections, footers, pageBreakRows, defaultFontSettings } =
+    document;
+  const normalizedFontSetting = normalizeFontSetting(defaultFontSettings);
   return {
     ...document,
-    headers: headers ? normalizeHeaderFooter(headers) : { rows: [] },
+    headers: headers
+      ? normalizeHeaderFooter(headers, normalizedFontSetting)
+      : { rows: [] },
     sections: sections.map((section) =>
       normalizeSection(section, document?.tableGap)
     ),
-    footers: footers ? normalizeHeaderFooter(footers) : { rows: [] },
+    footers: footers
+      ? normalizeHeaderFooter(footers, normalizedFontSetting)
+      : { rows: [] },
     pageBreakRows: pageBreakRows
-      ? normalizePageBreakRows(pageBreakRows)
+      ? normalizePageBreakRows(pageBreakRows, normalizedFontSetting)
       : undefined,
+  };
+}
+
+export function normalizeFontSetting(
+  documentFontSetting: FontSetting
+): FontSetting {
+  return {
+    ...documentFontSetting,
+    fontFace: documentFontSetting?.fontFace ?? defaultFontFace,
+    boldFace: documentFontSetting?.boldFace ?? defaultBoldFace,
   };
 }
 
@@ -125,8 +145,9 @@ export function normalizeCell(cell: Cell | CellValue): Cell {
 }
 export function normalizeRow(
   row: Row,
-  tableStyle?: RowOptions,
-  settingsFromTable?: NormalizedColumnSetting[]
+  tableStyle: RowOptions,
+  settingsFromTable: NormalizedColumnSetting[],
+  fontSetting: FontSetting
 ): NormalizedRow {
   const { data, options } = row;
   let normalizedData: Cell[] = data.map((d) => normalizeCell(d));
@@ -157,29 +178,34 @@ export function normalizeRow(
     data: normalizedData,
     options: {
       ...cellOptions,
+      ...fontSetting,
       border,
     },
   };
 }
 
 export function normalizePageBreakRows(
-  pageBreakRow: PageBreakRows
+  pageBreakRow: PageBreakRows,
+  fontSetting: FontSetting
 ): NormalizedPageBreakRows {
   const { rows, columns, style } = pageBreakRow;
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings)),
+    rows: rows.map((r) => normalizeRow(r, style, settings, fontSetting)),
     columns: settings,
   };
 }
 
-export function normalizeTable(table: Table): NormalizedTable {
+export function normalizeTable(
+  table: Table,
+  fontSetting: FontSetting
+): NormalizedTable {
   const { rows, headers, columns, style } = table;
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings)),
+    rows: rows.map((r) => normalizeRow(r, style, settings, fontSetting)),
     headers: headers
-      ? headers.map((h) => normalizeRow(h, style, settings))
+      ? headers.map((h) => normalizeRow(h, style, settings, fontSetting))
       : [],
     columns: settings,
   };
@@ -237,24 +263,28 @@ export function parseWidth(width: string): NormalizedWidth {
 }
 
 export function normalizeHeaderFooter(
-  headerFooter: HeaderFooters
+  headerFooter: HeaderFooters,
+  fontSetting: FontSetting
 ): NormalizedHeaderFooter {
   const { rows, columns, style } = headerFooter;
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings)),
+    rows: rows.map((r) => normalizeRow(r, style, settings, fontSetting)),
     columns: settings,
   };
 }
 export function normalizeSection(
   section: Section,
-  tableGap?: number
+  tableGap?: number,
+  fontSetting?: FontSetting
 ): NormalizedSection {
   const { headers, tables } = section;
   return {
     tableGap: tableGap ?? undefined,
     ...section,
-    headers: headers ? normalizeHeaderFooter(headers) : { rows: [] },
-    tables: tables.map((table) => normalizeTable(table)),
+    headers: headers
+      ? normalizeHeaderFooter(headers, fontSetting)
+      : { rows: [] },
+    tables: tables.map((table) => normalizeTable(table, fontSetting)),
   };
 }

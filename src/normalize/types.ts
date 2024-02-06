@@ -6,6 +6,8 @@ import {
   Watermark,
   Image,
   Document,
+  CellStyle,
+  CellOptions,
 } from "../types";
 
 export type NormalizedWidth = { value: number; unit: Unit };
@@ -41,3 +43,5 @@ export type NormalizedDocument = Omit<
   sections: NormalizedSection[];
   pageBreakRows?: NormalizedPageBreakRows;
 };
+
+export type CellSettings = CellStyle & CellOptions;
