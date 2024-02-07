@@ -1,7 +1,6 @@
 import _ from "lodash";
 import {
   Cell,
-  CellStyle,
   CellValue,
   ColumnSetting,
   Row,
@@ -13,10 +12,10 @@ import {
   Unit,
   HorizontalAlignment,
   PageBreakRows,
-  CellOptions,
   FontSetting,
 } from "../types";
 import {
+  CellSettings,
   NormalizedColumnSetting,
   NormalizedDocument,
   NormalizedHeaderFooter,
@@ -31,23 +30,36 @@ export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
 
 export function normalize(document: Document): NormalizedDocument {
-  const { headers, sections, footers, pageBreakRows, defaultFontSettings } =
-    document;
+  const {
+    headers,
+    sections,
+    footers,
+    pageBreakRows,
+    defaultFontSettings,
+    timestampPageNumberFontSetting,
+  } = document;
   const normalizedFontSetting = normalizeFontSetting(defaultFontSettings);
+  const normalizedTimestampPageNumberFontSetting = {
+    ...normalizedFontSetting,
+    ...timestampPageNumberFontSetting,
+  };
   return {
     ...document,
     headers: headers
-      ? normalizeHeaderFooter(headers, normalizedFontSetting)
+      ? normalizeHeaderFooter(normalizeSetting(headers, normalizedFontSetting))
       : { rows: [] },
     sections: sections.map((section) =>
-      normalizeSection(section, document?.tableGap)
+      normalizeSection(section, normalizedFontSetting, document?.tableGap)
     ),
     footers: footers
-      ? normalizeHeaderFooter(footers, normalizedFontSetting)
+      ? normalizeHeaderFooter(normalizeSetting(footers, normalizedFontSetting))
       : { rows: [] },
     pageBreakRows: pageBreakRows
-      ? normalizePageBreakRows(pageBreakRows, normalizedFontSetting)
+      ? normalizePageBreakRows(
+          normalizeSetting(pageBreakRows, normalizedFontSetting)
+        )
       : undefined,
+    timestampPageNumberFontSetting: normalizedTimestampPageNumberFontSetting,
   };
 }
 
@@ -61,7 +73,21 @@ export function normalizeFontSetting(
   };
 }
 
-export function normalizeOptions(data: Cell[], cellOptions: CellStyle): Cell[] {
+export function normalizeSetting(
+  obj: PageBreakRows | Table | HeaderFooters,
+  documentFontSetting: FontSetting
+): PageBreakRows | Table | HeaderFooters {
+  const style = { ...documentFontSetting, ...obj?.style };
+  return {
+    ...obj,
+    style,
+  };
+}
+
+export function normalizeOptions(
+  data: Cell[],
+  cellOptions: CellSettings
+): Cell[] {
   return data.map((d) => ({
     ...cellOptions,
     ...d,
@@ -112,7 +138,7 @@ export function normalizeAlignment(
 }
 
 export function normalizeCell(cell: Cell | CellValue): Cell {
-  const defaultProps: CellOptions = {
+  const defaultProps: CellSettings = {
     columnSpan: 1,
   };
 
@@ -146,15 +172,14 @@ export function normalizeCell(cell: Cell | CellValue): Cell {
 export function normalizeRow(
   row: Row,
   tableStyle: RowOptions,
-  settingsFromTable: NormalizedColumnSetting[],
-  fontSetting: FontSetting
+  settingsFromTable: NormalizedColumnSetting[]
 ): NormalizedRow {
   const { data, options } = row;
   let normalizedData: Cell[] = data.map((d) => normalizeCell(d));
 
   validateCellSpan(normalizedData, settingsFromTable);
 
-  let cellOptions: CellStyle = {};
+  let cellOptions: CellSettings = {};
   if (tableStyle) {
     const { border, ...rest } = tableStyle; // eslint-disable-line
     cellOptions = rest;
@@ -178,34 +203,29 @@ export function normalizeRow(
     data: normalizedData,
     options: {
       ...cellOptions,
-      ...fontSetting,
       border,
     },
   };
 }
 
 export function normalizePageBreakRows(
-  pageBreakRow: PageBreakRows,
-  fontSetting: FontSetting
+  pageBreakRow: PageBreakRows
 ): NormalizedPageBreakRows {
   const { rows, columns, style } = pageBreakRow;
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings, fontSetting)),
+    rows: rows.map((r) => normalizeRow(r, style, settings)),
     columns: settings,
   };
 }
 
-export function normalizeTable(
-  table: Table,
-  fontSetting: FontSetting
-): NormalizedTable {
+export function normalizeTable(table: Table): NormalizedTable {
   const { rows, headers, columns, style } = table;
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings, fontSetting)),
+    rows: rows.map((r) => normalizeRow(r, style, settings)),
     headers: headers
-      ? headers.map((h) => normalizeRow(h, style, settings, fontSetting))
+      ? headers.map((h) => normalizeRow(h, style, settings))
       : [],
     columns: settings,
   };
@@ -263,28 +283,29 @@ export function parseWidth(width: string): NormalizedWidth {
 }
 
 export function normalizeHeaderFooter(
-  headerFooter: HeaderFooters,
-  fontSetting: FontSetting
+  headerFooter: HeaderFooters
 ): NormalizedHeaderFooter {
   const { rows, columns, style } = headerFooter;
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings, fontSetting)),
+    rows: rows.map((r) => normalizeRow(r, style, settings)),
     columns: settings,
   };
 }
 export function normalizeSection(
   section: Section,
-  tableGap?: number,
-  fontSetting?: FontSetting
+  fontSetting: FontSetting,
+  tableGap?: number
 ): NormalizedSection {
   const { headers, tables } = section;
   return {
     tableGap: tableGap ?? undefined,
     ...section,
     headers: headers
-      ? normalizeHeaderFooter(headers, fontSetting)
+      ? normalizeHeaderFooter(normalizeSetting(headers, fontSetting))
       : { rows: [] },
-    tables: tables.map((table) => normalizeTable(table, fontSetting)),
+    tables: tables.map((table) =>
+      normalizeTable(normalizeSetting(table, fontSetting))
+    ),
   };
 }

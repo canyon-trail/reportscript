@@ -9,6 +9,7 @@ import {
   HeaderFooters,
   PageBreakRows,
   HorizontalAlignment,
+  FontSetting,
 } from "../types";
 import {
   computeCellAlignments,
@@ -26,13 +27,43 @@ import {
   defaultFontFace,
   defaultBoldFace,
   normalizeFontSetting,
+  normalizeSetting,
 } from ".";
 import {
   NormalizedColumnSetting,
   NormalizedDocument,
+  NormalizedHeaderFooter,
   NormalizedPageBreakRows,
+  NormalizedRow,
+  NormalizedSection,
   NormalizedTable,
 } from "./types";
+
+const emptyNormalizedDocument = {
+  headers: { rows: [] },
+  footers: { rows: [] },
+  pageBreakRows: undefined,
+};
+const defaultNormalizedFontSetting = {
+  fontFace: defaultFontFace,
+  boldFace: defaultBoldFace,
+};
+const defaultRowOptions = {
+  ...defaultNormalizedFontSetting,
+  border: false,
+};
+const defaultNormalizedCellOptions = {
+  ...defaultNormalizedFontSetting,
+  align: "center",
+  columnSpan: 1,
+};
+
+const defaultNormalizedColumnSetting: NormalizedColumnSetting[] = [
+  {
+    width: { value: 1, unit: "fr" },
+    align: "center",
+  },
+];
 describe("normalizeCell", () => {
   it("normalize string", () => {
     expect(normalizeCell("value")).toEqual({ value: "value", columnSpan: 1 });
@@ -110,12 +141,7 @@ describe("normalizeRow", () => {
 
   it("Row and cell carries tableStyle and tableColumnSetting", () => {
     expect(
-      normalizeRow(
-        mockRowWithString,
-        mockTableOptions,
-        mockTableColumnSetting,
-        defaultNormalizedFontSetting
-      )
+      normalizeRow(mockRowWithString, mockTableOptions, mockTableColumnSetting)
     ).toEqual({
       data: [
         { value: "one", ...mockTableOptions, align: "left", columnSpan: 1 },
@@ -135,8 +161,7 @@ describe("normalizeRow", () => {
           options: mockRowOptions,
         } as Row,
         mockTableOptions,
-        mockTableColumnSetting,
-        defaultNormalizedFontSetting
+        mockTableColumnSetting
       )
     ).toEqual({
       data: [
@@ -157,8 +182,7 @@ describe("normalizeRow", () => {
           options: mockRowOptions,
         } as Row,
         mockTableOptions,
-        mockTableColumnSetting,
-        defaultNormalizedFontSetting
+        mockTableColumnSetting
       )
     ).toEqual({
       data: [{ value: "one", ...mockRowOptions, align: "left", columnSpan: 2 }],
@@ -314,7 +338,7 @@ describe("normalizeTable", () => {
     const table: Table = {
       rows: rows,
     };
-    expect(normalizeTable(table, defaultNormalizedFontSetting)).toEqual({
+    expect(normalizeTable(table)).toEqual({
       headers: [],
       rows: [
         {
@@ -352,7 +376,7 @@ describe("normalizeTable", () => {
       headers: [],
       rows: rows,
     };
-    expect(normalizeTable(table, defaultNormalizedFontSetting)).toEqual({
+    expect(normalizeTable(table)).toEqual({
       headers: [],
       rows: [
         {
@@ -390,7 +414,7 @@ describe("normalizeTable", () => {
       headers: headers,
       rows: rows,
     };
-    expect(normalizeTable(table, defaultNormalizedFontSetting)).toEqual({
+    expect(normalizeTable(table)).toEqual({
       headers: [
         {
           data: [
@@ -448,7 +472,7 @@ describe("normalizeTable", () => {
       columns: tableColumnSetting,
       style: tableStyle,
     };
-    expect(normalizeTable(table, defaultNormalizedFontSetting)).toEqual({
+    expect(normalizeTable(table)).toEqual({
       headers: [
         {
           data: [
@@ -543,9 +567,7 @@ describe("normalizeTable", () => {
         },
       ],
     };
-    expect(normalizeTable(table, defaultNormalizedFontSetting)).toEqual(
-      expectedTable
-    );
+    expect(normalizeTable(table)).toEqual(expectedTable);
   });
 });
 describe("normalizeHeaderFooter", () => {
@@ -560,39 +582,37 @@ describe("normalizeHeaderFooter", () => {
     const header: HeaderFooters = {
       rows: rows,
     };
-    expect(normalizeHeaderFooter(header, defaultNormalizedFontSetting)).toEqual(
-      {
-        rows: [
-          {
-            data: [
-              {
-                value: "first column",
-                align: "center",
-                columnSpan: 1,
-              },
-              {
-                value: "second column",
-                align: "center",
-                columnSpan: 1,
-              },
-            ],
-            options: {
-              border: false,
+    expect(normalizeHeaderFooter(header)).toEqual({
+      rows: [
+        {
+          data: [
+            {
+              value: "first column",
+              align: "center",
+              columnSpan: 1,
             },
+            {
+              value: "second column",
+              align: "center",
+              columnSpan: 1,
+            },
+          ],
+          options: {
+            border: false,
           },
-        ],
-        columns: [
-          {
-            align: "center",
-            width: { value: 1, unit: "fr" },
-          },
-          {
-            align: "center",
-            width: { value: 1, unit: "fr" },
-          },
-        ],
-      }
-    );
+        },
+      ],
+      columns: [
+        {
+          align: "center",
+          width: { value: 1, unit: "fr" },
+        },
+        {
+          align: "center",
+          width: { value: 1, unit: "fr" },
+        },
+      ],
+    });
   });
   it("header/footer get passes down settings", () => {
     const header: HeaderFooters = {
@@ -609,45 +629,43 @@ describe("normalizeHeaderFooter", () => {
       ],
       style: headerStyle,
     };
-    expect(normalizeHeaderFooter(header, defaultNormalizedFontSetting)).toEqual(
-      {
-        rows: [
-          {
-            data: [
-              {
-                value: "first column",
-                align: "right",
-                fontSize: 9,
-                color: "white",
-                columnSpan: 1,
-              },
-              {
-                value: "second column",
-                align: "right",
-                fontSize: 9,
-                color: "white",
-                columnSpan: 1,
-              },
-            ],
-            options: {
-              border: false,
+    expect(normalizeHeaderFooter(header)).toEqual({
+      rows: [
+        {
+          data: [
+            {
+              value: "first column",
+              align: "right",
               fontSize: 9,
               color: "white",
+              columnSpan: 1,
             },
+            {
+              value: "second column",
+              align: "right",
+              fontSize: 9,
+              color: "white",
+              columnSpan: 1,
+            },
+          ],
+          options: {
+            border: false,
+            fontSize: 9,
+            color: "white",
           },
-        ],
-        columns: [
-          {
-            align: "right",
-            width: { value: 1, unit: "fr" },
-          },
-          {
-            align: "right",
-            width: { value: 1, unit: "fr" },
-          },
-        ],
-      }
-    );
+        },
+      ],
+      columns: [
+        {
+          align: "right",
+          width: { value: 1, unit: "fr" },
+        },
+        {
+          align: "right",
+          width: { value: 1, unit: "fr" },
+        },
+      ],
+    });
   });
 });
 describe("normalizeAlignment", () => {
@@ -750,47 +768,35 @@ describe("normalizeSection", () => {
       ],
       tableGap: 2,
     };
-    expect(normalizeSection(section)).toEqual({
+    expect(normalizeSection(section, defaultNormalizedFontSetting)).toEqual({
       headers: {
         rows: [
           {
-            data: [{ value: "section header", align: "center", columnSpan: 1 }],
-            options: {
-              border: false,
-            },
+            data: [
+              { ...defaultNormalizedCellOptions, value: "section header" },
+            ],
+            options: { ...defaultRowOptions, border: false },
           },
         ],
-        columns: [
-          {
-            width: { value: 1, unit: "fr" },
-            align: "center",
-          },
-        ],
+        columns: defaultNormalizedColumnSetting,
       },
       tables: [
         {
           headers: [
             {
-              data: [{ value: "table header", columnSpan: 1, align: "center" }],
-              options: {
-                border: true,
-              },
+              data: [
+                { ...defaultNormalizedCellOptions, value: "table header" },
+              ],
+              options: { ...defaultRowOptions, border: true },
             },
           ],
           rows: [
             {
-              data: [{ value: "row", columnSpan: 1, align: "center" }],
-              options: {
-                border: true,
-              },
+              data: [{ ...defaultNormalizedCellOptions, value: "row" }],
+              options: { ...defaultRowOptions, border: true },
             },
           ],
-          columns: [
-            {
-              width: { value: 1, unit: "fr" },
-              align: "center",
-            },
-          ],
+          columns: defaultNormalizedColumnSetting,
         },
       ],
       tableGap: 2,
@@ -810,7 +816,6 @@ describe("normalizeSection", () => {
               data: ["row"],
             },
           ],
-          style: { border: true },
           columns: [
             {
               width: "1fr",
@@ -820,7 +825,7 @@ describe("normalizeSection", () => {
       ],
       tableGap: 2,
     };
-    expect(normalizeSection(section, 7)).toEqual({
+    expect(normalizeSection(section, defaultNormalizedFontSetting, 7)).toEqual({
       headers: {
         rows: [],
       },
@@ -828,26 +833,19 @@ describe("normalizeSection", () => {
         {
           headers: [
             {
-              data: [{ value: "table header", columnSpan: 1, align: "center" }],
-              options: {
-                border: true,
-              },
+              data: [
+                { ...defaultNormalizedCellOptions, value: "table header" },
+              ],
+              options: defaultRowOptions,
             },
           ],
           rows: [
             {
-              data: [{ value: "row", columnSpan: 1, align: "center" }],
-              options: {
-                border: true,
-              },
+              data: [{ ...defaultNormalizedCellOptions, value: "row" }],
+              options: defaultRowOptions,
             },
           ],
-          columns: [
-            {
-              width: { value: 1, unit: "fr" },
-              align: "center",
-            },
-          ],
+          columns: defaultNormalizedColumnSetting,
         },
       ],
       tableGap: 2,
@@ -855,479 +853,272 @@ describe("normalizeSection", () => {
   });
 });
 describe("normalizeDocument", () => {
-  it("carries sections setting", () => {
-    const document: Document = {
-      ...emptyDocument,
-      headers: {
-        rows: [
-          {
-            data: ["document header"],
-          },
-        ],
-        columns: [
-          {
-            width: "1fr",
-          },
-        ],
-      },
-      sections: [
-        {
-          headers: {
-            rows: [
-              {
-                data: ["section header"],
-              },
-            ],
-            columns: [
-              {
-                width: "1fr",
-              },
-            ],
-          },
-          tables: [
-            {
-              headers: [
-                {
-                  data: ["table header"],
-                },
-              ],
-              rows: [
-                {
-                  data: ["row"],
-                },
-              ],
-              style: { border: true },
-              columns: [
-                {
-                  width: "1fr",
-                },
-              ],
-            },
-          ],
-        },
-      ],
-      footers: {
-        rows: [
-          {
-            data: ["document footer"],
-          },
-        ],
-
-        columns: [
-          {
-            width: "1fr",
-          },
-        ],
-      },
-      tableGap: 2,
+  const createNormalizedRow = (
+    text: string,
+    fontSetting?: FontSetting
+  ): NormalizedRow => {
+    const cellOptions = {
+      ...defaultNormalizedCellOptions,
+      ...fontSetting,
     };
-    expect(normalize(document)).toEqual({
-      ...emptyNormalizedDocument,
+    const rowOptions = {
+      ...defaultRowOptions,
+      ...fontSetting,
+    };
+    return {
+      data: [{ ...cellOptions, value: text } as Cell],
+      options: rowOptions,
+    };
+  };
+  const createNormalizedPageBreakRows = (
+    fontSetting?: FontSetting
+  ): NormalizedPageBreakRows => {
+    return {
+      rows: [
+        {
+          data: [
+            {
+              ...defaultNormalizedCellOptions,
+              ...fontSetting,
+              value: "column 1",
+            },
+            {
+              ...defaultNormalizedCellOptions,
+              ...fontSetting,
+              value: "column 2",
+            },
+          ] as Cell[],
+          options: { ...defaultRowOptions, ...fontSetting },
+        },
+      ],
+      columns: [
+        defaultNormalizedColumnSetting[0],
+        defaultNormalizedColumnSetting[0],
+      ] as NormalizedColumnSetting[],
+    };
+  };
+  const documentHeaders = {
+    rows: [
+      {
+        data: ["document header"],
+      },
+    ],
+  };
+  const documentSections = [
+    {
       headers: {
         rows: [
           {
-            data: [
-              { value: "document header", align: "center", columnSpan: 1 },
-            ],
-            options: {
-              border: false,
-            },
-          },
-        ],
-        columns: [
-          {
-            width: { value: 1, unit: "fr" },
-            align: "center",
+            data: ["section header"],
           },
         ],
       },
-      sections: [
+      tables: [
         {
-          headers: {
-            rows: [
-              {
-                data: [
-                  { value: "section header", align: "center", columnSpan: 1 },
-                ],
-                options: {
-                  border: false,
-                },
-              },
-            ],
-            columns: [
-              {
-                width: { value: 1, unit: "fr" },
-                align: "center",
-              },
-            ],
-          },
-          tables: [
+          headers: [
             {
-              headers: [
-                {
-                  data: [
-                    { value: "table header", columnSpan: 1, align: "center" },
-                  ],
-                  options: {
-                    border: true,
-                  },
-                },
-              ],
-              rows: [
-                {
-                  data: [{ value: "row", columnSpan: 1, align: "center" }],
-                  options: {
-                    border: true,
-                  },
-                },
-              ],
-              columns: [
-                {
-                  width: { value: 1, unit: "fr" },
-                  align: "center",
-                },
-              ],
+              data: ["table header"],
             },
           ],
-          tableGap: 2,
+          rows: [
+            {
+              data: ["row"],
+            },
+          ],
         },
       ],
-      footers: {
-        rows: [
-          {
-            data: [
-              { value: "document footer", align: "center", columnSpan: 1 },
-            ],
-            options: {
-              border: false,
-            },
-          },
-        ],
-        columns: [
-          {
-            width: { value: 1, unit: "fr" },
-            align: "center",
-          },
-        ],
+    },
+  ];
+  const documentFooters = {
+    rows: [
+      {
+        data: ["document footer"],
       },
+    ],
+  };
+  const normalizedDocumentHeader: NormalizedHeaderFooter = {
+    rows: [createNormalizedRow("document header")],
+    columns: defaultNormalizedColumnSetting,
+  };
+  const normalizedDocumentSections: NormalizedSection[] = [
+    {
+      headers: {
+        rows: [createNormalizedRow("section header")],
+        columns: defaultNormalizedColumnSetting,
+      },
+      tables: [
+        {
+          headers: [createNormalizedRow("table header")],
+          rows: [createNormalizedRow("row")],
+          columns: defaultNormalizedColumnSetting,
+        },
+      ],
+    },
+  ];
+  const normalizedDocumentFooters: NormalizedHeaderFooter = {
+    rows: [createNormalizedRow("document footer")],
+    columns: defaultNormalizedColumnSetting,
+  };
+
+  const document: Document = {
+    headers: documentHeaders,
+    sections: documentSections,
+    footers: documentFooters,
+  };
+
+  const normalizedDocument: NormalizedDocument = {
+    headers: normalizedDocumentHeader,
+    sections: normalizedDocumentSections,
+    footers: normalizedDocumentFooters,
+    timestampPageNumberFontSetting: defaultNormalizedFontSetting,
+  };
+  const pageBreakRows: PageBreakRows = {
+    rows: [
+      {
+        data: ["column 1", "column 2"],
+      },
+    ],
+    columns: [
+      {
+        width: "1fr",
+      },
+      {
+        width: "1fr",
+      },
+    ],
+  };
+  it("normalizes document with default options", () => {
+    expect(normalize(document)).toEqual(normalizedDocument);
+  });
+  it("keeps document settings", () => {
+    expect(normalize({ ...document, timestamp: true })).toEqual({
+      ...normalizedDocument,
+      timestamp: true,
+    });
+  });
+  it("passes down tableGap setting", () => {
+    const normalizedSection: NormalizedSection = {
+      ...normalizedDocumentSections[0],
+      tableGap: 2,
+      tables: [
+        {
+          ...normalizedDocumentSections[0].tables[0],
+        },
+      ],
+    };
+    expect(normalize({ ...document, tableGap: 2 })).toEqual({
+      ...normalizedDocument,
+      sections: [normalizedSection],
       tableGap: 2,
     });
   });
 
   it("return document with empty headers and footers", () => {
     const document: Document = {
-      ...emptyDocument,
-      sections: [
-        {
-          headers: {
-            rows: [
-              {
-                data: ["section header"],
-              },
-            ],
-            columns: [
-              {
-                width: "1fr",
-              },
-            ],
-          },
-          tables: [
-            {
-              headers: [
-                {
-                  data: ["table header"],
-                },
-              ],
-              rows: [
-                {
-                  data: ["row"],
-                },
-              ],
-              style: { border: true },
-              columns: [
-                {
-                  width: "1fr",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      sections: documentSections,
     };
     expect(normalize(document)).toEqual({
       ...emptyNormalizedDocument,
-      sections: [
-        {
-          headers: {
-            rows: [
-              {
-                data: [
-                  { value: "section header", align: "center", columnSpan: 1 },
-                ],
-                options: {
-                  border: false,
-                },
-              },
-            ],
-            columns: [
-              {
-                width: { value: 1, unit: "fr" },
-                align: "center",
-              },
-            ],
-          },
-          tables: [
-            {
-              headers: [
-                {
-                  data: [
-                    { value: "table header", columnSpan: 1, align: "center" },
-                  ],
-                  options: {
-                    border: true,
-                  },
-                },
-              ],
-              rows: [
-                {
-                  data: [{ value: "row", columnSpan: 1, align: "center" }],
-                  options: {
-                    border: true,
-                  },
-                },
-              ],
-              columns: [
-                {
-                  width: { value: 1, unit: "fr" },
-                  align: "center",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      sections: normalizedDocumentSections,
+      timestampPageNumberFontSetting: defaultNormalizedFontSetting,
     });
   });
 
   it("handles defined headers and undefined footers", () => {
     const document: Document = {
-      ...emptyDocument,
-      headers: {
-        rows: [
-          {
-            data: ["document header"],
-          },
-        ],
-        columns: [
-          {
-            width: "1fr",
-          },
-        ],
-      },
-      sections: [
-        {
-          headers: {
-            rows: [
-              {
-                data: ["section header"],
-              },
-            ],
-            columns: [
-              {
-                width: "1fr",
-              },
-            ],
-          },
-          tables: [
-            {
-              headers: [
-                {
-                  data: ["table header"],
-                },
-              ],
-              rows: [
-                {
-                  data: ["row"],
-                },
-              ],
-              style: { border: true },
-              columns: [
-                {
-                  width: "1fr",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      headers: documentHeaders,
+      sections: documentSections,
     };
     expect(normalize(document)).toEqual({
       ...emptyNormalizedDocument,
-      headers: {
-        rows: [
-          {
-            data: [
-              { value: "document header", align: "center", columnSpan: 1 },
-            ],
-            options: {
-              border: false,
-            },
-          },
-        ],
-        columns: [
-          {
-            width: { value: 1, unit: "fr" },
-            align: "center",
-          },
-        ],
-      },
-      sections: [
-        {
-          headers: {
-            rows: [
-              {
-                data: [
-                  { value: "section header", align: "center", columnSpan: 1 },
-                ],
-                options: {
-                  border: false,
-                },
-              },
-            ],
-            columns: [
-              {
-                width: { value: 1, unit: "fr" },
-                align: "center",
-              },
-            ],
-          },
-          tables: [
-            {
-              headers: [
-                {
-                  data: [
-                    { value: "table header", columnSpan: 1, align: "center" },
-                  ],
-                  options: {
-                    border: true,
-                  },
-                },
-              ],
-              rows: [
-                {
-                  data: [{ value: "row", columnSpan: 1, align: "center" }],
-                  options: {
-                    border: true,
-                  },
-                },
-              ],
-              columns: [
-                {
-                  width: { value: 1, unit: "fr" },
-                  align: "center",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      headers: normalizedDocumentHeader,
+      sections: normalizedDocumentSections,
+      timestampPageNumberFontSetting: defaultNormalizedFontSetting,
     });
   });
 
-  it("normalized pageBreakRow", () => {
-    const pageBreakRows: PageBreakRows = {
-      rows: [
-        {
-          data: ["column 1", "column 2"],
-          options: {
-            border: true,
-          },
-        },
-      ],
-      columns: [
-        {
-          width: "1fr",
-        },
-        {
-          width: "1fr",
-        },
-      ],
-    };
+  it("normalized with pageBreakRow", () => {
     const document: Document = {
-      ...emptyDocument,
-      sections: [
-        {
-          tables: [
-            {
-              rows: [
-                {
-                  data: ["row"],
-                },
-              ],
-              style: { border: true },
-              columns: [
-                {
-                  width: "1fr",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      sections: documentSections,
       pageBreakRows: pageBreakRows,
     };
-    const normalizedPageBreakRows: NormalizedPageBreakRows = {
-      rows: [
-        {
-          data: [
-            { value: "column 1", columnSpan: 1, align: "center" },
-            { value: "column 2", columnSpan: 1, align: "center" },
-          ],
-          options: {
-            border: true,
-          },
-        },
-      ],
-      columns: [
-        {
-          width: { value: 1, unit: "fr" },
-          align: "center",
-        },
-        {
-          width: { value: 1, unit: "fr" },
-          align: "center",
-        },
-      ] as NormalizedColumnSetting[],
-    };
+    const normalizedPageBreakRows: NormalizedPageBreakRows =
+      createNormalizedPageBreakRows();
     const expected: NormalizedDocument = {
       ...emptyNormalizedDocument,
-      sections: [
-        {
-          headers: { rows: [] },
-          tables: [
-            {
-              headers: [],
-              rows: [
-                {
-                  data: [{ value: "row", columnSpan: 1, align: "center" }],
-                  options: {
-                    border: true,
-                  },
-                },
-              ],
-              columns: [
-                {
-                  width: { value: 1, unit: "fr" },
-                  align: "center",
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      sections: normalizedDocumentSections,
       pageBreakRows: normalizedPageBreakRows,
+      timestampPageNumberFontSetting: defaultNormalizedFontSetting,
     };
     expect(normalize(document)).toEqual(expected);
+  });
+  describe("fonts setting", () => {
+    const fontSetting = {
+      fontFace: "Arial",
+      boldFace: "Arial-Bold",
+      bold: true,
+    };
+    const timestampPageNumberFontSetting = {
+      fontFace: "Times",
+      boldFace: "Times-Bold",
+      bold: false,
+    };
+    const normalizedDocumentHeader: NormalizedHeaderFooter = {
+      rows: [createNormalizedRow("document header", fontSetting)],
+      columns: defaultNormalizedColumnSetting,
+    };
+    const normalizedDocumentSections: NormalizedSection[] = [
+      {
+        headers: {
+          rows: [createNormalizedRow("section header", fontSetting)],
+          columns: defaultNormalizedColumnSetting,
+        },
+        tables: [
+          {
+            headers: [createNormalizedRow("table header", fontSetting)],
+            rows: [createNormalizedRow("row", fontSetting)],
+            columns: defaultNormalizedColumnSetting,
+          },
+        ],
+      },
+    ];
+    const normalizedDocumentFooters: NormalizedHeaderFooter = {
+      rows: [createNormalizedRow("document footer", fontSetting)],
+      columns: defaultNormalizedColumnSetting,
+    };
+    const expectedDocument: NormalizedDocument = {
+      headers: normalizedDocumentHeader,
+      sections: normalizedDocumentSections,
+      footers: normalizedDocumentFooters,
+      defaultFontSettings: fontSetting,
+      timestampPageNumberFontSetting: fontSetting,
+    };
+    it("override default FontSetting by setting it at Document", () => {
+      expect(
+        normalize({ ...document, defaultFontSettings: fontSetting })
+      ).toEqual(expectedDocument);
+    });
+    it("passed down fontSetting to pageBreakRow", () => {
+      expect(
+        normalize({
+          ...document,
+          defaultFontSettings: fontSetting,
+          pageBreakRows: pageBreakRows,
+        })
+      ).toEqual({
+        ...expectedDocument,
+        pageBreakRows: createNormalizedPageBreakRows(fontSetting),
+      });
+    });
+    it("overridden by timestampPageNumber", () => {
+      expect(
+        normalize({
+          ...document,
+          defaultFontSettings: fontSetting,
+          timestampPageNumberFontSetting,
+        })
+      ).toEqual({ ...expectedDocument, timestampPageNumberFontSetting });
+    });
   });
 });
 
@@ -1361,9 +1152,9 @@ describe("normalizePageBreakRows", () => {
         align: "center",
       }) as NormalizedColumnSetting[],
     };
-    expect(
-      normalizePageBreakRows(pageBreakRows, defaultNormalizedFontSetting)
-    ).toEqual(normalizedPageBreakRows);
+    expect(normalizePageBreakRows(pageBreakRows)).toEqual(
+      normalizedPageBreakRows
+    );
   });
 });
 
@@ -1469,20 +1260,42 @@ describe("normalizeFontSetting", () => {
   });
 });
 
-const emptyDocument = {
-  pageNumbers: true,
-  sectionPageNumbers: true,
-  timestamp: true,
-  repeatSectionHeaders: true,
-  repeatReportHeaders: true,
-};
-const emptyNormalizedDocument = {
-  ...emptyDocument,
-  headers: { rows: [] },
-  footers: { rows: [] },
-  pageBreakRows: undefined,
-};
-const defaultNormalizedFontSetting = {
-  fontFace: defaultFontFace,
-  boldFace: defaultBoldFace,
-};
+describe("normalizeSetting", () => {
+  const table: Table = {
+    rows: [{ data: ["hello"] }],
+  };
+  const fontSetting: FontSetting = {
+    fontFace: "Times-News",
+  };
+  it("return setting default font if obj style is empty", () => {
+    expect(normalizeSetting(table, fontSetting)).toEqual({
+      ...table,
+      style: { ...fontSetting },
+    });
+  });
+  it("return setting default font along with obj style", () => {
+    const tableWithStyle: Table = {
+      ...table,
+      style: {
+        border: true,
+        bold: true,
+      },
+    };
+    expect(normalizeSetting(tableWithStyle, fontSetting)).toEqual({
+      ...tableWithStyle,
+      style: { ...fontSetting, ...tableWithStyle.style },
+    });
+  });
+  it("return setting default font overridden by obj style", () => {
+    const tableWithStyle: Table = {
+      ...table,
+      style: {
+        bold: true,
+        fontFace: "Arial",
+      },
+    };
+    expect(normalizeSetting(tableWithStyle, fontSetting)).toEqual(
+      tableWithStyle
+    );
+  });
+});

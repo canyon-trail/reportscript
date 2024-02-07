@@ -136,10 +136,7 @@ export function writeCellBackground(
 }
 
 export function getCellFont(cell: TextCell): string {
-  const fontFace = cell?.fontFace;
-  const boldFace = cell?.boldFace;
-  const defaultFont = cell?.bold ? boldFace : fontFace;
-
+  const defaultFont = cell?.bold ? cell?.boldFace : cell?.fontFace;
   return defaultFont;
 }
 

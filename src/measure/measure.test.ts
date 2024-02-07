@@ -13,11 +13,7 @@ import {
   getPageDimensions,
 } from ".";
 import { Image } from "../types";
-import {
-  normalizeHeaderFooter,
-  normalizeSection,
-  normalizeTable,
-} from "../normalize";
+import { normalizeHeaderFooter, normalizeTable } from "../normalize";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
   NormalizedRow,
@@ -367,14 +363,14 @@ describe("measuring functions", () => {
       ];
 
       const sections = [
-        normalizeSection({
-          headers: {
+        {
+          headers: normalizeHeaderFooter({
             rows: [
               { data: [{ value: "A Section" }], options: { fontSize: 10 } },
             ],
-          },
-          tables,
-        }),
+          }),
+          tables: [normalizeTable(tables[0])],
+        },
       ];
 
       const footers = normalizeHeaderFooter({
@@ -526,14 +522,14 @@ describe("measuring functions", () => {
       ];
 
       const sections = [
-        normalizeSection({
-          headers: {
+        {
+          headers: normalizeHeaderFooter({
             rows: [
               { data: [{ value: "A Section" }], options: { fontSize: 10 } },
             ],
-          },
-          tables,
-        }),
+          }),
+          tables: [normalizeTable(tables[0])],
+        },
       ];
 
       const table = normalizeTable(tables[0]);

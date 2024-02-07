@@ -9,8 +9,6 @@ import {
   textHPadding,
 } from "../measure";
 import {
-  defaultBoldFace,
-  defaultFontFace,
   getCellColor,
   getCellFont,
   bottomBorder,
@@ -27,6 +25,7 @@ import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import { MeasuredWatermark } from "../measure/types";
 import { NormalizedColumnSetting, NormalizedRow } from "../normalize/types";
 import { PaginatedRow } from "../paginate/types";
+import { defaultBoldFace, defaultFontFace } from "../normalize/index";
 
 const mockMoveTo = jest.spyOn(PDFDocument.prototype, "moveTo");
 const mockLineTo = jest.spyOn(PDFDocument.prototype, "lineTo");
@@ -262,15 +261,21 @@ describe("rendering functions", () => {
 
       const args = [
         {
-          cell: { value: value, bold: value > 0 },
+          cell: {
+            value: value,
+            bold: value > 0,
+            boldFace: defaultBoldFace,
+            fontFace: defaultFontFace,
+          },
           expected: defaultFontFace,
         },
         {
-          cell: { value: value, bold: value == 0 },
-          expected: defaultBoldFace,
-        },
-        {
-          cell: { value: value, bold: value == 0 },
+          cell: {
+            value: value,
+            bold: value == 0,
+            boldFace: defaultBoldFace,
+            fontFace: defaultFontFace,
+          },
           expected: defaultBoldFace,
         },
       ];
@@ -282,13 +287,30 @@ describe("rendering functions", () => {
 
     it("returns bold font if row bold option is true", () => {
       const args = [
-        { cell: { value: 0 }, expected: defaultFontFace },
         {
-          cell: { value: 1, bold: false },
+          cell: {
+            value: 0,
+            boldFace: defaultBoldFace,
+            fontFace: defaultFontFace,
+          },
           expected: defaultFontFace,
         },
         {
-          cell: { value: 2, bold: true },
+          cell: {
+            value: 1,
+            bold: false,
+            boldFace: defaultBoldFace,
+            fontFace: defaultFontFace,
+          },
+          expected: defaultFontFace,
+        },
+        {
+          cell: {
+            value: 2,
+            bold: true,
+            boldFace: defaultBoldFace,
+            fontFace: defaultFontFace,
+          },
           expected: defaultBoldFace,
         },
       ];
@@ -411,8 +433,18 @@ describe("rendering functions", () => {
       const image = { height: imageHeight, image: buffer };
       const row: NormalizedRow = {
         data: [
-          { value: "hello", columnSpan: 1 },
-          { value: "world", columnSpan: 1 },
+          {
+            value: "hello",
+            columnSpan: 1,
+            fontFace: defaultFontFace,
+            boldFace: defaultBoldFace,
+          },
+          {
+            value: "world",
+            columnSpan: 1,
+            fontFace: defaultFontFace,
+            boldFace: defaultBoldFace,
+          },
         ],
       };
       const columns: NormalizedColumnSetting[] = [
