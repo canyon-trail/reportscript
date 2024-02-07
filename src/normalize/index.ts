@@ -13,6 +13,7 @@ import {
   HorizontalAlignment,
   PageBreakRows,
   FontSetting,
+  Watermark,
 } from "../types";
 import {
   CellSettings,
@@ -37,19 +38,26 @@ export function normalize(document: Document): NormalizedDocument {
     pageBreakRows,
     defaultFontSettings,
     timestampPageNumberFontSetting,
+    watermark,
   } = document;
   const normalizedFontSetting = normalizeFontSetting(defaultFontSettings);
   const normalizedTimestampPageNumberFontSetting = {
     ...normalizedFontSetting,
     ...timestampPageNumberFontSetting,
   };
+
   return {
     ...document,
     headers: headers
       ? normalizeHeaderFooter(normalizeSetting(headers, normalizedFontSetting))
       : { rows: [] },
     sections: sections.map((section) =>
-      normalizeSection(section, normalizedFontSetting, document?.tableGap)
+      normalizeSection(
+        section,
+        normalizedFontSetting,
+        document?.tableGap,
+        watermark
+      )
     ),
     footers: footers
       ? normalizeHeaderFooter(normalizeSetting(footers, normalizedFontSetting))
@@ -295,11 +303,14 @@ export function normalizeHeaderFooter(
 export function normalizeSection(
   section: Section,
   fontSetting: FontSetting,
-  tableGap?: number
+  tableGap?: number,
+  docWatermark?: Watermark
 ): NormalizedSection {
-  const { headers, tables } = section;
+  const { headers, tables, watermark } = section;
+  const sectionWatermark = watermark ?? docWatermark;
   return {
     tableGap: tableGap ?? undefined,
+
     ...section,
     headers: headers
       ? normalizeHeaderFooter(normalizeSetting(headers, fontSetting))
@@ -307,5 +318,19 @@ export function normalizeSection(
     tables: tables.map((table) =>
       normalizeTable(normalizeSetting(table, fontSetting))
     ),
+    watermark: normalizeWatermark(sectionWatermark, fontSetting),
   };
+}
+
+export function normalizeWatermark(
+  watermark: Watermark,
+  fontSetting: FontSetting
+): Watermark {
+  return watermark
+    ? {
+        fontFace: fontSetting?.fontFace,
+        color: fontSetting?.color,
+        ...watermark,
+      }
+    : undefined;
 }

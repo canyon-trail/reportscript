@@ -10,6 +10,7 @@ import {
   PageBreakRows,
   HorizontalAlignment,
   FontSetting,
+  Watermark,
 } from "../types";
 import {
   computeCellAlignments,
@@ -28,6 +29,7 @@ import {
   defaultBoldFace,
   normalizeFontSetting,
   normalizeSetting,
+  normalizeWatermark,
 } from ".";
 import {
   NormalizedColumnSetting,
@@ -732,42 +734,72 @@ describe("normalizeAlignment", () => {
 });
 
 describe("normalizeSection", () => {
+  const sectionHeaders = {
+    rows: [
+      {
+        data: ["section header"],
+      },
+    ],
+    columns: [
+      {
+        width: "1fr",
+      },
+    ],
+  };
+  const table = {
+    headers: [
+      {
+        data: ["table header"],
+      },
+    ],
+    rows: [
+      {
+        data: ["row"],
+      },
+    ],
+    columns: [
+      {
+        width: "1fr",
+      },
+    ],
+  };
+  const normalizedTable = {
+    headers: [
+      {
+        data: [{ ...defaultNormalizedCellOptions, value: "table header" }],
+        options: defaultRowOptions,
+      },
+    ],
+    rows: [
+      {
+        data: [{ ...defaultNormalizedCellOptions, value: "row" }],
+        options: defaultRowOptions,
+      },
+    ],
+    columns: defaultNormalizedColumnSetting,
+  };
   it("carries sections setting", () => {
     const section: Section = {
-      headers: {
-        rows: [
-          {
-            data: ["section header"],
-          },
-        ],
-        columns: [
-          {
-            width: "1fr",
-          },
-        ],
-      },
-      tables: [
-        {
-          headers: [
-            {
-              data: ["table header"],
-            },
-          ],
-          rows: [
-            {
-              data: ["row"],
-            },
-          ],
-          style: { border: true },
-          columns: [
-            {
-              width: "1fr",
-            },
-          ],
-        },
-      ],
+      headers: sectionHeaders,
+      tables: [{ ...table, style: { border: true } }],
       tableGap: 2,
     };
+    const expectedTable = {
+      headers: [
+        {
+          data: [{ ...defaultNormalizedCellOptions, value: "table header" }],
+          options: { ...defaultRowOptions, border: true },
+        },
+      ],
+      rows: [
+        {
+          data: [{ ...defaultNormalizedCellOptions, value: "row" }],
+          options: { ...defaultRowOptions, border: true },
+        },
+      ],
+      columns: defaultNormalizedColumnSetting,
+    };
+
     expect(normalizeSection(section, defaultNormalizedFontSetting)).toEqual({
       headers: {
         rows: [
@@ -780,75 +812,76 @@ describe("normalizeSection", () => {
         ],
         columns: defaultNormalizedColumnSetting,
       },
-      tables: [
-        {
-          headers: [
-            {
-              data: [
-                { ...defaultNormalizedCellOptions, value: "table header" },
-              ],
-              options: { ...defaultRowOptions, border: true },
-            },
-          ],
-          rows: [
-            {
-              data: [{ ...defaultNormalizedCellOptions, value: "row" }],
-              options: { ...defaultRowOptions, border: true },
-            },
-          ],
-          columns: defaultNormalizedColumnSetting,
-        },
-      ],
+      tables: [expectedTable],
       tableGap: 2,
     });
   });
   it("override doc tableGap setting", () => {
     const section: Section = {
-      tables: [
-        {
-          headers: [
-            {
-              data: ["table header"],
-            },
-          ],
-          rows: [
-            {
-              data: ["row"],
-            },
-          ],
-          columns: [
-            {
-              width: "1fr",
-            },
-          ],
-        },
-      ],
+      tables: [table],
       tableGap: 2,
     };
+
     expect(normalizeSection(section, defaultNormalizedFontSetting, 7)).toEqual({
       headers: {
         rows: [],
       },
-      tables: [
-        {
-          headers: [
-            {
-              data: [
-                { ...defaultNormalizedCellOptions, value: "table header" },
-              ],
-              options: defaultRowOptions,
-            },
-          ],
-          rows: [
-            {
-              data: [{ ...defaultNormalizedCellOptions, value: "row" }],
-              options: defaultRowOptions,
-            },
-          ],
-          columns: defaultNormalizedColumnSetting,
-        },
-      ],
+      tables: [normalizedTable],
       tableGap: 2,
+    });
+  });
+  it("passes normalizedWatermark from document", () => {
+    const section: Section = {
+      tables: [table],
+    };
+    const watermark: Watermark = {
+      text: "Hello",
+    };
+    expect(
+      normalizeSection(
+        section,
+        defaultNormalizedFontSetting,
+        undefined,
+        watermark
+      )
+    ).toEqual({
+      headers: {
+        rows: [],
+      },
+      tables: [normalizedTable],
+      watermark: {
+        text: "Hello",
+        fontFace: defaultFontFace,
+      },
+    });
+  });
+  it("overriden normalizedWatermark from document", () => {
+    const section: Section = {
+      tables: [table],
+      watermark: {
+        text: "Bye Bye",
+      },
+    };
+    const watermark: Watermark = {
+      text: "Hello",
+      fontFace: "Times",
+    };
+    expect(
+      normalizeSection(
+        section,
+        defaultNormalizedFontSetting,
+        undefined,
+        watermark
+      )
+    ).toEqual({
+      headers: {
+        rows: [],
+      },
+      tables: [normalizedTable],
+      watermark: {
+        text: "Bye Bye",
+        fontFace: defaultFontFace,
+      },
     });
   });
 });
@@ -959,13 +992,11 @@ describe("normalizeDocument", () => {
     rows: [createNormalizedRow("document footer")],
     columns: defaultNormalizedColumnSetting,
   };
-
   const document: Document = {
     headers: documentHeaders,
     sections: documentSections,
     footers: documentFooters,
   };
-
   const normalizedDocument: NormalizedDocument = {
     headers: normalizedDocumentHeader,
     sections: normalizedDocumentSections,
@@ -1296,6 +1327,27 @@ describe("normalizeSetting", () => {
     };
     expect(normalizeSetting(tableWithStyle, fontSetting)).toEqual(
       tableWithStyle
+    );
+  });
+});
+
+describe("normalizeWatermark", () => {
+  it("return empty if no watermark found", () => {
+    expect(normalizeWatermark(undefined, defaultNormalizedFontSetting)).toEqual(
+      undefined
+    );
+  });
+  it("passed fontSetting to watermark", () => {
+    const watermark = { text: "hello" };
+    const { fontFace } = defaultNormalizedFontSetting;
+    expect(normalizeWatermark(watermark, defaultNormalizedFontSetting)).toEqual(
+      { ...watermark, fontFace }
+    );
+  });
+  it("override fontSetting", () => {
+    const watermark = { text: "hello", fontFace: "Times" };
+    expect(normalizeWatermark(watermark, defaultNormalizedFontSetting)).toEqual(
+      watermark
     );
   });
 });

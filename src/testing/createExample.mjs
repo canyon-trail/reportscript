@@ -199,6 +199,7 @@ const documentFooter = {
   ],
   style: {
     fontSize: 12,
+    fontFace: "Times-Roman"
   },
 };
 
@@ -213,7 +214,7 @@ export const createDocument = (image) => ({
   footers: documentFooter,
   pageNumbers: true,
   timestamp: true,
-  timeStampPageNumberFontSetting: {
+  timestampPageNumberFontSetting: {
     fontFace: "Times-Roman",
     fontSize: 9
   },
@@ -225,6 +226,13 @@ export const createDocument = (image) => ({
         fontSize: 12
       }]
     }]
+  },
+  defaultFontSettings:{
+    fontFace:"Courier"
+  },
+  watermark:{
+    text:"Kind",
+    color:"black"
   }
 });
 
