@@ -10,6 +10,10 @@ import {
 } from "../measure";
 import { PaginatedRow } from "../paginate/types";
 import { MeasuredWatermark } from "../measure/types";
+import SVGtoPDF from "svg-to-pdfkit";
+import { Chart } from "types/chart";
+import { Chart as ChartJS, registerables, ChartConfiguration } from "chart.js";
+import { createCanvas } from "canvas";
 
 export function bottomBorder(
   row: PaginatedRow,
@@ -29,19 +33,23 @@ export function bottomBorder(
   );
 }
 
-export function writeRow(row: PaginatedRow, doc: PdfKitApi): void {
+export async function writeRow(
+  row: PaginatedRow,
+  doc: PdfKitApi
+): Promise<void> {
   const { image, start, data, maxHeight } = row;
-  data.forEach((cell, idx) => {
+
+  for (const [idx, cell] of data.entries()) {
     writeCellBackground(row, doc, idx);
 
     if ("value" in cell) {
       doc.fillColor(getCellColor(cell));
       doc.font(getCellFont(cell));
     }
-    writeCellContents(idx, row, doc);
+    await writeCellContents(idx, row, doc);
     bottomBorder(row, doc, idx);
     writeCellGrids(row, doc, idx);
-  });
+  }
 
   writeBorder(row, doc);
 
@@ -147,11 +155,11 @@ export function getCellColor(cell: TextCell): string {
   return defaultColor;
 }
 
-export function writeCellContents(
+export async function writeCellContents(
   index: number,
   row: PaginatedRow,
   doc: PdfKitApi
-): void {
+): Promise<void> {
   const { start, options, data, columnWidths, columnStarts, maxHeight } = row;
   const cell = data[index];
 
@@ -181,7 +189,9 @@ export function writeCellContents(
       .clip()
       .image(image, imageStart, y, { ...size })
       .restore();
-  } else if (!("chart" in cell)) {
+  } else if ("chart" in cell) {
+    await writeChart(cell.chart, x, y, columnWidths[index], doc);
+  } else {
     doc.text(`${cell.value}`.replace(/\t/g, "    "), x, y, {
       width: maxTextWidth,
       underline: options?.underline ?? undefined,
@@ -242,4 +252,58 @@ export function renderWatermark(
   doc.fillColor(color ?? "#ff0000", 0.1);
   doc.text(`${text}`.replace(/\t/g, "    "), x, y, { align: "center" });
   doc.restore();
+}
+
+async function writeChart(
+  chart: Chart,
+  x: number,
+  y: number,
+  columnWidth: number,
+  doc: PdfKitApi
+): Promise<void> {
+  const allowableChartWidth = columnWidth - textHPadding * 2;
+  const chartWidth =
+    chart.width <= allowableChartWidth ? chart.width : allowableChartWidth;
+
+  const config = {
+    ...chart.config,
+    options: {
+      ...(chart.config.options ?? {}),
+      animation: false,
+      responsive: false,
+    },
+  };
+
+  ChartJS.register(...registerables);
+
+  if (typeof window === "undefined") {
+    const canvas = createCanvas(chartWidth, chart.maxHeight, "svg");
+    new ChartJS(canvas as any, config as ChartConfiguration);
+    const svg = canvas.toBuffer();
+
+    SVGtoPDF(doc, svg.toString(), x, y);
+  } else {
+    config.options.devicePixelRatio = 4;
+
+    const canvas = Object.assign(document.createElement("canvas"), {
+      height: chart.maxHeight,
+      width: chartWidth,
+    });
+
+    new ChartJS(canvas, config as ChartConfiguration);
+
+    const dataUrl = canvas.toDataURL();
+    const buffer = Buffer.from(
+      dataUrl.replace("data:image/png;base64,", ""),
+      "base64"
+    );
+    doc
+      .save()
+      .rect(x, y, chartWidth, chart.maxHeight)
+      .clip()
+      .image(buffer, x, y, { height: chart.maxHeight, width: chartWidth })
+      .restore();
+
+    canvas.remove();
+  }
 }

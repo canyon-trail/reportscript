@@ -462,7 +462,7 @@ describe("rendering functions", () => {
         ),
       } as PaginatedRow;
 
-      writeRow(paginatedRow, doc);
+      await writeRow(paginatedRow, doc);
     });
 
     it("writes image", () => {

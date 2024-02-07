@@ -43,6 +43,7 @@ export function measure(
   const { headers, footers, sections, pageBreakRows, watermark } = document;
   const layout = document?.layout ?? "landscape";
   const { availableWidth, pageHeight, pageWidth } = getPageDimensions(layout);
+
   return {
     ...document,
     layout,
@@ -159,16 +160,24 @@ export function getRowHeight(
 
   const widthsWithoutPadding =
     calculateColumnWidthsWithoutPadding(columnwidths);
+
+  let hasExpandableChart = false;
+
   data.forEach((cell, idx) => {
+    hasExpandableChart = "chart" in cell && !cell.chart.maxHeight;
     const heights = getCellHeight(cell, widthsWithoutPadding[idx], doc);
     minHeight = Math.max(minHeight, heights.minHeight);
-    maxHeight = Math.max(maxHeight, heights.maxHeight);
+
+    maxHeight = hasExpandableChart
+      ? undefined
+      : Math.max(maxHeight, heights.maxHeight);
   });
 
   if (image) {
     minHeight += image.height;
-    maxHeight += image.height;
+    maxHeight = !hasExpandableChart ? maxHeight + image.height : undefined;
   }
+
   return { minHeight, maxHeight };
 }
 
@@ -195,7 +204,9 @@ export function getCellHeight(
   if ("chart" in cell) {
     return {
       minHeight: cell.chart.minHeight + rowLineGap + lineGap,
-      maxHeight: cell.chart.maxHeight + rowLineGap + lineGap,
+      maxHeight: cell.chart.maxHeight
+        ? cell.chart.maxHeight + rowLineGap + lineGap
+        : undefined,
     };
   }
 
@@ -211,19 +222,13 @@ export function getCellHeight(
     align: cell.align,
   };
 
-  const minHeight =
-    doc.heightOfString("X", {
-      ...heightOptions,
-      height: cell.fontSize,
-    }) + gap;
-
-  const maxHeight =
+  const height =
     doc.heightOfString(textVal, {
       ...heightOptions,
       height: cell.noWrap ? cell.fontSize : undefined,
     }) + gap;
 
-  return { minHeight, maxHeight };
+  return { minHeight: height, maxHeight: height };
 }
 
 export function getCellHeightWithText(

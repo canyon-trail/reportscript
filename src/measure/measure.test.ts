@@ -57,15 +57,7 @@ describe("measuring functions", () => {
       const columnWidth = new Array(7).fill(756 / 7);
       const result = getRowHeight(row, doc, columnWidth);
 
-      const expectedMin =
-        doc.heightOfString("X", {
-          width: 756 / 7,
-          lineGap,
-          align: "center",
-        }) +
-        lineGap * 0.5;
-
-      const expectedMax =
+      const expectedHeight =
         doc.heightOfString(longString, {
           width: 756 / 7,
           lineGap,
@@ -74,8 +66,8 @@ describe("measuring functions", () => {
         lineGap * 0.5;
 
       expect(result).toEqual({
-        maxHeight: expectedMax,
-        minHeight: expectedMin,
+        maxHeight: expectedHeight,
+        minHeight: expectedHeight,
       });
     });
 
@@ -108,6 +100,45 @@ describe("measuring functions", () => {
       expect(result).toEqual({
         minHeight: expected,
         maxHeight: expected,
+      });
+    });
+
+    it("sets maxHeight to undefined with an expandable chart (undefined maxHeight)", () => {
+      const data: Cell[] = [
+        { value: "hello", columnSpan: 1 },
+        { value: "world", columnSpan: 1 },
+        {
+          chart: {
+            config: {
+              type: "bar",
+              data: {
+                labels: ["test"],
+                datasets: [
+                  {
+                    label: "test",
+                    data: [12],
+                  },
+                ],
+              },
+            },
+            minHeight: 200,
+          },
+        },
+      ];
+
+      const fontSize = 8;
+
+      const row: NormalizedRow = {
+        data,
+        options: { fontSize },
+      };
+
+      const columnWidth = new Array(2).fill(756 / 2);
+      const result = getRowHeight(row, doc, columnWidth);
+
+      expect(result).toEqual({
+        minHeight: 200 + lineGap * 2,
+        maxHeight: undefined,
       });
     });
   });
