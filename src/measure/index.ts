@@ -78,7 +78,7 @@ export function getMeasuredSections(
     tables: s.tables.map((t) => measureTable(doc, t, availableWidth)),
     index: idx,
     watermark:
-      s?.watermark && getMeasuredWatermark(s?.watermark, pageHeight, pageWidth),
+      s?.watermark && getMeasuredWatermark(s.watermark, pageHeight, pageWidth),
   }));
 }
 

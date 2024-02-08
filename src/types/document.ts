@@ -51,6 +51,9 @@ export type Document = {
   tableGap?: number;
   /** Sets the font settings for any page numbers or timestamps. */
   timestampPageNumberFontSetting?: FontSetting;
+  /** Default font setting through out document */
+  defaultFontSettings?: FontSetting;
+
   /** Adds custom rows for page breaks */
   pageBreakRows?: PageBreakRows;
   /**

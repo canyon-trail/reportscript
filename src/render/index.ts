@@ -15,11 +15,6 @@ import { Chart } from "types/chart";
 import { Chart as ChartJS, registerables, ChartConfiguration } from "chart.js";
 import { createCanvas } from "canvas";
 
-export const defaultFontFace = "Helvetica";
-export const defaultBoldFace = "Helvetica-Bold";
-export const defaultBackgroundColor = "#e6e0e0";
-export const defaultHeaderColor = "#5a5858";
-
 export function bottomBorder(
   row: PaginatedRow,
   doc: PdfKitApi,
@@ -149,10 +144,7 @@ export function writeCellBackground(
 }
 
 export function getCellFont(cell: TextCell): string {
-  const fontFace = cell?.fontFace || defaultFontFace;
-  const boldFace = cell?.boldFace || defaultBoldFace;
-  const defaultFont = cell?.bold ? boldFace : fontFace;
-
+  const defaultFont = cell?.bold ? cell?.boldFace : cell?.fontFace;
   return defaultFont;
 }
 
@@ -254,7 +246,7 @@ export function renderWatermark(
   doc: PdfKitApi
 ): void {
   const { text, fontFace, color, x, y, fontSize, origin } = watermark;
-  doc.font(fontFace ?? defaultBoldFace, undefined, fontSize);
+  doc.font(fontFace, undefined, fontSize);
   doc.save();
   doc.rotate(-45, { origin: origin });
   doc.fillColor(color ?? "#ff0000", 0.1);

@@ -101,8 +101,6 @@ async function render(
 
     if (p?.watermark) {
       renderWatermark(p.watermark, pdfDoc);
-    } else {
-      doc?.watermark && renderWatermark(doc.watermark, pdfDoc);
     }
 
     if (idx !== doc.pages.length - 1) {

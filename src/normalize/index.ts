@@ -1,7 +1,6 @@
 import _ from "lodash";
 import {
   Cell,
-  CellStyle,
   CellValue,
   ColumnSetting,
   Row,
@@ -13,9 +12,11 @@ import {
   Unit,
   HorizontalAlignment,
   PageBreakRows,
-  CellOptions,
+  FontSetting,
+  Watermark,
 } from "../types";
 import {
+  CellSettings,
   NormalizedColumnSetting,
   NormalizedDocument,
   NormalizedHeaderFooter,
@@ -26,22 +27,75 @@ import {
   NormalizedWidth,
 } from "./types";
 
+export const defaultFontFace = "Helvetica";
+export const defaultBoldFace = "Helvetica-Bold";
+
 export function normalize(document: Document): NormalizedDocument {
-  const { headers, sections, footers, pageBreakRows } = document;
+  const {
+    headers,
+    sections,
+    footers,
+    pageBreakRows,
+    defaultFontSettings,
+    timestampPageNumberFontSetting,
+    watermark,
+  } = document;
+  const normalizedFontSetting = normalizeFontSetting(defaultFontSettings);
+  const normalizedTimestampPageNumberFontSetting = {
+    ...normalizedFontSetting,
+    ...timestampPageNumberFontSetting,
+  };
+
   return {
     ...document,
-    headers: headers ? normalizeHeaderFooter(headers) : { rows: [] },
+    headers: headers
+      ? normalizeHeaderFooter(normalizeSetting(headers, normalizedFontSetting))
+      : { rows: [] },
     sections: sections.map((section) =>
-      normalizeSection(section, document?.tableGap)
+      normalizeSection(
+        section,
+        normalizedFontSetting,
+        document?.tableGap,
+        watermark
+      )
     ),
-    footers: footers ? normalizeHeaderFooter(footers) : { rows: [] },
+    footers: footers
+      ? normalizeHeaderFooter(normalizeSetting(footers, normalizedFontSetting))
+      : { rows: [] },
     pageBreakRows: pageBreakRows
-      ? normalizePageBreakRows(pageBreakRows)
+      ? normalizePageBreakRows(
+          normalizeSetting(pageBreakRows, normalizedFontSetting)
+        )
       : undefined,
+    timestampPageNumberFontSetting: normalizedTimestampPageNumberFontSetting,
   };
 }
 
-export function normalizeOptions(data: Cell[], cellOptions: CellStyle): Cell[] {
+export function normalizeFontSetting(
+  documentFontSetting: FontSetting
+): FontSetting {
+  return {
+    ...documentFontSetting,
+    fontFace: documentFontSetting?.fontFace ?? defaultFontFace,
+    boldFace: documentFontSetting?.boldFace ?? defaultBoldFace,
+  };
+}
+
+export function normalizeSetting(
+  obj: PageBreakRows | Table | HeaderFooters,
+  documentFontSetting: FontSetting
+): PageBreakRows | Table | HeaderFooters {
+  const style = { ...documentFontSetting, ...obj?.style };
+  return {
+    ...obj,
+    style,
+  };
+}
+
+export function normalizeOptions(
+  data: Cell[],
+  cellOptions: CellSettings
+): Cell[] {
   return data.map((d) => ({
     ...cellOptions,
     ...d,
@@ -92,7 +146,7 @@ export function normalizeAlignment(
 }
 
 export function normalizeCell(cell: Cell | CellValue): Cell {
-  const defaultProps: CellOptions = {
+  const defaultProps: CellSettings = {
     columnSpan: 1,
   };
 
@@ -125,15 +179,15 @@ export function normalizeCell(cell: Cell | CellValue): Cell {
 }
 export function normalizeRow(
   row: Row,
-  tableStyle?: RowOptions,
-  settingsFromTable?: NormalizedColumnSetting[]
+  tableStyle: RowOptions,
+  settingsFromTable: NormalizedColumnSetting[]
 ): NormalizedRow {
   const { data, options } = row;
   let normalizedData: Cell[] = data.map((d) => normalizeCell(d));
 
   validateCellSpan(normalizedData, settingsFromTable);
 
-  let cellOptions: CellStyle = {};
+  let cellOptions: CellSettings = {};
   if (tableStyle) {
     const { border, ...rest } = tableStyle; // eslint-disable-line
     cellOptions = rest;
@@ -248,13 +302,35 @@ export function normalizeHeaderFooter(
 }
 export function normalizeSection(
   section: Section,
-  tableGap?: number
+  fontSetting: FontSetting,
+  tableGap?: number,
+  docWatermark?: Watermark
 ): NormalizedSection {
-  const { headers, tables } = section;
+  const { headers, tables, watermark } = section;
+  const sectionWatermark = watermark ?? docWatermark;
   return {
     tableGap: tableGap ?? undefined,
+
     ...section,
-    headers: headers ? normalizeHeaderFooter(headers) : { rows: [] },
-    tables: tables.map((table) => normalizeTable(table)),
+    headers: headers
+      ? normalizeHeaderFooter(normalizeSetting(headers, fontSetting))
+      : { rows: [] },
+    tables: tables.map((table) =>
+      normalizeTable(normalizeSetting(table, fontSetting))
+    ),
+    watermark: normalizeWatermark(sectionWatermark, fontSetting),
   };
+}
+
+export function normalizeWatermark(
+  watermark: Watermark,
+  fontSetting: FontSetting
+): Watermark {
+  return watermark
+    ? {
+        fontFace: fontSetting?.fontFace,
+        color: fontSetting?.color,
+        ...watermark,
+      }
+    : undefined;
 }
