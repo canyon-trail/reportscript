@@ -136,13 +136,10 @@ export function normalizeAlignment(
   cells: Cell[],
   alignments: HorizontalAlignment[]
 ): Cell[] {
-  return cells.map((cell, index) => {
-    const cellWithAlign = {
-      align: alignments[index],
-      ...cell,
-    };
-    return cellWithAlign;
-  });
+  return cells.map((cell, index) => ({
+    horizontalAlign: alignments[index],
+    ...cell,
+  }));
 }
 
 export function normalizeCell(cell: Cell | CellValue): Cell {

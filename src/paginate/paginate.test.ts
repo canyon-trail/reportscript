@@ -117,7 +117,7 @@ const createPageNumberTimeStampRow = (param: pageNumberTimestampRowParam) => {
       data: [
         {
           value: `${timestampVal}${pageNumVal}`,
-          align: "right",
+          horizontalAlign: "right",
           columnSpan: 1,
         },
       ],
