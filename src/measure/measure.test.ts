@@ -223,7 +223,7 @@ describe("measuring functions", () => {
         doc.heightOfString("X", {
           width: 20,
           lineGap,
-          align: cell.align,
+          align: cell.horizontalAlign,
           height: 10,
         }) +
         lineGap * 0.5;
@@ -646,8 +646,8 @@ describe("measuring functions", () => {
         rows: [
           {
             data: [
-              { value: "column 1", columnSpan: 1, align: "center" },
-              { value: "column 2", columnSpan: 1, align: "center" },
+              { value: "column 1", columnSpan: 1, horizontalAlign: "center" },
+              { value: "column 2", columnSpan: 1, horizontalAlign: "center" },
             ],
             options: {
               border: true,
@@ -655,8 +655,8 @@ describe("measuring functions", () => {
           },
           {
             data: [
-              { value: "column 1", columnSpan: 1, align: "center" },
-              { value: "column 2", columnSpan: 1, align: "center" },
+              { value: "column 1", columnSpan: 1, horizontalAlign: "center" },
+              { value: "column 2", columnSpan: 1, horizontalAlign: "center" },
             ],
             options: {
               border: true,
@@ -770,7 +770,9 @@ const normalizedSimpleSingleTableDocument: NormalizedDocument = {
           headers: [],
           rows: [
             {
-              data: [{ value: "row", columnSpan: 1, align: "center" }],
+              data: [
+                { value: "row", columnSpan: 1, horizontalAlign: "center" },
+              ],
               options: {
                 border: true,
               },

@@ -549,7 +549,9 @@ describe("normalizeTable", () => {
       headers: [],
       rows: [
         {
-          data: [{ value: "first column", columnSpan: 3, align: "center" }],
+          data: [
+            { value: "first column", columnSpan: 3, horizontalAlign: "center" },
+          ],
           options: { border: false },
         },
       ],
@@ -715,17 +717,17 @@ describe("normalizeAlignment", () => {
       {
         value: "1",
         columnSpan: 1,
-        align: "left",
+        horizontalAlign: "left",
       },
       {
         value: "1",
         columnSpan: 1,
-        align: "left",
+        horizontalAlign: "left",
       },
       {
         value: "1",
         columnSpan: 1,
-        align: "left",
+        horizontalAlign: "left",
       },
     ];
 
@@ -1170,8 +1172,8 @@ describe("normalizePageBreakRows", () => {
       rows: [
         {
           data: [
-            { value: "column 1", columnSpan: 1, align: "center" },
-            { value: "column 2", columnSpan: 1, align: "center" },
+            { value: "column 1", columnSpan: 1, horizontalAlign: "center" },
+            { value: "column 2", columnSpan: 1, horizontalAlign: "center" },
           ],
           options: {
             border: true,

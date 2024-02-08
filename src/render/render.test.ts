@@ -338,7 +338,7 @@ describe("rendering functions", () => {
       const row: NormalizedRow = {
         data: [
           { value: "hello", columnSpan: 1 },
-          { value: "world", columnSpan: 1, align: "left" },
+          { value: "world", columnSpan: 1, horizontalAlign: "left" },
           { value: "hello\t", columnSpan: 1 },
           { value: longString, columnSpan: 1, noWrap: true },
           { value: 8, columnSpan: 1 },
@@ -517,14 +517,14 @@ describe("rendering functions", () => {
     });
 
     it("returns centering offset if align is center", () => {
-      const cell = { image, align: "center" } as ImageCell;
+      const cell = { image, horizontalAlign: "center" } as ImageCell;
 
       const result = getImageXOffset(cell, maxContentWidth);
       expect(result).toBe(10);
     });
 
     it("returns right setting offset if align is right", () => {
-      const cell = { image, align: "right" } as ImageCell;
+      const cell = { image, horizontalAlign: "right" } as ImageCell;
 
       const result = getImageXOffset(cell, maxContentWidth);
       expect(result).toBe(20 - textHPadding);

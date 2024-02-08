@@ -53,11 +53,8 @@ export type CellValue = string | number;
  * @deprecated Needs to be renamed to CellLayout or similar
  */
 export type CellOptions = {
-  /**
-   * Sets the horizontal alignment of the contents within a cell. Default is "center".
-   * @deprecated Needs to be renamed to horizontalAlignment
-   * */
-  align?: HorizontalAlignment;
+  /** Sets the horizontal alignment of a cell's contents within the table row. Default is "center". */
+  horizontalAlign?: HorizontalAlignment;
   /** Sets the vertical alignment of a cell's contents within the table row. Default is "center". */
   verticalAlign?: VerticalAlignment;
   /** Sets how many columns within a row a cell will span. Default is 1. */
