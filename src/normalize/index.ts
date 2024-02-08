@@ -82,12 +82,12 @@ export function normalizeFontSetting(
 }
 
 export function normalizeSetting(
-  obj: PageBreakRows | Table | HeaderFooters,
+  component: PageBreakRows | Table | HeaderFooters,
   documentFontSetting: FontSetting
 ): PageBreakRows | Table | HeaderFooters {
-  const style = { ...documentFontSetting, ...obj?.style };
+  const style = { ...documentFontSetting, ...component?.style };
   return {
-    ...obj,
+    ...component,
     style,
   };
 }

@@ -1300,13 +1300,13 @@ describe("normalizeSetting", () => {
   const fontSetting: FontSetting = {
     fontFace: "Times-News",
   };
-  it("return setting default font if obj style is empty", () => {
+  it("return setting default font if component style is empty", () => {
     expect(normalizeSetting(table, fontSetting)).toEqual({
       ...table,
       style: { ...fontSetting },
     });
   });
-  it("return setting default font along with obj style", () => {
+  it("return setting default font along with component style", () => {
     const tableWithStyle: Table = {
       ...table,
       style: {
@@ -1319,7 +1319,7 @@ describe("normalizeSetting", () => {
       style: { ...fontSetting, ...tableWithStyle.style },
     });
   });
-  it("return setting default font overridden by obj style", () => {
+  it("return setting default font overridden by component style", () => {
     const tableWithStyle: Table = {
       ...table,
       style: {
