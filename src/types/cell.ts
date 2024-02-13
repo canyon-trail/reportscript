@@ -9,12 +9,12 @@ export type Cell = ImageCell | TextCell | ChartCell;
  *
  */
 export type ImageCell = CellStyle &
-  CellOptions & {
+  CellLayout & {
     /** An ImageCell requires an Image data object. */
     image: Image;
   };
 
-export type ChartCell = CellOptions &
+export type ChartCell = CellLayout &
   CellStyle & {
     chart: Chart;
   };
@@ -24,7 +24,7 @@ export type ChartCell = CellOptions &
  */
 export type TextCell = CellStyle &
   FontSetting &
-  CellOptions & {
+  CellLayout & {
     /** A TextCell requires a string or number value. */
     value: CellValue;
   };
@@ -48,16 +48,9 @@ export type CellStyle = {
 
 export type CellValue = string | number;
 
-/**
- * Specifies the layout properties of a cell.
- * @deprecated Needs to be renamed to CellLayout or similar
- */
-export type CellOptions = {
-  /**
-   * Sets the horizontal alignment of the contents within a cell. Default is "center".
-   * @deprecated Needs to be renamed to horizontalAlignment
-   * */
-  align?: HorizontalAlignment;
+export type CellLayout = {
+  /** Sets the horizontal alignment of a cell's contents within the table row. Default is "center". */
+  horizontalAlign?: HorizontalAlignment;
   /** Sets the vertical alignment of a cell's contents within the table row. Default is "center". */
   verticalAlign?: VerticalAlignment;
   /** Sets how many columns within a row a cell will span. Default is 1. */

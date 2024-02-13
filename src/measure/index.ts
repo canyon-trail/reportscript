@@ -219,7 +219,7 @@ export function getCellHeight(
   const heightOptions = {
     width,
     lineGap: rowLineGap,
-    align: cell.align,
+    align: cell.horizontalAlign,
   };
 
   const height =
@@ -252,7 +252,7 @@ export function measureCellHeights(
 }
 
 export function getCellAlign(cell: Cell): string {
-  return cell?.align ?? "center";
+  return cell?.horizontalAlign ?? "center";
 }
 
 function measureFooterHeight(

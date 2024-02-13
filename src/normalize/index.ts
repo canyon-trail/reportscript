@@ -82,12 +82,12 @@ export function normalizeFontSetting(
 }
 
 export function normalizeSetting(
-  obj: PageBreakRows | Table | HeaderFooters,
+  component: PageBreakRows | Table | HeaderFooters,
   documentFontSetting: FontSetting
 ): PageBreakRows | Table | HeaderFooters {
-  const style = { ...documentFontSetting, ...obj?.style };
+  const style = { ...documentFontSetting, ...component?.style };
   return {
-    ...obj,
+    ...component,
     style,
   };
 }
@@ -136,13 +136,10 @@ export function normalizeAlignment(
   cells: Cell[],
   alignments: HorizontalAlignment[]
 ): Cell[] {
-  return cells.map((cell, index) => {
-    const cellWithAlign = {
-      align: alignments[index],
-      ...cell,
-    };
-    return cellWithAlign;
-  });
+  return cells.map((cell, index) => ({
+    horizontalAlign: alignments[index],
+    ...cell,
+  }));
 }
 
 export function normalizeCell(cell: Cell | CellValue): Cell {

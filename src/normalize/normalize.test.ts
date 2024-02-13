@@ -56,7 +56,7 @@ const defaultRowOptions = {
 };
 const defaultNormalizedCellOptions = {
   ...defaultNormalizedFontSetting,
-  align: "center",
+  horizontalAlign: "center",
   columnSpan: 1,
 };
 
@@ -146,8 +146,18 @@ describe("normalizeRow", () => {
       normalizeRow(mockRowWithString, mockTableOptions, mockTableColumnSetting)
     ).toEqual({
       data: [
-        { value: "one", ...mockTableOptions, align: "left", columnSpan: 1 },
-        { value: "two", ...mockTableOptions, align: "left", columnSpan: 1 },
+        {
+          value: "one",
+          ...mockTableOptions,
+          horizontalAlign: "left",
+          columnSpan: 1,
+        },
+        {
+          value: "two",
+          ...mockTableOptions,
+          horizontalAlign: "left",
+          columnSpan: 1,
+        },
       ],
       options: {
         ...mockTableOptions,
@@ -167,8 +177,18 @@ describe("normalizeRow", () => {
       )
     ).toEqual({
       data: [
-        { value: "one", ...mockRowOptions, align: "left", columnSpan: 1 },
-        { value: "two", ...mockRowOptions, align: "left", columnSpan: 1 },
+        {
+          value: "one",
+          ...mockRowOptions,
+          horizontalAlign: "left",
+          columnSpan: 1,
+        },
+        {
+          value: "two",
+          ...mockRowOptions,
+          horizontalAlign: "left",
+          columnSpan: 1,
+        },
       ],
       options: {
         ...mockRowOptions,
@@ -187,7 +207,14 @@ describe("normalizeRow", () => {
         mockTableColumnSetting
       )
     ).toEqual({
-      data: [{ value: "one", ...mockRowOptions, align: "left", columnSpan: 2 }],
+      data: [
+        {
+          value: "one",
+          ...mockRowOptions,
+          horizontalAlign: "left",
+          columnSpan: 2,
+        },
+      ],
       options: {
         ...mockRowOptions,
         border: false,
@@ -347,12 +374,12 @@ describe("normalizeTable", () => {
           data: [
             {
               value: "first column",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
             {
               value: "second column",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
           ],
@@ -385,12 +412,12 @@ describe("normalizeTable", () => {
           data: [
             {
               value: "first column",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
             {
               value: "second column",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
           ],
@@ -422,12 +449,12 @@ describe("normalizeTable", () => {
           data: [
             {
               value: "header 1",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
             {
               value: "header 2",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
           ],
@@ -441,12 +468,12 @@ describe("normalizeTable", () => {
           data: [
             {
               value: "first column",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
             {
               value: "second column",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
           ],
@@ -480,14 +507,14 @@ describe("normalizeTable", () => {
           data: [
             {
               value: "header 1",
-              align: "right",
+              horizontalAlign: "right",
               fontSize: 9,
               color: "white",
               columnSpan: 1,
             },
             {
               value: "header 2",
-              align: "right",
+              horizontalAlign: "right",
               fontSize: 9,
               color: "white",
               columnSpan: 1,
@@ -505,14 +532,14 @@ describe("normalizeTable", () => {
           data: [
             {
               value: "first column",
-              align: "right",
+              horizontalAlign: "right",
               fontSize: 9,
               color: "white",
               columnSpan: 1,
             },
             {
               value: "second column",
-              align: "right",
+              horizontalAlign: "right",
               fontSize: 9,
               color: "white",
               columnSpan: 1,
@@ -549,7 +576,9 @@ describe("normalizeTable", () => {
       headers: [],
       rows: [
         {
-          data: [{ value: "first column", columnSpan: 3, align: "center" }],
+          data: [
+            { value: "first column", columnSpan: 3, horizontalAlign: "center" },
+          ],
           options: { border: false },
         },
       ],
@@ -590,12 +619,12 @@ describe("normalizeHeaderFooter", () => {
           data: [
             {
               value: "first column",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
             {
               value: "second column",
-              align: "center",
+              horizontalAlign: "center",
               columnSpan: 1,
             },
           ],
@@ -637,14 +666,14 @@ describe("normalizeHeaderFooter", () => {
           data: [
             {
               value: "first column",
-              align: "right",
+              horizontalAlign: "right",
               fontSize: 9,
               color: "white",
               columnSpan: 1,
             },
             {
               value: "second column",
-              align: "right",
+              horizontalAlign: "right",
               fontSize: 9,
               color: "white",
               columnSpan: 1,
@@ -696,17 +725,17 @@ describe("normalizeAlignment", () => {
       {
         value: "1",
         columnSpan: 1,
-        align: "center",
+        horizontalAlign: "center",
       },
       {
         value: "1",
         columnSpan: 1,
-        align: "center",
+        horizontalAlign: "center",
       },
       {
         value: "1",
         columnSpan: 1,
-        align: "center",
+        horizontalAlign: "center",
       },
     ]);
   });
@@ -715,17 +744,17 @@ describe("normalizeAlignment", () => {
       {
         value: "1",
         columnSpan: 1,
-        align: "left",
+        horizontalAlign: "left",
       },
       {
         value: "1",
         columnSpan: 1,
-        align: "left",
+        horizontalAlign: "left",
       },
       {
         value: "1",
         columnSpan: 1,
-        align: "left",
+        horizontalAlign: "left",
       },
     ];
 
@@ -1170,8 +1199,8 @@ describe("normalizePageBreakRows", () => {
       rows: [
         {
           data: [
-            { value: "column 1", columnSpan: 1, align: "center" },
-            { value: "column 2", columnSpan: 1, align: "center" },
+            { value: "column 1", columnSpan: 1, horizontalAlign: "center" },
+            { value: "column 2", columnSpan: 1, horizontalAlign: "center" },
           ],
           options: {
             border: true,
@@ -1298,13 +1327,13 @@ describe("normalizeSetting", () => {
   const fontSetting: FontSetting = {
     fontFace: "Times-News",
   };
-  it("return setting default font if obj style is empty", () => {
+  it("return setting default font if component style is empty", () => {
     expect(normalizeSetting(table, fontSetting)).toEqual({
       ...table,
       style: { ...fontSetting },
     });
   });
-  it("return setting default font along with obj style", () => {
+  it("return setting default font along with component style", () => {
     const tableWithStyle: Table = {
       ...table,
       style: {
@@ -1317,7 +1346,7 @@ describe("normalizeSetting", () => {
       style: { ...fontSetting, ...tableWithStyle.style },
     });
   });
-  it("return setting default font overridden by obj style", () => {
+  it("return setting default font overridden by component style", () => {
     const tableWithStyle: Table = {
       ...table,
       style: {

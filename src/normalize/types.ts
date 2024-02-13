@@ -7,7 +7,7 @@ import {
   Image,
   Document,
   CellStyle,
-  CellOptions,
+  CellLayout,
 } from "../types";
 
 export type NormalizedWidth = { value: number; unit: Unit };
@@ -44,4 +44,4 @@ export type NormalizedDocument = Omit<
   pageBreakRows?: NormalizedPageBreakRows;
 };
 
-export type CellSettings = CellStyle & CellOptions;
+export type CellSettings = CellStyle & CellLayout;

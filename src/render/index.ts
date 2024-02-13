@@ -229,7 +229,7 @@ export function getImageXOffset(
   maxContentWidth: number
 ): number {
   const width = cell.image?.width;
-  const align = cell.align;
+  const align = cell.horizontalAlign;
 
   const imageStart =
     align === "center"

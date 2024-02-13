@@ -187,7 +187,7 @@ function handlePageNumTimestamp(
   const timestampPageNumFontSetting = doc?.timestampPageNumberFontSetting;
   const dataCell: Cell = {
     value: docFooterText,
-    align: "right",
+    horizontalAlign: "right",
     columnSpan: 1,
     ...timestampPageNumFontSetting,
   };

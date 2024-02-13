@@ -1,6 +1,6 @@
 /** Style text font */
 export type FontSetting = {
-  /** Default is "Helvetica" */
+  /** Default is "Helvetica". See https://pdfkit.org/docs/text.html#fonts */
   fontFace?: string;
   /** Default value is 7. */
   fontSize?: number;
