@@ -10,7 +10,10 @@ type TextTemplate = {
   apply: (thisFn: any, variables: TextTemplateVariables[]) => string;
 };
 
-export function rs(templates: TemplateStringsArray, ...args): TextTemplate {
+export function rs(
+  templates: TemplateStringsArray,
+  ...args: any[]
+): TextTemplate {
   args;
 
   return (variableArgs: TextTemplateVariables) => {
