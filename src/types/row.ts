@@ -1,3 +1,4 @@
+import { TextTemplate } from "rs";
 import { Cell, CellStyle, CellValue, Image } from "./cell";
 import { FontSetting } from "./font";
 
@@ -7,7 +8,7 @@ import { FontSetting } from "./font";
  */
 export type Row = {
   /** A row’s data requires an array of either ImageCell or TextCell objects, strings, or numbers. */
-  data: (Cell | CellValue)[];
+  data: (Cell | CellValue | TextTemplate)[];
   /** Sets styling options for the cell. Overrides any row or table level styling options. */
   options?: RowOptions;
   /** Adds an image for the entire row with no other data. */

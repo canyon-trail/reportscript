@@ -191,6 +191,15 @@ export async function writeCellContents(
       .restore();
   } else if ("chart" in cell) {
     await writeChart(cell.chart, x, y, columnWidths[index], doc);
+  } else if ("template" in cell) {
+    doc.text("Not quite done yet".replace(/\t/g, "    "), x, y, {
+      width: maxTextWidth,
+      underline: options?.underline ?? undefined,
+      align,
+      lineGap: cellLineGap,
+      height: cell.noWrap ? fontSize : undefined,
+      ellipsis: cell.noWrap || undefined,
+    });
   } else {
     doc.text(`${cell.value}`.replace(/\t/g, "    "), x, y, {
       width: maxTextWidth,

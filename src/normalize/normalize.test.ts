@@ -11,6 +11,7 @@ import {
   HorizontalAlignment,
   FontSetting,
   Watermark,
+  TextTemplateCell,
 } from "../types";
 import {
   computeCellAlignments,
@@ -40,6 +41,7 @@ import {
   NormalizedSection,
   NormalizedTable,
 } from "./types";
+import { rs } from "../rs/index";
 
 const emptyNormalizedDocument = {
   headers: { rows: [] },
@@ -85,12 +87,36 @@ describe("normalizeCell", () => {
       columnSpan: 1,
     });
   });
+
   it("normalize null", () => {
     expect(normalizeCell(null)).toEqual({ value: "", columnSpan: 1 });
+  });
+  it("normalize null", () => {
+    expect(normalizeCell(undefined)).toEqual({ value: "", columnSpan: 1 });
+  });
+  it("normalize 0 as number", () => {
+    expect(normalizeCell(0)).toEqual({ value: 0, columnSpan: 1 });
   });
   it("allows 0 value", () => {
     expect(normalizeCell({ value: 0 })).toEqual({
       value: 0,
+      columnSpan: 1,
+    });
+  });
+  it("normalize text template cell", () => {
+    const cell: TextTemplateCell = {
+      template: rs`Page {{documentPageNumber}} of {{documentPageCount}}`,
+    };
+    const normalizedCell = normalizeCell(cell);
+    expect(normalizedCell).toMatchObject({
+      template: cell.template,
+      columnSpan: 1,
+    });
+  });
+  it("normalize text template", () => {
+    const expectedTemplate = rs`Page {{documentPageNumber}} of {{documentPageCount}}`;
+    expect(normalizeCell(expectedTemplate)).toStrictEqual({
+      template: expectedTemplate,
       columnSpan: 1,
     });
   });

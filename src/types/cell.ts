@@ -1,8 +1,9 @@
 import { HorizontalAlignment, VerticalAlignment } from "types/alignment";
 import { FontSetting } from "./font";
 import { Chart } from "./chart";
+import { TextTemplate } from "rs";
 
-export type Cell = ImageCell | TextCell | ChartCell;
+export type Cell = ImageCell | TextCell | ChartCell | TextTemplateCell;
 
 /**
  * An Image can be added to a row cell with optional styles.
@@ -27,6 +28,12 @@ export type TextCell = CellStyle &
   CellLayout & {
     /** A TextCell requires a string or number value. */
     value: CellValue;
+  };
+
+export type TextTemplateCell = CellStyle &
+  FontSetting &
+  CellLayout & {
+    template: TextTemplate;
   };
 
 export type CellStyle = {

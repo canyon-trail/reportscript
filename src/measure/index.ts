@@ -190,6 +190,12 @@ export function getCellHeight(
   const gap = lineGap * 0.5;
   const rowLineGap = cell?.lineGap ?? lineGap;
 
+  const heightOptions = {
+    width,
+    lineGap: rowLineGap,
+    align: cell?.horizontalAlign,
+  };
+
   if (!cell) {
     throw new UndefinedCellError("Cell is undefined");
   }
@@ -210,17 +216,38 @@ export function getCellHeight(
     };
   }
 
+  if ("template" in cell) {
+    const lowVariable = {
+      documentPageNumber: 1,
+      documentPageCount: 1,
+      sectionPageNumber: 1,
+      sectionPageCount: 1,
+      timestamp: "",
+    };
+    const highVariable = {
+      documentPageNumber: 100000,
+      documentPageCount: 100000,
+      sectionPageNumber: 100000,
+      sectionPageCount: 100000,
+      timestamp: "Thu Jun 01 2023 19:10:58",
+    };
+    const lowBoundTemplate = cell.template.renderTemplate(lowVariable);
+    const highBoundTemplate = cell.template.renderTemplate(highVariable);
+    const options = {
+      ...heightOptions,
+      height: cell.noWrap ? cell.fontSize : undefined,
+    };
+    return {
+      minHeight: doc.heightOfString(lowBoundTemplate, options) + gap,
+      maxHeight: doc.heightOfString(highBoundTemplate, options) + gap,
+    };
+  }
+
   doc.fontSize(cell?.fontSize ?? defaultFontSize);
 
   const textContent = text ?? cell?.value;
 
   const textVal = textContent ? (cell?.noWrap ? "X" : `${textContent}`) : "";
-
-  const heightOptions = {
-    width,
-    lineGap: rowLineGap,
-    align: cell.horizontalAlign,
-  };
 
   const height =
     doc.heightOfString(textVal, {

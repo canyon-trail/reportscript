@@ -16,7 +16,7 @@ const variableKeys: Record<keyof TextTemplateVariables, boolean> = {
 
 type RenderTemplateFn = (variables: TextTemplateVariables) => string;
 
-type TextTemplate = {
+export type TextTemplate = {
   renderTemplate: RenderTemplateFn;
 };
 
@@ -86,7 +86,6 @@ export function rs(
       output.push(remainingArgs.shift());
     }
   }
-
   return {
     renderTemplate: (variables: TextTemplateVariables) =>
       output.map((x) => x(variables)).join(""),

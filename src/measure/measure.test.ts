@@ -22,6 +22,7 @@ import {
   NormalizedDocument,
 } from "../normalize/types";
 import { MeasuredDocument, MeasuredWatermark } from "./types";
+import { rs } from "../rs/index";
 
 describe("measuring functions", () => {
   describe("getRowHeight", () => {
@@ -201,7 +202,28 @@ describe("measuring functions", () => {
 
       expect(result).toBe(40 + lineGap + 1);
     });
-
+    it("get text template cell Height ", () => {
+      const cell: Cell = {
+        template: rs`Page {{documentPageNumber}} of {{documentPageCount}}`,
+        columnSpan: 1,
+        fontSize: 10,
+      };
+      const options = {
+        width: 50,
+        lineGap,
+        align: cell.horizontalAlign,
+        height: 10,
+      };
+      const result = getCellHeight(cell, 50, doc);
+      const lowBound =
+        doc.heightOfString("Page 1 of 1", options) + lineGap * 0.5;
+      const highBound =
+        doc.heightOfString("Page 100000 of 100000", options) + lineGap * 0.5;
+      expect(result).toStrictEqual({
+        minHeight: lowBound,
+        maxHeight: highBound,
+      });
+    });
     it("throws for undefined cell", () => {
       expect(() => getCellHeight(undefined, 100, doc)).toThrow(
         "Cell is undefined"
@@ -214,6 +236,26 @@ describe("measuring functions", () => {
       const cell = {
         value: longString,
         noWrap: true,
+        columnSpan: 1,
+        fontSize: 10,
+      } as TextCell;
+      const result = getCellHeight(cell, 20, doc).maxHeight;
+
+      const expected =
+        doc.heightOfString("X", {
+          width: 20,
+          lineGap,
+          align: cell.horizontalAlign,
+          height: 10,
+        }) +
+        lineGap * 0.5;
+
+      expect(result).toBe(expected);
+    });
+    it("returns height of single line of text", () => {
+      const string = "this";
+      const cell = {
+        value: string,
         columnSpan: 1,
         fontSize: 10,
       } as TextCell;
