@@ -39,6 +39,7 @@ export function normalize(
   const {
     headers,
     footers,
+    sections,
     pageBreakRows,
     defaultFontSettings,
     timestampPageNumberFontSetting,
@@ -51,8 +52,6 @@ export function normalize(
     ...normalizedFontSetting,
     ...timestampPageNumberFontSetting,
   };
-
-  const sections = getDocumentSections(document);
 
   return {
     ...documentProps,
@@ -335,14 +334,10 @@ export function normalizeWatermark(
     : undefined;
 }
 
-function getDocumentSections(document: Document | SimpleDocument): Section[] {
-  return "sections" in document
-    ? document.sections
-    : [{ tables: document.tables }];
-}
-
 function getDocumentProps(
   document: Document | SimpleDocument
 ): Partial<Document> {
-  return "sections" in document ? document : {};
+  return "sections" in document
+    ? document
+    : { sections: [{ tables: document.tables }] };
 }
