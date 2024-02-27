@@ -1185,7 +1185,7 @@ describe("normalizeDocument", () => {
   });
 
   describe("with simple document", () => {
-    it("convertes simple document with only tables into normalized document", () => {
+    it("converts simple document with only tables into normalized document", () => {
       const simpleDoc: SimpleDocument = {
         tables: documentSections[0].tables,
       };
