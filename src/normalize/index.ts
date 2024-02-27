@@ -14,6 +14,7 @@ import {
   PageBreakRows,
   FontSetting,
   Watermark,
+  SimpleDocument,
 } from "../types";
 import {
   CellSettings,
@@ -30,34 +31,36 @@ import {
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
 
-export function normalize(document: Document): NormalizedDocument {
+export function normalize(
+  document: Document | SimpleDocument
+): NormalizedDocument {
+  const documentProps = getDocumentProps(document);
+
   const {
     headers,
-    sections,
     footers,
     pageBreakRows,
     defaultFontSettings,
     timestampPageNumberFontSetting,
     watermark,
-  } = document;
+    tableGap,
+  } = documentProps;
+
   const normalizedFontSetting = normalizeFontSetting(defaultFontSettings);
   const normalizedTimestampPageNumberFontSetting = {
     ...normalizedFontSetting,
     ...timestampPageNumberFontSetting,
   };
 
+  const sections = getDocumentSections(document);
+
   return {
-    ...document,
+    ...documentProps,
     headers: headers
       ? normalizeHeaderFooter(normalizeSetting(headers, normalizedFontSetting))
       : { rows: [] },
     sections: sections.map((section) =>
-      normalizeSection(
-        section,
-        normalizedFontSetting,
-        document?.tableGap,
-        watermark
-      )
+      normalizeSection(section, normalizedFontSetting, tableGap, watermark)
     ),
     footers: footers
       ? normalizeHeaderFooter(normalizeSetting(footers, normalizedFontSetting))
@@ -330,4 +333,16 @@ export function normalizeWatermark(
         ...watermark,
       }
     : undefined;
+}
+
+function getDocumentSections(document: Document | SimpleDocument): Section[] {
+  return "sections" in document
+    ? document.sections
+    : [{ tables: document.tables }];
+}
+
+function getDocumentProps(
+  document: Document | SimpleDocument
+): Partial<Document> {
+  return "sections" in document ? document : {};
 }

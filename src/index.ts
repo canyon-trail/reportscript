@@ -7,7 +7,7 @@ import { renderWatermark, writeRow } from "./render";
 import { paginate } from "./paginate";
 import { normalize } from "./normalize";
 import fs from "fs";
-import { Document, SnapshotResult } from "./types";
+import { Document, SimpleDocument, SnapshotResult } from "./types";
 export { splitColumn } from "./paginate/splitColumn";
 
 type RenderDocumentResult = {
@@ -19,7 +19,7 @@ type RenderDocumentResult = {
  * Writes a Document to a NodeJS.WriteableStream and returns the stream.
  */
 export async function renderPdf(
-  document: Document,
+  document: Document | SimpleDocument,
   response: NodeJS.WritableStream
 ): Promise<NodeJS.WritableStream> {
   const { stream } = await renderDocument(document, undefined, response);
@@ -34,7 +34,7 @@ export async function renderPdf(
  */
 export async function renderSnapshot(
   path: string,
-  document: Document
+  document: Document | SimpleDocument
 ): Promise<SnapshotResult> {
   const { reportDocument } = await renderDocument(document, true);
   const doc = reportDocument as SnapshottingDocument;
@@ -53,13 +53,14 @@ export async function renderSnapshot(
 }
 
 async function renderDocument(
-  document: Document,
+  document: Document | SimpleDocument,
   isSnapshot?: boolean,
   outStream?: NodeJS.WritableStream
 ): Promise<RenderDocumentResult> {
   let stream: NodeJS.WritableStream;
   const pdfDoc = new PDFDocument({
-    layout: document.layout ?? "landscape",
+    layout:
+      "layout" in document && document.layout ? document.layout : "landscape",
     margin: 0,
     bufferPages: true,
     info: isSnapshot
@@ -112,6 +113,7 @@ async function render(
 
 export type {
   Document,
+  SimpleDocument,
   Image,
   Table,
   Row,

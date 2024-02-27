@@ -1,7 +1,7 @@
 import { FontSetting } from "./font";
 import { Row, RowOptions } from "./row";
 import { Section } from "./section";
-import { ColumnSetting } from "./table";
+import { ColumnSetting, Table } from "./table";
 
 /**
  * A document is the main data object that gets passed to {@link renderPdf}.
@@ -61,6 +61,13 @@ export type Document = {
    * it will override the document watermark setting.
    */
   watermark?: Watermark;
+};
+
+/**
+ * A simple document only requires an array of tables
+ */
+export type SimpleDocument = {
+  tables: Table[];
 };
 
 export type HeaderFooters = {

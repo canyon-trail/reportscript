@@ -11,6 +11,7 @@ import {
   HorizontalAlignment,
   FontSetting,
   Watermark,
+  SimpleDocument,
 } from "../types";
 import {
   computeCellAlignments,
@@ -914,6 +915,7 @@ describe("normalizeSection", () => {
     });
   });
 });
+
 describe("normalizeDocument", () => {
   const createNormalizedRow = (
     text: string,
@@ -1112,6 +1114,7 @@ describe("normalizeDocument", () => {
     };
     expect(normalize(document)).toEqual(expected);
   });
+
   describe("fonts setting", () => {
     const fontSetting = {
       fontFace: "Arial",
@@ -1178,6 +1181,34 @@ describe("normalizeDocument", () => {
           timestampPageNumberFontSetting,
         })
       ).toEqual({ ...expectedDocument, timestampPageNumberFontSetting });
+    });
+  });
+
+  describe("with simple document", () => {
+    it("convertes simple document with only tables into normalized document", () => {
+      const simpleDoc: SimpleDocument = {
+        tables: documentSections[0].tables,
+      };
+
+      const result = normalize(simpleDoc);
+
+      expect(result).toEqual({
+        headers: { rows: [] },
+        footers: { rows: [] },
+        sections: [
+          {
+            headers: { rows: [] },
+            tables: [
+              {
+                headers: [createNormalizedRow("table header")],
+                rows: [createNormalizedRow("row")],
+                columns: defaultNormalizedColumnSetting,
+              },
+            ],
+          },
+        ],
+        timestampPageNumberFontSetting: defaultNormalizedFontSetting,
+      });
     });
   });
 });
