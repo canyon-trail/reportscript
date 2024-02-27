@@ -3,6 +3,7 @@ import { UndefinedCellError, VerticalMeasure } from "./types";
 import { PdfKitApi } from "../reportDocument";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
+  NormalizedCell,
   NormalizedDocument,
   NormalizedHeaderFooter,
   NormalizedPageBreakRows,
@@ -22,19 +23,6 @@ export const margin = ptsPerInch / 4;
 export const defaultFontSize = 7;
 export const textHPadding = 2;
 export const lineGap = margin * 0.25;
-
-export const exampleDocumentFooterRow: NormalizedHeaderFooter = Object.freeze({
-  rows: [
-    {
-      data: [{ value: "Page N of N", columnSpan: 1, align: "right" }],
-      options: {
-        border: false,
-        fontSize: 9,
-      },
-    },
-  ],
-  columns: [{ width: { value: 1, unit: "fr" } }],
-});
 
 export function measure(
   document: NormalizedDocument,
@@ -56,7 +44,6 @@ export function measure(
       pageHeight,
       pageWidth
     ),
-    documentFooterHeight: measureFooterHeight(document, doc, availableWidth),
     pageBreakRows:
       pageBreakRows &&
       getMeasuredPageBreakRows(doc, pageBreakRows, availableWidth),
@@ -182,11 +169,12 @@ export function getRowHeight(
 }
 
 export function getCellHeight(
-  cell: Cell,
+  cell: NormalizedCell,
   width: number,
   doc: PdfKitApi,
   text?: string | number
 ): VerticalMeasure {
+  console.log(cell);
   const gap = lineGap * 0.5;
   const rowLineGap = cell?.lineGap ?? lineGap;
 
@@ -217,28 +205,20 @@ export function getCellHeight(
   }
 
   if ("template" in cell) {
-    const lowVariable = {
-      documentPageNumber: 1,
-      documentPageCount: 1,
-      sectionPageNumber: 1,
-      sectionPageCount: 1,
-      timestamp: "",
-    };
     const highVariable = {
-      documentPageNumber: 100000,
-      documentPageCount: 100000,
-      sectionPageNumber: 100000,
-      sectionPageCount: 100000,
+      documentPageNumber: 1000,
+      documentPageCount: 1000,
+      sectionPageNumber: 1000,
+      sectionPageCount: 1000,
       timestamp: "Thu Jun 01 2023 19:10:58",
     };
-    const lowBoundTemplate = cell.template.renderTemplate(lowVariable);
     const highBoundTemplate = cell.template.renderTemplate(highVariable);
     const options = {
       ...heightOptions,
       height: cell.noWrap ? cell.fontSize : undefined,
     };
     return {
-      minHeight: doc.heightOfString(lowBoundTemplate, options) + gap,
+      minHeight: doc.heightOfString(highBoundTemplate, options) + gap,
       maxHeight: doc.heightOfString(highBoundTemplate, options) + gap,
     };
   }
@@ -280,22 +260,6 @@ export function measureCellHeights(
 
 export function getCellAlign(cell: Cell): string {
   return cell?.horizontalAlign ?? "center";
-}
-
-function measureFooterHeight(
-  document: NormalizedDocument,
-  doc: PdfKitApi,
-  availableWidth: number
-): number {
-  const hasFooter =
-    document.timestamp || document.pageNumbers || document.sectionPageNumbers;
-
-  if (!hasFooter) {
-    return 0;
-  }
-  const { rows, columns } = exampleDocumentFooterRow;
-  const columnwidths = calculateColumnWidths(columns, availableWidth);
-  return getRowHeight(rows[0], doc, columnwidths).minHeight;
 }
 
 type PageDimensions = {

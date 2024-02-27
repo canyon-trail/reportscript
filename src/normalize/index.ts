@@ -14,9 +14,11 @@ import {
   PageBreakRows,
   FontSetting,
   Watermark,
+  TextTemplateCell,
 } from "../types";
 import {
   CellSettings,
+  NormalizedCell,
   NormalizedColumnSetting,
   NormalizedDocument,
   NormalizedHeaderFooter,
@@ -26,11 +28,15 @@ import {
   NormalizedTable,
   NormalizedWidth,
 } from "./types";
-import { TextTemplate } from "rs";
-import util from "util";
+import { TextTemplate, rs } from "../rs/index";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
+
+type TemplateRow = {
+  data: TextTemplateCell[];
+  options?: RowOptions;
+};
 
 export function normalize(document: Document): NormalizedDocument {
   const {
@@ -41,12 +47,25 @@ export function normalize(document: Document): NormalizedDocument {
     defaultFontSettings,
     timestampPageNumberFontSetting,
     watermark,
+    sectionPageNumbers,
+    pageNumbers,
+    timestamp,
   } = document;
   const normalizedFontSetting = normalizeFontSetting(defaultFontSettings);
   const normalizedTimestampPageNumberFontSetting = {
     ...normalizedFontSetting,
     ...timestampPageNumberFontSetting,
   };
+  const normalizedTimeStampPageNum = normalizeDocPageNumTimeStamp(
+    sectionPageNumbers,
+    pageNumbers,
+    timestamp
+  );
+  const normalizedFooters = normalizeFooter(
+    normalizeSetting(footers, normalizedFontSetting),
+    normalizedTimeStampPageNum,
+    normalizedFontSetting
+  );
 
   return {
     ...document,
@@ -61,9 +80,7 @@ export function normalize(document: Document): NormalizedDocument {
         watermark
       )
     ),
-    footers: footers
-      ? normalizeHeaderFooter(normalizeSetting(footers, normalizedFontSetting))
-      : { rows: [] },
+    footers: normalizedFooters,
     pageBreakRows: pageBreakRows
       ? normalizePageBreakRows(
           normalizeSetting(pageBreakRows, normalizedFontSetting)
@@ -71,6 +88,81 @@ export function normalize(document: Document): NormalizedDocument {
       : undefined,
     timestampPageNumberFontSetting: normalizedTimestampPageNumberFontSetting,
   };
+}
+
+export function normalizeDocPageNumTimeStamp(
+  sectionPageNumbers: boolean,
+  pageNumbers: boolean,
+  timestamp: boolean
+): TextTemplate | undefined {
+  if (sectionPageNumbers && pageNumbers) {
+    throw new Error(
+      "A document cannot have both pageNumbers and sectionPageNumbers set to true"
+    );
+  }
+
+  if (timestamp) {
+    if (sectionPageNumbers) {
+      return rs`{{timestamp}} Page {{sectionPageNumber}} of {{sectionPageCount}}`;
+    } else if (pageNumbers) {
+      return rs`{{timestamp}} Page {{documentPageNumber}} of {{documentPageCount}}`;
+    } else {
+      return rs`{{timestamp}}`;
+    }
+  } else {
+    if (sectionPageNumbers) {
+      return rs`Page {{sectionPageNumber}} of {{sectionPageCount}}`;
+    } else if (pageNumbers) {
+      return rs`Page {{documentPageNumber}} of {{documentPageCount}}`;
+    } else {
+      return undefined;
+    }
+  }
+}
+
+export function normalizeFooter(
+  footer: HeaderFooters,
+  timeStampPageNumTemplate: TextTemplate,
+  normalizedFontSetting: FontSetting
+): NormalizedHeaderFooter {
+  if (footer && timeStampPageNumTemplate) {
+    throw new Error(
+      "Cannot set footer, and page number or timestamp at the same time. Please use TextTemplateCell to set page number or timestamp"
+    );
+  }
+
+  if (timeStampPageNumTemplate) {
+    const pageNumTimeStampColumnSetting: NormalizedColumnSetting = {
+      align: "right",
+      width: { value: 1, unit: "fr" },
+    };
+    const defaultRowOptions: RowOptions = {
+      fontFace: defaultFontFace,
+      boldFace: defaultBoldFace,
+    };
+    const normalizedTemplateRow = normalizeRow(
+      { data: [{ template: timeStampPageNumTemplate }] },
+      {
+        ...defaultRowOptions,
+        ...normalizedFontSetting,
+      },
+      [pageNumTimeStampColumnSetting]
+    );
+    return {
+      rows: [normalizedTemplateRow],
+      columns: [pageNumTimeStampColumnSetting],
+    };
+  }
+  if (footer) {
+    const { rows, columns, style } = footer;
+    const settings = normalizedColumnSetting(rows, columns);
+    const normalizedRows = rows.map((r) => normalizeRow(r, style, settings));
+    return {
+      rows: normalizedRows,
+      columns: settings,
+    };
+  }
+  return { rows: [] };
 }
 
 export function normalizeFontSetting(
@@ -88,16 +180,18 @@ export function normalizeSetting(
   documentFontSetting: FontSetting
 ): PageBreakRows | Table | HeaderFooters {
   const style = { ...documentFontSetting, ...component?.style };
-  return {
-    ...component,
-    style,
-  };
+  return component
+    ? {
+        ...component,
+        style,
+      }
+    : undefined;
 }
 
 export function normalizeOptions(
-  data: Cell[],
+  data: NormalizedCell[],
   cellOptions: CellSettings
-): Cell[] {
+): NormalizedCell[] {
   return data.map((d) => ({
     ...cellOptions,
     ...d,
@@ -105,7 +199,7 @@ export function normalizeOptions(
 }
 
 export function validateCellSpan(
-  cells: Cell[],
+  cells: NormalizedCell[],
   columnSettings: NormalizedColumnSetting[]
 ): void {
   const totalWidth = columnSettings?.length;
@@ -124,7 +218,7 @@ export function validateCellSpan(
 
 export function computeCellAlignments(
   columnSettings: NormalizedColumnSetting[],
-  cells: Cell[]
+  cells: NormalizedCell[]
 ): HorizontalAlignment[] {
   let cellIndex = 0;
   return cells.map((cell) => {
@@ -135,26 +229,31 @@ export function computeCellAlignments(
 }
 
 export function normalizeAlignment(
-  cells: Cell[],
+  cells: NormalizedCell[],
   alignments: HorizontalAlignment[]
-): Cell[] {
+): NormalizedCell[] {
   return cells.map((cell, index) => ({
     horizontalAlign: alignments[index],
     ...cell,
   }));
 }
 
-export function normalizeCell(cell: Cell | CellValue | TextTemplate): Cell {
+export function normalizeCell(
+  cell: Cell | CellValue | TextTemplateCell
+): NormalizedCell {
   const defaultProps: CellSettings = {
     columnSpan: 1,
   };
-  if (cell != null && cell != undefined) {
+  if (cell == null || cell === undefined) {
+    return {
+      ...defaultProps,
+      value: "",
+    };
+  } else {
     if (_.isString(cell)) {
       return { value: cell as string, ...defaultProps };
     } else if (_.isNumber(cell)) {
       return { value: cell, ...defaultProps };
-    } else if ("renderTemplate" in cell) {
-      return { ...defaultProps, template: cell };
     } else if (cell && "image" in (cell as Cell)) {
       return {
         ...defaultProps,
@@ -170,10 +269,14 @@ export function normalizeCell(cell: Cell | CellValue | TextTemplate): Cell {
         ...cell,
         value: cell.value,
       };
-    } else if (cell && "template" in cell) {
-      console.log(util);
+    } else if (
+      cell &&
+      "template" in cell &&
+      ![undefined, null].includes(cell.template)
+    ) {
       return {
         ...defaultProps,
+        ...cell,
         template: cell.template,
       };
     } else {
@@ -183,22 +286,15 @@ export function normalizeCell(cell: Cell | CellValue | TextTemplate): Cell {
         value: "",
       };
     }
-  } else {
-    return {
-      ...defaultProps,
-
-      value: "",
-    };
   }
 }
 export function normalizeRow(
-  row: Row,
+  row: Row | TemplateRow,
   tableStyle: RowOptions,
   settingsFromTable: NormalizedColumnSetting[]
 ): NormalizedRow {
   const { data, options } = row;
-  let normalizedData: Cell[] = data.map((d) => normalizeCell(d));
-
+  let normalizedData: NormalizedCell[] = data.map((d) => normalizeCell(d));
   validateCellSpan(normalizedData, settingsFromTable);
 
   let cellOptions: CellSettings = {};

@@ -3,7 +3,7 @@ import { FontSetting } from "./font";
 import { Chart } from "./chart";
 import { TextTemplate } from "rs";
 
-export type Cell = ImageCell | TextCell | ChartCell | TextTemplateCell;
+export type Cell = ImageCell | TextCell | ChartCell;
 
 /**
  * An Image can be added to a row cell with optional styles.

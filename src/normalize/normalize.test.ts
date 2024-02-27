@@ -31,6 +31,8 @@ import {
   normalizeFontSetting,
   normalizeSetting,
   normalizeWatermark,
+  normalizeDocPageNumTimeStamp,
+  normalizeFooter,
 } from ".";
 import {
   NormalizedColumnSetting,
@@ -56,18 +58,28 @@ const defaultRowOptions = {
   ...defaultNormalizedFontSetting,
   border: false,
 };
-const defaultNormalizedCellOptions = {
-  ...defaultNormalizedFontSetting,
+const defaultCellAlignmentWidthOptions = {
   horizontalAlign: "center",
   columnSpan: 1,
 };
-
-const defaultNormalizedColumnSetting: NormalizedColumnSetting[] = [
-  {
-    width: { value: 1, unit: "fr" },
-    align: "center",
-  },
+const defaultNormalizedCellOptions = {
+  ...defaultNormalizedFontSetting,
+  ...defaultCellAlignmentWidthOptions,
+};
+const defaultNormalizedColumnSetting: NormalizedColumnSetting = {
+  width: { value: 1, unit: "fr" },
+  align: "center",
+};
+const defaultNormalizedColumnSettings: NormalizedColumnSetting[] = [
+  defaultNormalizedColumnSetting,
 ];
+const mockVariables = {
+  documentPageNumber: 1,
+  documentPageCount: 3,
+  sectionPageNumber: 1,
+  sectionPageCount: 1,
+  timestamp: "10:00:00",
+};
 describe("normalizeCell", () => {
   it("normalize string", () => {
     expect(normalizeCell("value")).toEqual({ value: "value", columnSpan: 1 });
@@ -91,7 +103,7 @@ describe("normalizeCell", () => {
   it("normalize null", () => {
     expect(normalizeCell(null)).toEqual({ value: "", columnSpan: 1 });
   });
-  it("normalize null", () => {
+  it("normalize undefined", () => {
     expect(normalizeCell(undefined)).toEqual({ value: "", columnSpan: 1 });
   });
   it("normalize 0 as number", () => {
@@ -113,13 +125,7 @@ describe("normalizeCell", () => {
       columnSpan: 1,
     });
   });
-  it("normalize text template", () => {
-    const expectedTemplate = rs`Page {{documentPageNumber}} of {{documentPageCount}}`;
-    expect(normalizeCell(expectedTemplate)).toStrictEqual({
-      template: expectedTemplate,
-      columnSpan: 1,
-    });
-  });
+
   it("normalize cell override columnSpan", () => {
     expect(normalizeCell({ value: "value", columnSpan: 2 })).toEqual({
       value: "value",
@@ -645,13 +651,11 @@ describe("normalizeHeaderFooter", () => {
           data: [
             {
               value: "first column",
-              horizontalAlign: "center",
-              columnSpan: 1,
+              ...defaultCellAlignmentWidthOptions,
             },
             {
               value: "second column",
-              horizontalAlign: "center",
-              columnSpan: 1,
+              ...defaultCellAlignmentWidthOptions,
             },
           ],
           options: {
@@ -659,16 +663,7 @@ describe("normalizeHeaderFooter", () => {
           },
         },
       ],
-      columns: [
-        {
-          align: "center",
-          width: { value: 1, unit: "fr" },
-        },
-        {
-          align: "center",
-          width: { value: 1, unit: "fr" },
-        },
-      ],
+      columns: [defaultNormalizedColumnSetting, defaultNormalizedColumnSetting],
     });
   });
   it("header/footer get passes down settings", () => {
@@ -831,7 +826,7 @@ describe("normalizeSection", () => {
         options: defaultRowOptions,
       },
     ],
-    columns: defaultNormalizedColumnSetting,
+    columns: defaultNormalizedColumnSettings,
   };
   it("carries sections setting", () => {
     const section: Section = {
@@ -852,7 +847,7 @@ describe("normalizeSection", () => {
           options: { ...defaultRowOptions, border: true },
         },
       ],
-      columns: defaultNormalizedColumnSetting,
+      columns: defaultNormalizedColumnSettings,
     };
 
     expect(normalizeSection(section, defaultNormalizedFontSetting)).toEqual({
@@ -865,7 +860,7 @@ describe("normalizeSection", () => {
             options: { ...defaultRowOptions, border: false },
           },
         ],
-        columns: defaultNormalizedColumnSetting,
+        columns: defaultNormalizedColumnSettings,
       },
       tables: [expectedTable],
       tableGap: 2,
@@ -980,8 +975,8 @@ describe("normalizeDocument", () => {
         },
       ],
       columns: [
-        defaultNormalizedColumnSetting[0],
-        defaultNormalizedColumnSetting[0],
+        defaultNormalizedColumnSettings[0],
+        defaultNormalizedColumnSettings[0],
       ] as NormalizedColumnSetting[],
     };
   };
@@ -1026,26 +1021,26 @@ describe("normalizeDocument", () => {
   };
   const normalizedDocumentHeader: NormalizedHeaderFooter = {
     rows: [createNormalizedRow("document header")],
-    columns: defaultNormalizedColumnSetting,
+    columns: defaultNormalizedColumnSettings,
   };
   const normalizedDocumentSections: NormalizedSection[] = [
     {
       headers: {
         rows: [createNormalizedRow("section header")],
-        columns: defaultNormalizedColumnSetting,
+        columns: defaultNormalizedColumnSettings,
       },
       tables: [
         {
           headers: [createNormalizedRow("table header")],
           rows: [createNormalizedRow("row")],
-          columns: defaultNormalizedColumnSetting,
+          columns: defaultNormalizedColumnSettings,
         },
       ],
     },
   ];
   const normalizedDocumentFooters: NormalizedHeaderFooter = {
     rows: [createNormalizedRow("document footer")],
-    columns: defaultNormalizedColumnSetting,
+    columns: defaultNormalizedColumnSettings,
   };
   const document: Document = {
     headers: documentHeaders,
@@ -1077,9 +1072,9 @@ describe("normalizeDocument", () => {
     expect(normalize(document)).toEqual(normalizedDocument);
   });
   it("keeps document settings", () => {
-    expect(normalize({ ...document, timestamp: true })).toEqual({
+    expect(normalize({ ...document, layout: "landscape" })).toEqual({
       ...normalizedDocument,
-      timestamp: true,
+      layout: "landscape",
     });
   });
   it("passes down tableGap setting", () => {
@@ -1098,7 +1093,6 @@ describe("normalizeDocument", () => {
       tableGap: 2,
     });
   });
-
   it("return document with empty headers and footers", () => {
     const document: Document = {
       sections: documentSections,
@@ -1109,7 +1103,6 @@ describe("normalizeDocument", () => {
       timestampPageNumberFontSetting: defaultNormalizedFontSetting,
     });
   });
-
   it("handles defined headers and undefined footers", () => {
     const document: Document = {
       headers: documentHeaders,
@@ -1122,7 +1115,6 @@ describe("normalizeDocument", () => {
       timestampPageNumberFontSetting: defaultNormalizedFontSetting,
     });
   });
-
   it("normalized with pageBreakRow", () => {
     const document: Document = {
       sections: documentSections,
@@ -1138,6 +1130,32 @@ describe("normalizeDocument", () => {
     };
     expect(normalize(document)).toEqual(expected);
   });
+  it("normalize with pageNumber and timestamp without footer", () => {
+    const document: Document = {
+      sections: documentSections,
+      pageNumbers: true,
+      timestamp: true,
+    };
+    const normalizedDocument: NormalizedDocument = normalize(document);
+    const normalizedTemplateCell = normalizedDocument.footers.rows[0]
+      .data[0] as TextTemplateCell;
+
+    expect(
+      normalizedTemplateCell.template.renderTemplate(mockVariables)
+    ).toEqual("10:00:00 Page 1 of 3");
+  });
+  it("normalize with pageNumber and timestamp with footer", () => {
+    const document: Document = {
+      sections: documentSections,
+      footers: documentFooters,
+      pageNumbers: true,
+      timestamp: true,
+    };
+
+    expect(() => normalize(document)).toThrowError(
+      "Cannot set footer, and page number or timestamp at the same time. Please use TextTemplateCell to set page number or timestamp"
+    );
+  });
   describe("fonts setting", () => {
     const fontSetting = {
       fontFace: "Arial",
@@ -1151,26 +1169,26 @@ describe("normalizeDocument", () => {
     };
     const normalizedDocumentHeader: NormalizedHeaderFooter = {
       rows: [createNormalizedRow("document header", fontSetting)],
-      columns: defaultNormalizedColumnSetting,
+      columns: defaultNormalizedColumnSettings,
     };
     const normalizedDocumentSections: NormalizedSection[] = [
       {
         headers: {
           rows: [createNormalizedRow("section header", fontSetting)],
-          columns: defaultNormalizedColumnSetting,
+          columns: defaultNormalizedColumnSettings,
         },
         tables: [
           {
             headers: [createNormalizedRow("table header", fontSetting)],
             rows: [createNormalizedRow("row", fontSetting)],
-            columns: defaultNormalizedColumnSetting,
+            columns: defaultNormalizedColumnSettings,
           },
         ],
       },
     ];
     const normalizedDocumentFooters: NormalizedHeaderFooter = {
       rows: [createNormalizedRow("document footer", fontSetting)],
-      columns: defaultNormalizedColumnSetting,
+      columns: defaultNormalizedColumnSettings,
     };
     const expectedDocument: NormalizedDocument = {
       headers: normalizedDocumentHeader,
@@ -1353,6 +1371,9 @@ describe("normalizeSetting", () => {
   const fontSetting: FontSetting = {
     fontFace: "Times-News",
   };
+  it("return undefined if no component style is set", () => {
+    expect(normalizeSetting(undefined, fontSetting)).toEqual(undefined);
+  });
   it("return setting default font if component style is empty", () => {
     expect(normalizeSetting(table, fontSetting)).toEqual({
       ...table,
@@ -1403,6 +1424,140 @@ describe("normalizeWatermark", () => {
     const watermark = { text: "hello", fontFace: "Times" };
     expect(normalizeWatermark(watermark, defaultNormalizedFontSetting)).toEqual(
       watermark
+    );
+  });
+});
+
+describe("normalizeDocPageNumTimeStamp", () => {
+  it("throws error if section and doc page numbers are enable", () => {
+    expect(() =>
+      normalizeDocPageNumTimeStamp(true, true, undefined)
+    ).toThrowError(
+      "A document cannot have both pageNumbers and sectionPageNumbers set to true"
+    );
+  });
+  it("return undefine if nothing is set", () => {
+    expect(
+      normalizeDocPageNumTimeStamp(undefined, undefined, undefined)
+    ).toEqual(undefined);
+  });
+  it("return template for section page number", () => {
+    const result = normalizeDocPageNumTimeStamp(
+      true,
+      undefined,
+      undefined
+    ).renderTemplate(mockVariables);
+    expect(result).toBe("Page 1 of 1");
+  });
+  it("return template for document page number", () => {
+    const result = normalizeDocPageNumTimeStamp(
+      undefined,
+      true,
+      undefined
+    ).renderTemplate(mockVariables);
+    expect(result).toBe("Page 1 of 3");
+  });
+  it("return template for document page number and timestamp", () => {
+    const result = normalizeDocPageNumTimeStamp(
+      undefined,
+      true,
+      true
+    ).renderTemplate(mockVariables);
+    expect(result).toBe("10:00:00 Page 1 of 3");
+  });
+  it("return template for document section page number and timestamp", () => {
+    const result = normalizeDocPageNumTimeStamp(
+      true,
+      undefined,
+      true
+    ).renderTemplate(mockVariables);
+    expect(result).toBe("10:00:00 Page 1 of 1");
+  });
+});
+describe("normalizeFooter", () => {
+  const rows: Row[] = [{ data: ["data"] }];
+  const template = rs`{{documentPageNumber}}`;
+
+  it("return empty row if no footer and template", () => {
+    expect(normalizeFooter(undefined, undefined, undefined)).toEqual({
+      rows: [],
+    });
+  });
+  it("return footer with template including default settings and when no footer is set", () => {
+    expect(normalizeFooter(undefined, template, undefined)).toEqual({
+      rows: [
+        {
+          data: [
+            {
+              template: template,
+              ...defaultNormalizedCellOptions,
+              horizontalAlign: "right",
+            },
+          ],
+          options: defaultRowOptions,
+        },
+      ],
+      columns: [
+        {
+          align: "right",
+          width: { value: 1, unit: "fr" },
+        },
+      ],
+    });
+  });
+  it("return footer with template including normalized font settings", () => {
+    const fontSetting: FontSetting = {
+      fontFace: "Times",
+    };
+    expect(normalizeFooter(undefined, template, fontSetting)).toEqual({
+      rows: [
+        {
+          data: [
+            {
+              template: template,
+              ...defaultNormalizedCellOptions,
+              horizontalAlign: "right",
+              fontFace: "Times",
+            },
+          ],
+          options: {
+            ...defaultRowOptions,
+            fontFace: "Times",
+          },
+        },
+      ],
+      columns: [
+        {
+          align: "right",
+          width: { value: 1, unit: "fr" },
+        },
+      ],
+    });
+  });
+  it("return footer with default settings", () => {
+    const footer: HeaderFooters = { rows: rows };
+    expect(normalizeFooter(footer, undefined, undefined)).toEqual({
+      rows: [
+        {
+          data: [
+            {
+              value: "data",
+              ...defaultCellAlignmentWidthOptions,
+            },
+          ],
+          options: {
+            border: false,
+          },
+        },
+      ],
+      columns: [defaultNormalizedColumnSetting],
+    });
+  });
+  it("throw error if both footer and template are set", () => {
+    expect(() =>
+      normalizeFooter({ rows: rows }, template, undefined)
+    ).toThrowError(
+      "Cannot set footer, and page number or timestamp at the same time. Please use TextTemplateCell to set page number or timestamp"
     );
   });
 });
