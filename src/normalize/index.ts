@@ -39,39 +39,13 @@ type TemplateRow = {
 };
 
 export function normalize(document: Document): NormalizedDocument {
-  const {
-    headers,
-    sections,
-    footers,
-    pageBreakRows,
-    defaultFontSettings,
-    timestampPageNumberFontSetting,
-    watermark,
-    sectionPageNumbers,
-    pageNumbers,
-    timestamp,
-  } = document;
+  const { headers, sections, pageBreakRows, defaultFontSettings, watermark } =
+    document;
   const normalizedFontSetting = normalizeFontSetting(defaultFontSettings);
-  const normalizedTimestampPageNumberFontSetting = {
-    ...normalizedFontSetting,
-    ...timestampPageNumberFontSetting,
-  };
-  const normalizedTimeStampPageNum = normalizeDocPageNumTimeStamp(
-    sectionPageNumbers,
-    pageNumbers,
-    timestamp
-  );
-  const normalizedFooters = normalizeFooter(
-    normalizeSetting(footers, normalizedFontSetting),
-    normalizedTimeStampPageNum,
-    normalizedFontSetting
-  );
 
   return {
     ...document,
-    headers: headers
-      ? normalizeHeaderFooter(normalizeSetting(headers, normalizedFontSetting))
-      : { rows: [] },
+    headers: normalizeHeaderFooter(headers, normalizedFontSetting),
     sections: sections.map((section) =>
       normalizeSection(
         section,
@@ -80,17 +54,12 @@ export function normalize(document: Document): NormalizedDocument {
         watermark
       )
     ),
-    footers: normalizedFooters,
-    pageBreakRows: pageBreakRows
-      ? normalizePageBreakRows(
-          normalizeSetting(pageBreakRows, normalizedFontSetting)
-        )
-      : undefined,
-    timestampPageNumberFontSetting: normalizedTimestampPageNumberFontSetting,
+    footers: normalizeFooter(normalizedFontSetting, document),
+    pageBreakRows: normalizePageBreakRows(pageBreakRows, normalizedFontSetting),
   };
 }
 
-export function normalizeDocPageNumTimeStamp(
+export function normalizeDocPageNumTimestamp(
   sectionPageNumbers: boolean,
   pageNumbers: boolean,
   timestamp: boolean
@@ -121,31 +90,29 @@ export function normalizeDocPageNumTimeStamp(
 }
 
 export function normalizeFooter(
-  footer: HeaderFooters,
-  timeStampPageNumTemplate: TextTemplate,
-  normalizedFontSetting: FontSetting
+  normalizedFontSetting: FontSetting,
+  document: Document
 ): NormalizedHeaderFooter {
-  if (footer && timeStampPageNumTemplate) {
+  const { footers, timestamp, pageNumbers, sectionPageNumbers } = document;
+  const timeStampPageNumTemplate = normalizeDocPageNumTimestamp(
+    sectionPageNumbers,
+    pageNumbers,
+    timestamp
+  );
+
+  if (footers && timeStampPageNumTemplate) {
     throw new Error(
-      "Cannot set footer, and page number or timestamp at the same time. Please use TextTemplateCell to set page number or timestamp"
+      "Cannot set footer, and pageNumber || timestamp || sectionPageNumber at the same time. Please use TextTemplateCell to set pageNumber || timestamp || sectionPageNumber"
     );
   }
-
   if (timeStampPageNumTemplate) {
     const pageNumTimeStampColumnSetting: NormalizedColumnSetting = {
       align: "right",
       width: { value: 1, unit: "fr" },
     };
-    const defaultRowOptions: RowOptions = {
-      fontFace: defaultFontFace,
-      boldFace: defaultBoldFace,
-    };
     const normalizedTemplateRow = normalizeRow(
       { data: [{ template: timeStampPageNumTemplate }] },
-      {
-        ...defaultRowOptions,
-        ...normalizedFontSetting,
-      },
+      normalizedFontSetting,
       [pageNumTimeStampColumnSetting]
     );
     return {
@@ -153,13 +120,16 @@ export function normalizeFooter(
       columns: [pageNumTimeStampColumnSetting],
     };
   }
-  if (footer) {
-    const { rows, columns, style } = footer;
-    const settings = normalizedColumnSetting(rows, columns);
-    const normalizedRows = rows.map((r) => normalizeRow(r, style, settings));
+  if (footers) {
+    const { rows, columns, style } = footers;
+    const normalizedSettings = normalizedColumnSetting(rows, columns);
+    const normalizedStyle = { ...normalizedFontSetting, ...style };
+    const normalizedRows = rows.map((r) =>
+      normalizeRow(r, normalizedStyle, normalizedSettings)
+    );
     return {
       rows: normalizedRows,
-      columns: settings,
+      columns: normalizedSettings,
     };
   }
   return { rows: [] };
@@ -173,19 +143,6 @@ export function normalizeFontSetting(
     fontFace: documentFontSetting?.fontFace ?? defaultFontFace,
     boldFace: documentFontSetting?.boldFace ?? defaultBoldFace,
   };
-}
-
-export function normalizeSetting(
-  component: PageBreakRows | Table | HeaderFooters,
-  documentFontSetting: FontSetting
-): PageBreakRows | Table | HeaderFooters {
-  const style = { ...documentFontSetting, ...component?.style };
-  return component
-    ? {
-        ...component,
-        style,
-      }
-    : undefined;
 }
 
 export function normalizeOptions(
@@ -249,43 +206,42 @@ export function normalizeCell(
       ...defaultProps,
       value: "",
     };
+  }
+  if (_.isString(cell)) {
+    return { value: cell as string, ...defaultProps };
+  } else if (_.isNumber(cell)) {
+    return { value: cell, ...defaultProps };
+  } else if (cell && "image" in (cell as Cell)) {
+    return {
+      ...defaultProps,
+      ...cell,
+    };
+  } else if (
+    cell &&
+    "value" in cell &&
+    ![undefined, null].includes(cell.value)
+  ) {
+    return {
+      ...defaultProps,
+      ...cell,
+      value: cell.value,
+    };
+  } else if (
+    cell &&
+    "template" in cell &&
+    ![undefined, null].includes(cell.template)
+  ) {
+    return {
+      ...defaultProps,
+      ...cell,
+      template: cell.template,
+    };
   } else {
-    if (_.isString(cell)) {
-      return { value: cell as string, ...defaultProps };
-    } else if (_.isNumber(cell)) {
-      return { value: cell, ...defaultProps };
-    } else if (cell && "image" in (cell as Cell)) {
-      return {
-        ...defaultProps,
-        ...cell,
-      };
-    } else if (
-      cell &&
-      "value" in cell &&
-      ![undefined, null].includes(cell.value)
-    ) {
-      return {
-        ...defaultProps,
-        ...cell,
-        value: cell.value,
-      };
-    } else if (
-      cell &&
-      "template" in cell &&
-      ![undefined, null].includes(cell.template)
-    ) {
-      return {
-        ...defaultProps,
-        ...cell,
-        template: cell.template,
-      };
-    } else {
-      return {
-        ...defaultProps,
-        ...cell,
-        value: "",
-      };
-    }
+    return {
+      ...defaultProps,
+      ...cell,
+      value: "",
+    };
   }
 }
 export function normalizeRow(
@@ -327,23 +283,30 @@ export function normalizeRow(
 }
 
 export function normalizePageBreakRows(
-  pageBreakRow: PageBreakRows
-): NormalizedPageBreakRows {
+  pageBreakRow: PageBreakRows,
+  normalizedFontSetting: FontSetting
+): NormalizedPageBreakRows | undefined {
+  if (!pageBreakRow) return undefined;
   const { rows, columns, style } = pageBreakRow;
+  const normalizedStyle = { ...normalizedFontSetting, ...style };
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings)),
+    rows: rows.map((r) => normalizeRow(r, normalizedStyle, settings)),
     columns: settings,
   };
 }
 
-export function normalizeTable(table: Table): NormalizedTable {
+export function normalizeTable(
+  table: Table,
+  normalizedFontSetting: FontSetting
+): NormalizedTable {
   const { rows, headers, columns, style } = table;
+  const normalizedStyle = { ...normalizedFontSetting, ...style };
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings)),
+    rows: rows.map((r) => normalizeRow(r, normalizedStyle, settings)),
     headers: headers
-      ? headers.map((h) => normalizeRow(h, style, settings))
+      ? headers.map((h) => normalizeRow(h, normalizedStyle, settings))
       : [],
     columns: settings,
   };
@@ -403,18 +366,21 @@ export function parseWidth(width: string): NormalizedWidth {
 }
 
 export function normalizeHeaderFooter(
-  headerFooter: HeaderFooters
+  headerFooter: HeaderFooters,
+  normalizedFontSetting: FontSetting
 ): NormalizedHeaderFooter {
+  if (!headerFooter) return { rows: [] };
   const { rows, columns, style } = headerFooter;
+  const normalizedStyle = { ...normalizedFontSetting, ...style };
   const settings = normalizedColumnSetting(rows, columns);
   return {
-    rows: rows.map((r) => normalizeRow(r, style, settings)),
+    rows: rows.map((r) => normalizeRow(r, normalizedStyle, settings)),
     columns: settings,
   };
 }
 export function normalizeSection(
   section: Section,
-  fontSetting: FontSetting,
+  normalizedFontSetting: FontSetting,
   tableGap?: number,
   docWatermark?: Watermark
 ): NormalizedSection {
@@ -422,15 +388,10 @@ export function normalizeSection(
   const sectionWatermark = watermark ?? docWatermark;
   return {
     tableGap: tableGap ?? undefined,
-
     ...section,
-    headers: headers
-      ? normalizeHeaderFooter(normalizeSetting(headers, fontSetting))
-      : { rows: [] },
-    tables: tables.map((table) =>
-      normalizeTable(normalizeSetting(table, fontSetting))
-    ),
-    watermark: normalizeWatermark(sectionWatermark, fontSetting),
+    headers: normalizeHeaderFooter(headers, normalizedFontSetting),
+    tables: tables.map((table) => normalizeTable(table, normalizedFontSetting)),
+    watermark: normalizeWatermark(sectionWatermark, normalizedFontSetting),
   };
 }
 

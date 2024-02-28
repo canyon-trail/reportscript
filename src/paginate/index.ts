@@ -11,8 +11,6 @@ import { Page, PaginatedDocument } from "./types";
 export type PaginatingDoc = MeasuredDocument & {
   remaining: MeasuredSection[];
   pages: Page[];
-  hasHeaders: boolean;
-  hasFooters: boolean;
   footerSpace: number;
   headerSpace: number;
 };
@@ -82,19 +80,19 @@ function paginateStep(doc: PaginatingDoc) {
 }
 
 function prepareDoc(doc: MeasuredDocument): PaginatingDoc {
-  const hasHeaders = doc.headers.length > 0;
-  const headerSpace = hasHeaders ? margin + sumOfRowHeights(doc.headers) : 0;
-  const hasFooters = doc.footers.length > 0;
-  const footerSpace = hasFooters ? margin + sumOfRowHeights(doc.footers) : 0;
+  const headerSpace = handleHeaderFooterSpace(doc.headers);
+  const footerSpace = handleHeaderFooterSpace(doc.footers);
   return {
     ...doc,
     pages: [{ rows: [], sectionIndex: 0 }],
     remaining: [...doc.sections],
-    hasHeaders,
-    hasFooters,
     headerSpace,
     footerSpace,
   };
+}
+
+export function handleHeaderFooterSpace(measuredRows: MeasuredRow[]): number {
+  return measuredRows.length > 0 ? margin + sumOfRowHeights(measuredRows) : 0;
 }
 
 function addHeadersAndFooters(doc: PaginatingDoc, creationDate: Date): void {
@@ -117,7 +115,7 @@ function addHeadersAndFooters(doc: PaginatingDoc, creationDate: Date): void {
 
 function handleHeaders(index: number, doc: PaginatingDoc) {
   const page = doc.pages[index];
-  if (doc.hasHeaders && (doc.repeatReportHeaders || index === 0)) {
+  if (doc.headerSpace > 0 && (doc.repeatReportHeaders || index === 0)) {
     page.rows.unshift({
       data: [],
       minHeight: margin,
@@ -139,7 +137,7 @@ function handleFooters(
 
   const { pageInnerHeight } = getPageDimensions(doc.layout);
 
-  if (doc.hasFooters) {
+  if (doc.footerSpace > 0) {
     const usedSpace = sumOfRowHeights(page.rows);
     const marginSpace = pageInnerHeight - usedSpace - doc.footerSpace + margin;
 

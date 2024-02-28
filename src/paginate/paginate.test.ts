@@ -904,8 +904,6 @@ describe("updateTextTemplateVariables", () => {
         } as Page,
       ],
       remaining: undefined,
-      hasHeaders: undefined,
-      hasFooters: undefined,
       footerSpace: undefined,
       headerSpace: undefined,
     };
@@ -1029,7 +1027,6 @@ describe("page numbers and timestamp", () => {
         ],
       })
     );
-    console.log(JSON.stringify(input, null, 2));
     const result = paginate(input, creationDate);
 
     const expected: PaginatedDocument = {

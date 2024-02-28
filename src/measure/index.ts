@@ -188,9 +188,10 @@ export function getCellHeight(
   }
 
   if ("image" in cell) {
+    const height = cell.image.height + rowLineGap + lineGap;
     return {
-      minHeight: cell.image.height + rowLineGap + lineGap,
-      maxHeight: cell.image.height + rowLineGap + lineGap,
+      minHeight: height,
+      maxHeight: height,
     };
   }
 
@@ -216,9 +217,10 @@ export function getCellHeight(
       ...heightOptions,
       height: cell.noWrap ? cell.fontSize : undefined,
     };
+    const height = doc.heightOfString(highBoundTemplate, options) + gap;
     return {
-      minHeight: doc.heightOfString(highBoundTemplate, options) + gap,
-      maxHeight: doc.heightOfString(highBoundTemplate, options) + gap,
+      minHeight: height,
+      maxHeight: height,
     };
   }
 

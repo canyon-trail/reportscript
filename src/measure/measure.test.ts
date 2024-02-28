@@ -13,7 +13,12 @@ import {
   getPageDimensions,
 } from ".";
 import { Image } from "../types";
-import { normalizeHeaderFooter, normalizeTable } from "../normalize";
+import {
+  defaultBoldFace,
+  defaultFontFace,
+  normalizeHeaderFooter,
+  normalizeTable,
+} from "../normalize";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
   NormalizedRow,
@@ -351,7 +356,10 @@ describe("measuring functions", () => {
   });
   describe("measure", () => {
     let doc;
-
+    const defaultNormalizedFontSetting = {
+      fontFace: defaultFontFace,
+      boldFace: defaultBoldFace,
+    };
     beforeEach(() => {
       doc = new PDFDocument({
         layout: "landscape",
@@ -396,14 +404,17 @@ describe("measuring functions", () => {
     });
 
     it("returns measured document", () => {
-      const headers = normalizeHeaderFooter({
-        rows: [
-          {
-            data: [{ value: "A Report" }],
-            options: { fontSize: 11 },
-          },
-        ],
-      });
+      const headers = normalizeHeaderFooter(
+        {
+          rows: [
+            {
+              data: [{ value: "A Report" }],
+              options: { fontSize: 11 },
+            },
+          ],
+        },
+        defaultNormalizedFontSetting
+      );
 
       const tables = [
         {
@@ -436,25 +447,31 @@ describe("measuring functions", () => {
 
       const sections = [
         {
-          headers: normalizeHeaderFooter({
-            rows: [
-              { data: [{ value: "A Section" }], options: { fontSize: 10 } },
-            ],
-          }),
-          tables: [normalizeTable(tables[0])],
+          headers: normalizeHeaderFooter(
+            {
+              rows: [
+                { data: [{ value: "A Section" }], options: { fontSize: 10 } },
+              ],
+            },
+            defaultNormalizedFontSetting
+          ),
+          tables: [normalizeTable(tables[0], defaultNormalizedFontSetting)],
         },
       ];
 
-      const footers = normalizeHeaderFooter({
-        rows: [
-          {
-            data: [{ value: "05/01/2022" }],
-            options: { fontSize: 6 },
-          },
-        ],
-      });
+      const footers = normalizeHeaderFooter(
+        {
+          rows: [
+            {
+              data: [{ value: "05/01/2022" }],
+              options: { fontSize: 6 },
+            },
+          ],
+        },
+        defaultNormalizedFontSetting
+      );
 
-      const table = normalizeTable(tables[0]);
+      const table = normalizeTable(tables[0], defaultNormalizedFontSetting);
 
       const document = { headers, sections, footers };
       const result = measure(document, doc);
@@ -594,16 +611,19 @@ describe("measuring functions", () => {
 
       const sections = [
         {
-          headers: normalizeHeaderFooter({
-            rows: [
-              { data: [{ value: "A Section" }], options: { fontSize: 10 } },
-            ],
-          }),
-          tables: [normalizeTable(tables[0])],
+          headers: normalizeHeaderFooter(
+            {
+              rows: [
+                { data: [{ value: "A Section" }], options: { fontSize: 10 } },
+              ],
+            },
+            defaultNormalizedFontSetting
+          ),
+          tables: [normalizeTable(tables[0], defaultNormalizedFontSetting)],
         },
       ];
 
-      const table = normalizeTable(tables[0]);
+      const table = normalizeTable(tables[0], defaultNormalizedFontSetting);
 
       const document = { sections };
       const result = measure(document, doc);
