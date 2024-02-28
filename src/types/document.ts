@@ -18,9 +18,25 @@ import { ColumnSetting, Table } from "./table";
  * - landscape layout:    756 (792 - 2 * page margin)
  * - portrait layout:     576 (612 - 2 * page margin)
  */
-export type Document = {
-  /** A document requires an array of sections. */
+export type Document = SimpleDocument | DocumentWithSections;
+
+export type DocumentWithSections = DocumentOptions & {
+  /** A DocumentWithSections requires an array of sections. */
   sections: Section[];
+};
+
+export type SimpleDocument = DocumentOptions & {
+  /** A SimpleDocument requires an array of tables rather than sections with tables. */
+  tables: Table[];
+};
+
+export type HeaderFooters = {
+  rows: Row[];
+  columns?: ColumnSetting[];
+  style?: RowOptions;
+};
+
+export type DocumentOptions = {
   /**
    * Headers are displayed at the top of a pdf page.
    * By default, the headers are only displayed on the first page.
@@ -61,19 +77,6 @@ export type Document = {
    * it will override the document watermark setting.
    */
   watermark?: Watermark;
-};
-
-/**
- * A simple document only requires an array of tables
- */
-export type SimpleDocument = {
-  tables: Table[];
-};
-
-export type HeaderFooters = {
-  rows: Row[];
-  columns?: ColumnSetting[];
-  style?: RowOptions;
 };
 
 export type Layout = "landscape" | "portrait";

@@ -14,7 +14,7 @@ import {
   PageBreakRows,
   FontSetting,
   Watermark,
-  SimpleDocument,
+  DocumentWithSections,
 } from "../types";
 import {
   CellSettings,
@@ -31,9 +31,7 @@ import {
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
 
-export function normalize(
-  document: Document | SimpleDocument
-): NormalizedDocument {
+export function normalize(document: Document): NormalizedDocument {
   const documentProps = getDocumentProps(document);
 
   const {
@@ -334,9 +332,7 @@ export function normalizeWatermark(
     : undefined;
 }
 
-function getDocumentProps(
-  document: Document | SimpleDocument
-): Partial<Document> {
+function getDocumentProps(document: Document): DocumentWithSections {
   return "sections" in document
     ? document
     : { sections: [{ tables: document.tables }] };

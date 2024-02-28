@@ -7,7 +7,7 @@ import { renderWatermark, writeRow } from "./render";
 import { paginate } from "./paginate";
 import { normalize } from "./normalize";
 import fs from "fs";
-import { Document, SimpleDocument, SnapshotResult } from "./types";
+import { Document, SnapshotResult } from "./types";
 export { splitColumn } from "./paginate/splitColumn";
 
 type RenderDocumentResult = {
@@ -19,7 +19,7 @@ type RenderDocumentResult = {
  * Writes a Document to a NodeJS.WriteableStream and returns the stream.
  */
 export async function renderPdf(
-  document: Document | SimpleDocument,
+  document: Document,
   response: NodeJS.WritableStream
 ): Promise<NodeJS.WritableStream> {
   const { stream } = await renderDocument(document, undefined, response);
@@ -34,7 +34,7 @@ export async function renderPdf(
  */
 export async function renderSnapshot(
   path: string,
-  document: Document | SimpleDocument
+  document: Document
 ): Promise<SnapshotResult> {
   const { reportDocument } = await renderDocument(document, true);
   const doc = reportDocument as SnapshottingDocument;
@@ -53,7 +53,7 @@ export async function renderSnapshot(
 }
 
 async function renderDocument(
-  document: Document | SimpleDocument,
+  document: Document,
   isSnapshot?: boolean,
   outStream?: NodeJS.WritableStream
 ): Promise<RenderDocumentResult> {

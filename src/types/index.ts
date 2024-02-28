@@ -6,7 +6,7 @@ export * from "./table";
 export * from "./section";
 export * from "./document";
 
-import { Document, SimpleDocument } from "./document";
+import { Document } from "./document";
 
 export type SnapshotResult = {
   snapshot: string;
@@ -14,6 +14,6 @@ export type SnapshotResult = {
 };
 
 export type RenderPdf = (
-  document: Document | SimpleDocument,
+  document: Document,
   response: NodeJS.WritableStream
 ) => NodeJS.WritableStream;
