@@ -83,10 +83,9 @@ export function normalizeDocPageNumTimestamp(
       return rs`Page {{sectionPageNumber}} of {{sectionPageCount}}`;
     } else if (pageNumbers) {
       return rs`Page {{documentPageNumber}} of {{documentPageCount}}`;
-    } else {
-      return undefined;
     }
   }
+  return undefined;
 }
 
 export function normalizeFooter(
