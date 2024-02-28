@@ -211,7 +211,6 @@ export const createDocument = (image) => ({
     chartSection,
   ],
   repeatSectionHeaders: true,
-  footers: documentFooter,
   pageNumbers: true,
   timestamp: true,
   timestampPageNumberFontSetting: {

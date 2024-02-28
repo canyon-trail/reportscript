@@ -1,7 +1,8 @@
 import { MeasuredRow, MeasuredWatermark } from "../measure/types";
-import { Layout } from "../types";
+import { Cell, Layout } from "../types";
 
-export type PaginatedRow = MeasuredRow & {
+export type PaginatedRow = Omit<MeasuredRow, "data"> & {
+  data: Cell[];
   start: number;
 };
 
