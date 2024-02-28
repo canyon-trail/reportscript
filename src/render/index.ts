@@ -181,8 +181,8 @@ export async function writeCellContents(
 
   if ("image" in cell) {
     const { image, ...size } = cell.image;
-    const imageStart = x + getImageXOffset(cell, maxTextWidth);
-    console.log([maxTextWidth, imageStart]);
+    const offset = getImageXOffset(cell, columnWidths[index]);
+    const imageStart = x + offset;
     doc
       .save()
       .rect(columnStarts[index], start, columnWidths[index], maxHeight)
@@ -229,8 +229,10 @@ export function getImageXOffset(
   maxContentWidth: number
 ): number {
   const width = cell.image?.width;
+  if (!width) {
+    return 0;
+  }
   const align = cell.horizontalAlign;
-  console.log([width, align]);
   const imageStart =
     align === "center"
       ? maxContentWidth / 2 - width / 2
