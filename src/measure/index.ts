@@ -174,7 +174,6 @@ export function getCellHeight(
   doc: PdfKitApi,
   text?: string | number
 ): VerticalMeasure {
-  console.log(cell);
   const gap = lineGap * 0.5;
   const rowLineGap = cell?.lineGap ?? lineGap;
 

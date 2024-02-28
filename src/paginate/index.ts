@@ -38,7 +38,6 @@ export function paginate(
   creationDate: Date
 ): PaginatedDocument {
   const pagingDoc = prepareDoc(doc);
-  console.log("paginate");
   while (pagingDoc.remaining.length > 0) {
     paginateStep(pagingDoc);
   }
@@ -99,7 +98,6 @@ function prepareDoc(doc: MeasuredDocument): PaginatingDoc {
 }
 
 function addHeadersAndFooters(doc: PaginatingDoc, creationDate: Date): void {
-  console.log("addheader and footer");
   const timestamp = `${creationDate.toLocaleString("en-US", {
     timeZone: "America/Chicago",
   })}`.split(/ GMT/)[0];
