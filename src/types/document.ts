@@ -65,8 +65,6 @@ export type DocumentOptions = {
    * Any section tableGap settings will override the document tableGap.
    */
   tableGap?: number;
-  /** Sets the font settings for any page numbers or timestamps. */
-  timestampPageNumberFontSetting?: FontSetting;
   /** Default font setting through out document */
   defaultFontSettings?: FontSetting;
 

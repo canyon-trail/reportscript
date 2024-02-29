@@ -13,15 +13,22 @@ import {
   getPageDimensions,
 } from ".";
 import { Image } from "../types";
-import { normalizeHeaderFooter, normalizeTable } from "../normalize";
+import {
+  defaultBoldFace,
+  defaultFontFace,
+  normalizeHeaderFooter,
+  normalizeTable,
+} from "../normalize";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
   NormalizedRow,
   NormalizedPageBreakRows,
   NormalizedColumnSetting,
   NormalizedDocument,
+  NormalizedCell,
 } from "../normalize/types";
 import { MeasuredDocument, MeasuredWatermark } from "./types";
+import { rs } from "../rs/index";
 
 describe("measuring functions", () => {
   describe("getRowHeight", () => {
@@ -201,7 +208,27 @@ describe("measuring functions", () => {
 
       expect(result).toBe(40 + lineGap + 1);
     });
+    it("get text template cell Height ", () => {
+      const cell: NormalizedCell = {
+        template: rs`Page {{documentPageNumber}} of {{documentPageCount}}`,
+        columnSpan: 1,
+        fontSize: 10,
+      };
+      const options = {
+        width: 50,
+        lineGap,
+        align: cell.horizontalAlign,
+        height: 10,
+      };
+      const result = getCellHeight(cell, 50, doc);
 
+      const highBound =
+        doc.heightOfString("Page 1000 of 1000", options) + lineGap * 0.5;
+      expect(result).toStrictEqual({
+        minHeight: highBound,
+        maxHeight: highBound,
+      });
+    });
     it("throws for undefined cell", () => {
       expect(() => getCellHeight(undefined, 100, doc)).toThrow(
         "Cell is undefined"
@@ -214,6 +241,26 @@ describe("measuring functions", () => {
       const cell = {
         value: longString,
         noWrap: true,
+        columnSpan: 1,
+        fontSize: 10,
+      } as TextCell;
+      const result = getCellHeight(cell, 20, doc).maxHeight;
+
+      const expected =
+        doc.heightOfString("X", {
+          width: 20,
+          lineGap,
+          align: cell.horizontalAlign,
+          height: 10,
+        }) +
+        lineGap * 0.5;
+
+      expect(result).toBe(expected);
+    });
+    it("returns height of single line of text", () => {
+      const string = "this";
+      const cell = {
+        value: string,
         columnSpan: 1,
         fontSize: 10,
       } as TextCell;
@@ -309,7 +356,10 @@ describe("measuring functions", () => {
   });
   describe("measure", () => {
     let doc;
-
+    const defaultNormalizedFontSetting = {
+      fontFace: defaultFontFace,
+      boldFace: defaultBoldFace,
+    };
     beforeEach(() => {
       doc = new PDFDocument({
         layout: "landscape",
@@ -350,19 +400,21 @@ describe("measuring functions", () => {
             ],
           },
         ],
-        documentFooterHeight: 0,
       };
     });
 
     it("returns measured document", () => {
-      const headers = normalizeHeaderFooter({
-        rows: [
-          {
-            data: [{ value: "A Report" }],
-            options: { fontSize: 11 },
-          },
-        ],
-      });
+      const headers = normalizeHeaderFooter(
+        {
+          rows: [
+            {
+              data: [{ value: "A Report" }],
+              options: { fontSize: 11 },
+            },
+          ],
+        },
+        defaultNormalizedFontSetting
+      );
 
       const tables = [
         {
@@ -395,25 +447,31 @@ describe("measuring functions", () => {
 
       const sections = [
         {
-          headers: normalizeHeaderFooter({
-            rows: [
-              { data: [{ value: "A Section" }], options: { fontSize: 10 } },
-            ],
-          }),
-          tables: [normalizeTable(tables[0])],
+          headers: normalizeHeaderFooter(
+            {
+              rows: [
+                { data: [{ value: "A Section" }], options: { fontSize: 10 } },
+              ],
+            },
+            defaultNormalizedFontSetting
+          ),
+          tables: [normalizeTable(tables[0], defaultNormalizedFontSetting)],
         },
       ];
 
-      const footers = normalizeHeaderFooter({
-        rows: [
-          {
-            data: [{ value: "05/01/2022" }],
-            options: { fontSize: 6 },
-          },
-        ],
-      });
+      const footers = normalizeHeaderFooter(
+        {
+          rows: [
+            {
+              data: [{ value: "05/01/2022" }],
+              options: { fontSize: 6 },
+            },
+          ],
+        },
+        defaultNormalizedFontSetting
+      );
 
-      const table = normalizeTable(tables[0]);
+      const table = normalizeTable(tables[0], defaultNormalizedFontSetting);
 
       const document = { headers, sections, footers };
       const result = measure(document, doc);
@@ -519,7 +577,6 @@ describe("measuring functions", () => {
             columnStarts: calculateCellLeftCoords(docFooterColumnWidths),
           },
         ],
-        documentFooterHeight: 0,
       });
     });
     it("return document without footer/headers", () => {
@@ -554,16 +611,19 @@ describe("measuring functions", () => {
 
       const sections = [
         {
-          headers: normalizeHeaderFooter({
-            rows: [
-              { data: [{ value: "A Section" }], options: { fontSize: 10 } },
-            ],
-          }),
-          tables: [normalizeTable(tables[0])],
+          headers: normalizeHeaderFooter(
+            {
+              rows: [
+                { data: [{ value: "A Section" }], options: { fontSize: 10 } },
+              ],
+            },
+            defaultNormalizedFontSetting
+          ),
+          tables: [normalizeTable(tables[0], defaultNormalizedFontSetting)],
         },
       ];
 
-      const table = normalizeTable(tables[0]);
+      const table = normalizeTable(tables[0], defaultNormalizedFontSetting);
 
       const document = { sections };
       const result = measure(document, doc);

@@ -89,7 +89,9 @@ async function render(
   pdfDoc: PdfKitApi
 ): Promise<void> {
   for (const [idx, p] of doc.pages.entries()) {
-    const rows: PaginatedRow[] = p.rows.map((x) => ({ ...x, start: 0 }));
+    const rows: PaginatedRow[] = p.rows.map(
+      (x) => ({ ...x, start: 0 } as PaginatedRow)
+    );
 
     let startPos = margin;
 

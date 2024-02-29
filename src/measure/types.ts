@@ -1,14 +1,19 @@
 import {
+  NormalizedCell,
   NormalizedColumnSetting,
   NormalizedDocument,
   NormalizedRow,
 } from "../normalize/types";
-import { Cell, Layout, Row, Watermark } from "../types";
+import { Layout, Watermark } from "../types";
 
 export type MeasuredTable = {
   rows: MeasuredRow[];
   headers: MeasuredRow[];
-  measureTextHeight: (text: string, index: number, row: Row) => VerticalMeasure;
+  measureTextHeight: (
+    text: string,
+    index: number,
+    row: NormalizedRow | MeasuredRow
+  ) => VerticalMeasure;
   columns: NormalizedColumnSetting[];
 };
 export type MeasuredSection = {
@@ -25,7 +30,7 @@ export type VerticalMeasure = {
 };
 
 export type MeasuredRow = Omit<NormalizedRow, "data"> & {
-  data: Cell[];
+  data: NormalizedCell[];
   columnHeights: VerticalMeasure[];
   columnWidths: number[];
   columnStarts: number[];
@@ -40,7 +45,6 @@ export type MeasuredDocument = Omit<
   footers: MeasuredRow[];
   sections: MeasuredSection[];
   layout: Layout;
-  documentFooterHeight: number;
   pageBreakRows?: MeasuredRow[];
   watermark?: MeasuredWatermark;
 };

@@ -1,12 +1,6 @@
-import { Cell, TextCell } from "../types";
-import {
-  exampleDocumentFooterRow,
-  getPageDimensions,
-  margin,
-} from "../measure";
+import { TextCell } from "../types";
+import { getPageDimensions, margin } from "../measure";
 import _ from "lodash";
-import { calculateCellLeftCoords } from "../measure";
-import { calculateColumnWidths } from "./calculateColumnWidths";
 import {
   MeasuredDocument,
   MeasuredRow,
@@ -17,22 +11,21 @@ import { Page, PaginatedDocument } from "./types";
 export type PaginatingDoc = MeasuredDocument & {
   remaining: MeasuredSection[];
   pages: Page[];
-  hasHeaders: boolean;
-  hasFooters: boolean;
   footerSpace: number;
   headerSpace: number;
 };
-
 export type TableSplitResult = {
   first: MeasuredTable;
   rest: MeasuredTable;
 };
-
-type PageSectionCount = {
-  sectionPage: number;
+export type TextTemplateVariables = {
+  documentPageNumber: number;
+  documentPageCount: number;
+  sectionPageNumber: number;
+  sectionPageCount: number;
   currentSection: number;
+  timestamp: string;
 };
-
 export type SectionSplitResult = {
   first: MeasuredSection;
   rest: MeasuredSection;
@@ -43,7 +36,6 @@ export function paginate(
   creationDate: Date
 ): PaginatedDocument {
   const pagingDoc = prepareDoc(doc);
-
   while (pagingDoc.remaining.length > 0) {
     paginateStep(pagingDoc);
   }
@@ -88,48 +80,42 @@ function paginateStep(doc: PaginatingDoc) {
 }
 
 function prepareDoc(doc: MeasuredDocument): PaginatingDoc {
-  const hasHeaders = doc.headers.length > 0;
-  const headerSpace = hasHeaders ? margin + sumOfRowHeights(doc.headers) : 0;
-  const hasFooters = doc.footers.length > 0 || doc.documentFooterHeight > 0;
-  const footerSpace = hasFooters
-    ? margin + sumOfRowHeights(doc.footers) + doc.documentFooterHeight
-    : 0;
+  const headerSpace = handleHeaderFooterSpace(doc.headers);
+  const footerSpace = handleHeaderFooterSpace(doc.footers);
   return {
     ...doc,
     pages: [{ rows: [], sectionIndex: 0 }],
     remaining: [...doc.sections],
-    hasHeaders,
-    hasFooters,
     headerSpace,
     footerSpace,
   };
 }
 
-export function addHeadersAndFooters(
-  doc: PaginatingDoc,
-  creationDate: Date
-): void {
-  if (doc.pageNumbers && doc.sectionPageNumbers) {
-    throw new Error(
-      "A document cannot have both pageNumbers and sectionPageNumbers set to true"
-    );
-  }
+export function handleHeaderFooterSpace(measuredRows: MeasuredRow[]): number {
+  return measuredRows.length > 0 ? margin + sumOfRowHeights(measuredRows) : 0;
+}
 
-  const pageSectionCount = {
-    sectionPage: 0,
+function addHeadersAndFooters(doc: PaginatingDoc, creationDate: Date): void {
+  const timestamp = `${creationDate.toLocaleString("en-US", {
+    timeZone: "America/Chicago",
+  })}`.split(/ GMT/)[0];
+  const variables: TextTemplateVariables = {
+    documentPageNumber: 0,
+    documentPageCount: doc.pages.length,
+    sectionPageNumber: 0,
+    sectionPageCount: 0,
     currentSection: 0,
+    timestamp: timestamp,
   };
-
   doc.pages.forEach((_, idx) => {
     handleHeaders(idx, doc);
-
-    handleFooters(idx, doc, pageSectionCount, creationDate);
+    handleFooters(idx, doc, variables);
   });
 }
 
 function handleHeaders(index: number, doc: PaginatingDoc) {
   const page = doc.pages[index];
-  if (doc.hasHeaders && (doc.repeatReportHeaders || index === 0)) {
+  if (doc.headerSpace > 0 && (doc.repeatReportHeaders || index === 0)) {
     page.rows.unshift({
       data: [],
       minHeight: margin,
@@ -145,14 +131,13 @@ function handleHeaders(index: number, doc: PaginatingDoc) {
 function handleFooters(
   index: number,
   doc: PaginatingDoc,
-  pageSectionCount: PageSectionCount,
-  creationDate: Date
+  textTemplateVariables: TextTemplateVariables
 ) {
   const page = doc.pages[index];
 
   const { pageInnerHeight } = getPageDimensions(doc.layout);
 
-  if (doc.hasFooters) {
+  if (doc.footerSpace > 0) {
     const usedSpace = sumOfRowHeights(page.rows);
     const marginSpace = pageInnerHeight - usedSpace - doc.footerSpace + margin;
 
@@ -164,80 +149,50 @@ function handleFooters(
       columnWidths: [],
       columnStarts: [],
     });
-    page.rows.push(...doc.footers);
+    updateTextTemplateVariables(index, doc, textTemplateVariables);
 
-    handlePageNumTimestamp(index, doc, pageSectionCount, creationDate);
-  }
-}
-
-function handlePageNumTimestamp(
-  index: number,
-  doc: PaginatingDoc,
-  pageSectionCount: PageSectionCount,
-  creationDate: Date
-) {
-  const page = doc.pages[index];
-
-  const docFooterText = getFooterText(
-    index,
-    doc,
-    pageSectionCount,
-    creationDate
-  );
-  const timestampPageNumFontSetting = doc?.timestampPageNumberFontSetting;
-  const dataCell: Cell = {
-    value: docFooterText,
-    horizontalAlign: "right",
-    columnSpan: 1,
-    ...timestampPageNumFontSetting,
-  };
-  const { availableWidth } = getPageDimensions(doc.layout);
-  if (docFooterText.length) {
-    const widths = calculateColumnWidths(
-      [{ width: { value: 1, unit: "fr" } }],
-      availableWidth
+    const footers = doc.footers.map((x) =>
+      handleFooter(x, textTemplateVariables)
     );
-    page.rows.push({
-      ...exampleDocumentFooterRow,
-      data: [dataCell],
-      minHeight: doc.documentFooterHeight,
-      maxHeight: doc.documentFooterHeight,
-      columnHeights: [],
-      columnWidths: widths,
-      columnStarts: calculateCellLeftCoords(widths),
-    });
+    page.rows.push(...footers);
   }
 }
 
-function getFooterText(
+export function updateTextTemplateVariables(
   index: number,
   doc: PaginatingDoc,
-  pageSectionCount: PageSectionCount,
-  creationDate: Date
-) {
+  textTemplateVariables: TextTemplateVariables
+): void {
   const page = doc.pages[index];
-
-  const timestamp = `${creationDate.toLocaleString("en-US", {
-    timeZone: "America/Chicago",
-  })}`;
-  const pageNum = ` Page ${index + 1} of ${doc.pages.length}`;
-
-  pageSectionCount.sectionPage =
-    pageSectionCount.currentSection === page.sectionIndex
-      ? pageSectionCount.sectionPage + 1
+  textTemplateVariables.documentPageNumber = index + 1;
+  textTemplateVariables.sectionPageNumber =
+    textTemplateVariables.currentSection === page.sectionIndex
+      ? textTemplateVariables.sectionPageNumber + 1
       : 1;
-
-  pageSectionCount.currentSection = page.sectionIndex;
-
-  const sectionPageCount = doc.pages.filter(
-    (x) => x.sectionIndex === pageSectionCount.currentSection
+  textTemplateVariables.currentSection = page.sectionIndex;
+  textTemplateVariables.sectionPageCount = doc.pages.filter(
+    (x) => x.sectionIndex === textTemplateVariables.currentSection
   ).length;
+}
 
-  const sectionPageText = ` Page ${pageSectionCount.sectionPage} of ${sectionPageCount}`;
-
-  return `${doc.timestamp ? `${timestamp.split(/ GMT/)[0]}` : ""}${
-    doc.pageNumbers ? pageNum : doc.sectionPageNumbers ? sectionPageText : ""
-  }`;
+export function handleFooter(
+  row: MeasuredRow,
+  variables: TextTemplateVariables
+): MeasuredRow {
+  return {
+    ...row,
+    data: row.data.map((cell) => {
+      if ("template" in cell) {
+        const { template, ...rest } = cell;
+        return {
+          ...rest,
+          value: template.renderTemplate(variables),
+        };
+      } else {
+        return cell;
+      }
+    }),
+  };
 }
 
 function getSectionHeight(section: MeasuredSection): number {
