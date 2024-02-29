@@ -59,7 +59,8 @@ async function renderDocument(
 ): Promise<RenderDocumentResult> {
   let stream: NodeJS.WritableStream;
   const pdfDoc = new PDFDocument({
-    layout: document.layout ?? "landscape",
+    layout:
+      "layout" in document && document.layout ? document.layout : "landscape",
     margin: 0,
     bufferPages: true,
     info: isSnapshot
@@ -114,6 +115,7 @@ async function render(
 
 export type {
   Document,
+  SimpleDocument,
   Image,
   Table,
   Row,

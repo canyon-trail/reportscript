@@ -11,6 +11,7 @@ import {
   HorizontalAlignment,
   FontSetting,
   Watermark,
+  SimpleDocument,
   TextTemplateCell,
 } from "../types";
 import {
@@ -936,6 +937,7 @@ describe("normalizeSection", () => {
     });
   });
 });
+
 describe("normalizeDocument", () => {
   const createNormalizedRow = (
     text: string,
@@ -1127,6 +1129,7 @@ describe("normalizeDocument", () => {
     };
     expect(normalize(document)).toEqual(expected);
   });
+
   it("normalize with pageNumber and timestamp without footer", () => {
     const document: Document = {
       sections: documentSections,
@@ -1203,6 +1206,27 @@ describe("normalizeDocument", () => {
       ).toEqual({
         ...expectedDocument,
         pageBreakRows: createNormalizedPageBreakRows(fontSetting),
+      });
+    });
+  });
+
+  describe("with simple document", () => {
+    it("converts simple document with only tables into normalized document", () => {
+      const simpleDoc: SimpleDocument = {
+        tables: documentSections[0].tables,
+      };
+
+      const result = normalize(simpleDoc);
+
+      expect(result).toEqual({
+        headers: { rows: [] },
+        footers: { rows: [] },
+        sections: [
+          {
+            headers: { rows: [] },
+            tables: normalizedDocumentSections[0].tables,
+          },
+        ],
       });
     });
   });

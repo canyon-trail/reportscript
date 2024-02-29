@@ -6,6 +6,8 @@ export * from "./table";
 export * from "./section";
 export * from "./document";
 
+import { Document } from "./document";
+
 export type SnapshotResult = {
   snapshot: string;
   rendered: string;
