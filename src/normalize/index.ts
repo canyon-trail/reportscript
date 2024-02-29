@@ -28,7 +28,8 @@ import {
   NormalizedTable,
   NormalizedWidth,
 } from "./types";
-import { TextTemplate, rs } from "../rs/index";
+import { rs } from "../rs/index";
+import { TextTemplate } from "../types/textTemplate";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";

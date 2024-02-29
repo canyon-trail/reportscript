@@ -1,5 +1,6 @@
 import { Cell, CellStyle, CellValue, Image } from "./cell";
 import { FontSetting } from "./font";
+import { TextTemplate } from "./textTemplate";
 
 /**
  * A row contains data for an entry in a table, and can accept options to apply a default style to each cell in the row.
@@ -7,7 +8,7 @@ import { FontSetting } from "./font";
  */
 export type Row = {
   /** A row’s data requires an array of either ImageCell or TextCell objects, strings, or numbers. */
-  data: (Cell | CellValue)[];
+  data: (Cell | CellValue | TextTemplate)[];
   /** Sets styling options for the cell. Overrides any row or table level styling options. */
   options?: RowOptions;
   /** Adds an image for the entire row with no other data. */
