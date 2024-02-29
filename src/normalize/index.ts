@@ -14,6 +14,7 @@ import {
   PageBreakRows,
   FontSetting,
   Watermark,
+  DocumentWithSections,
   TextTemplateCell,
 } from "../types";
 import {
@@ -39,20 +40,23 @@ type TemplateRow = {
 };
 
 export function normalize(document: Document): NormalizedDocument {
-  const { headers, sections, pageBreakRows, defaultFontSettings, watermark } =
-    document;
+  const documentProps = getDocumentProps(document);
+
+  const {
+    headers,
+    sections,
+    pageBreakRows,
+    defaultFontSettings,
+    watermark,
+    tableGap,
+  } = documentProps;
   const normalizedFontSetting = normalizeFontSetting(defaultFontSettings);
 
   return {
-    ...document,
+    ...documentProps,
     headers: normalizeHeaderFooter(headers, normalizedFontSetting),
     sections: sections.map((section) =>
-      normalizeSection(
-        section,
-        normalizedFontSetting,
-        document?.tableGap,
-        watermark
-      )
+      normalizeSection(section, normalizedFontSetting, tableGap, watermark)
     ),
     footers: normalizeFooter(normalizedFontSetting, document),
     pageBreakRows: normalizePageBreakRows(pageBreakRows, normalizedFontSetting),
@@ -405,4 +409,10 @@ export function normalizeWatermark(
         ...watermark,
       }
     : undefined;
+}
+
+function getDocumentProps(document: Document): DocumentWithSections {
+  return "sections" in document
+    ? document
+    : { sections: [{ tables: document.tables }] };
 }
