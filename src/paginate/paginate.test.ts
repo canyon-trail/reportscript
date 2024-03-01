@@ -1046,7 +1046,6 @@ describe("page numbers and timestamp", () => {
       ...emptyMeasuredDoc,
       sections: [section],
       footers: [createTemplateRow(rs`{{timestamp}}`, rowHeight)],
-      timestamp: true,
     };
 
     const result = paginate(input, creationDate);
@@ -1083,8 +1082,6 @@ describe("page numbers and timestamp", () => {
           rowHeight
         ),
       ],
-      timestamp: true,
-      pageNumbers: true,
     };
     const timestampPageNumRow = createPageNumberTimeStampRow({
       footerHeight: rowHeight,

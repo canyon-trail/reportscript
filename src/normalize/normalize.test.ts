@@ -85,7 +85,7 @@ describe("normalizeCell", () => {
   it("normalize string", () => {
     expect(normalizeCell("value")).toEqual({ value: "value", columnSpan: 1 });
   });
-  it("normalize image", () => {
+  it("normalizes image", () => {
     const image: ImageCell = {
       image: { image: "image", height: 100 },
     };
