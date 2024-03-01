@@ -8,7 +8,6 @@ import {
   Document,
   CellStyle,
   CellLayout,
-  TextTemplateCell,
 } from "../types";
 
 export type NormalizedWidth = { value: number; unit: Unit };
@@ -16,10 +15,8 @@ export type NormalizedColumnSetting = Omit<ColumnSetting, "width"> & {
   width: NormalizedWidth;
 };
 
-export type NormalizedCell = Cell | TextTemplateCell;
-
 export type NormalizedRow = {
-  data: NormalizedCell[];
+  data: Cell[];
   options?: RowOptions;
   image?: Image;
 };

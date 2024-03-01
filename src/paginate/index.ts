@@ -8,6 +8,7 @@ import {
   MeasuredTable,
 } from "../measure/types";
 import { Page, PaginatedDocument } from "./types";
+import { TextTemplateVariables } from "types/textTemplate";
 export type PaginatingDoc = MeasuredDocument & {
   remaining: MeasuredSection[];
   pages: Page[];
@@ -18,13 +19,8 @@ export type TableSplitResult = {
   first: MeasuredTable;
   rest: MeasuredTable;
 };
-export type TextTemplateVariables = {
-  documentPageNumber: number;
-  documentPageCount: number;
-  sectionPageNumber: number;
-  sectionPageCount: number;
+export type PaginationTextTemplateVariables = TextTemplateVariables & {
   currentSection: number;
-  timestamp: string;
 };
 export type SectionSplitResult = {
   first: MeasuredSection;
@@ -40,7 +36,7 @@ export function paginate(
     paginateStep(pagingDoc);
   }
 
-  addHeadersAndFooters(pagingDoc, creationDate);
+  handlePages(pagingDoc, creationDate);
   return {
     pages: pagingDoc.pages,
     layout: doc.layout,
@@ -95,11 +91,11 @@ export function handleHeaderFooterSpace(measuredRows: MeasuredRow[]): number {
   return measuredRows.length > 0 ? margin + sumOfRowHeights(measuredRows) : 0;
 }
 
-function addHeadersAndFooters(doc: PaginatingDoc, creationDate: Date): void {
+function handlePages(doc: PaginatingDoc, creationDate: Date): void {
   const timestamp = `${creationDate.toLocaleString("en-US", {
     timeZone: "America/Chicago",
   })}`.split(/ GMT/)[0];
-  const variables: TextTemplateVariables = {
+  const variables: PaginationTextTemplateVariables = {
     documentPageNumber: 0,
     documentPageCount: doc.pages.length,
     sectionPageNumber: 0,
@@ -107,9 +103,11 @@ function addHeadersAndFooters(doc: PaginatingDoc, creationDate: Date): void {
     currentSection: 0,
     timestamp: timestamp,
   };
-  doc.pages.forEach((_, idx) => {
+  doc.pages.forEach((page, idx) => {
     handleHeaders(idx, doc);
-    handleFooters(idx, doc, variables);
+    handleFooters(idx, doc);
+    updateTextTemplateVariables(idx, doc, variables);
+    doc.pages[idx] = handleTemplatePerPage(page, variables);
   });
 }
 
@@ -128,11 +126,7 @@ function handleHeaders(index: number, doc: PaginatingDoc) {
   }
 }
 
-function handleFooters(
-  index: number,
-  doc: PaginatingDoc,
-  textTemplateVariables: TextTemplateVariables
-) {
+function handleFooters(index: number, doc: PaginatingDoc) {
   const page = doc.pages[index];
 
   const { pageInnerHeight } = getPageDimensions(doc.layout);
@@ -149,19 +143,15 @@ function handleFooters(
       columnWidths: [],
       columnStarts: [],
     });
-    updateTextTemplateVariables(index, doc, textTemplateVariables);
 
-    const footers = doc.footers.map((x) =>
-      handleFooter(x, textTemplateVariables)
-    );
-    page.rows.push(...footers);
+    page.rows.push(...doc.footers);
   }
 }
 
 export function updateTextTemplateVariables(
   index: number,
   doc: PaginatingDoc,
-  textTemplateVariables: TextTemplateVariables
+  textTemplateVariables: PaginationTextTemplateVariables
 ): void {
   const page = doc.pages[index];
   textTemplateVariables.documentPageNumber = index + 1;
@@ -175,9 +165,22 @@ export function updateTextTemplateVariables(
   ).length;
 }
 
-export function handleFooter(
+function handleTemplatePerPage(
+  page: Page,
+  variables: PaginationTextTemplateVariables
+): Page {
+  const { rows } = page;
+  return {
+    ...page,
+    rows: rows.map((row) => {
+      return handleTemplate(row, variables);
+    }),
+  };
+}
+
+export function handleTemplate(
   row: MeasuredRow,
-  variables: TextTemplateVariables
+  variables: PaginationTextTemplateVariables
 ): MeasuredRow {
   return {
     ...row,

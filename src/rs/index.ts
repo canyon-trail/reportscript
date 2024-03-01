@@ -1,10 +1,8 @@
-type TextTemplateVariables = {
-  documentPageNumber: number;
-  documentPageCount: number;
-  sectionPageNumber: number;
-  sectionPageCount: number;
-  timestamp: string;
-};
+import {
+  RenderTemplateFn,
+  TextTemplate,
+  TextTemplateVariables,
+} from "../types/textTemplate";
 
 const variableKeys: Record<keyof TextTemplateVariables, boolean> = {
   documentPageCount: true,
@@ -12,12 +10,6 @@ const variableKeys: Record<keyof TextTemplateVariables, boolean> = {
   sectionPageCount: true,
   sectionPageNumber: true,
   timestamp: true,
-};
-
-type RenderTemplateFn = (variables: TextTemplateVariables) => string;
-
-export type TextTemplate = {
-  renderTemplate: RenderTemplateFn;
 };
 
 function compileTemplate(template: string): RenderTemplateFn {

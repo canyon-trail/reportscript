@@ -15,11 +15,9 @@ import {
   FontSetting,
   Watermark,
   DocumentWithSections,
-  TextTemplateCell,
 } from "../types";
 import {
   CellSettings,
-  NormalizedCell,
   NormalizedColumnSetting,
   NormalizedDocument,
   NormalizedHeaderFooter,
@@ -29,15 +27,11 @@ import {
   NormalizedTable,
   NormalizedWidth,
 } from "./types";
-import { TextTemplate, rs } from "../rs/index";
+import { rs } from "../rs/index";
+import { TextTemplate } from "../types/textTemplate";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
-
-type TemplateRow = {
-  data: TextTemplateCell[];
-  options?: RowOptions;
-};
 
 export function normalize(document: Document): NormalizedDocument {
   const documentProps = getDocumentProps(document);
@@ -58,7 +52,7 @@ export function normalize(document: Document): NormalizedDocument {
     sections: sections.map((section) =>
       normalizeSection(section, normalizedFontSetting, tableGap, watermark)
     ),
-    footers: normalizeFooter(normalizedFontSetting, document),
+    footers: normalizeDocumentFooter(normalizedFontSetting, document),
     pageBreakRows: normalizePageBreakRows(pageBreakRows, normalizedFontSetting),
   };
 }
@@ -92,7 +86,7 @@ export function normalizeDocPageNumTimestamp(
   return undefined;
 }
 
-export function normalizeFooter(
+export function normalizeDocumentFooter(
   normalizedFontSetting: FontSetting,
   document: Document
 ): NormalizedHeaderFooter {
@@ -149,9 +143,9 @@ export function normalizeFontSetting(
 }
 
 export function normalizeOptions(
-  data: NormalizedCell[],
+  data: Cell[],
   cellOptions: CellSettings
-): NormalizedCell[] {
+): Cell[] {
   return data.map((d) => ({
     ...cellOptions,
     ...d,
@@ -159,7 +153,7 @@ export function normalizeOptions(
 }
 
 export function validateCellSpan(
-  cells: NormalizedCell[],
+  cells: Cell[],
   columnSettings: NormalizedColumnSetting[]
 ): void {
   const totalWidth = columnSettings?.length;
@@ -178,7 +172,7 @@ export function validateCellSpan(
 
 export function computeCellAlignments(
   columnSettings: NormalizedColumnSetting[],
-  cells: NormalizedCell[]
+  cells: Cell[]
 ): HorizontalAlignment[] {
   let cellIndex = 0;
   return cells.map((cell) => {
@@ -189,51 +183,53 @@ export function computeCellAlignments(
 }
 
 export function normalizeAlignment(
-  cells: NormalizedCell[],
+  cells: Cell[],
   alignments: HorizontalAlignment[]
-): NormalizedCell[] {
+): Cell[] {
   return cells.map((cell, index) => ({
     horizontalAlign: alignments[index],
     ...cell,
   }));
 }
 
-export function normalizeCell(
-  cell: Cell | CellValue | TextTemplateCell
-): NormalizedCell {
+export function normalizeCell(cell: Cell | CellValue | TextTemplate): Cell {
   const defaultProps: CellSettings = {
     columnSpan: 1,
   };
   if (cell == null || cell === undefined) {
-    return {
-      ...defaultProps,
-      value: "",
-    };
+    throw new Error("Cell is null or undefined");
   }
+
   if (_.isString(cell)) {
     return { value: cell as string, ...defaultProps };
   } else if (_.isNumber(cell)) {
     return { value: cell, ...defaultProps };
-  } else if (cell && "image" in (cell as Cell)) {
+  } else if ("renderTemplate" in cell) {
+    return {
+      ...defaultProps,
+      template: cell,
+    };
+  } else if (cell && "image" in cell) {
+    if (!cell.image) {
+      throw new Error("Cell image is null or undefined");
+    }
     return {
       ...defaultProps,
       ...cell,
     };
-  } else if (
-    cell &&
-    "value" in cell &&
-    ![undefined, null].includes(cell.value)
-  ) {
+  } else if (cell && "value" in cell) {
+    if (cell.value == null || cell.value === undefined) {
+      throw new Error("Cell value is null or undefined");
+    }
     return {
       ...defaultProps,
       ...cell,
       value: cell.value,
     };
-  } else if (
-    cell &&
-    "template" in cell &&
-    ![undefined, null].includes(cell.template)
-  ) {
+  } else if (cell && "template" in cell) {
+    if (!cell.template) {
+      throw new Error("Cell template is null or undefined");
+    }
     return {
       ...defaultProps,
       ...cell,
@@ -248,12 +244,12 @@ export function normalizeCell(
   }
 }
 export function normalizeRow(
-  row: Row | TemplateRow,
+  row: Row,
   tableStyle: RowOptions,
   settingsFromTable: NormalizedColumnSetting[]
 ): NormalizedRow {
   const { data, options } = row;
-  let normalizedData: NormalizedCell[] = data.map((d) => normalizeCell(d));
+  let normalizedData: Cell[] = data.map((d) => normalizeCell(d));
   validateCellSpan(normalizedData, settingsFromTable);
 
   let cellOptions: CellSettings = {};

@@ -13,6 +13,7 @@ import {
   Watermark,
   SimpleDocument,
   TextTemplateCell,
+  ImageCell,
 } from "../types";
 import {
   computeCellAlignments,
@@ -32,7 +33,7 @@ import {
   normalizeFontSetting,
   normalizeWatermark,
   normalizeDocPageNumTimestamp,
-  normalizeFooter,
+  normalizeDocumentFooter,
 } from ".";
 import {
   NormalizedColumnSetting,
@@ -84,6 +85,20 @@ describe("normalizeCell", () => {
   it("normalize string", () => {
     expect(normalizeCell("value")).toEqual({ value: "value", columnSpan: 1 });
   });
+  it("normalizes image", () => {
+    const image: ImageCell = {
+      image: { image: "image", height: 100 },
+    };
+    expect(normalizeCell(image)).toEqual({ ...image, columnSpan: 1 });
+  });
+  it("throw errors on invalid image", () => {
+    const image: ImageCell = {
+      image: undefined,
+    };
+    expect(() => normalizeCell(image)).toThrowError(
+      "Cell image is null or undefined"
+    );
+  });
   it("normalize number", () => {
     expect(normalizeCell(1)).toEqual({ value: 1, columnSpan: 1 });
   });
@@ -93,18 +108,20 @@ describe("normalizeCell", () => {
       columnSpan: 1,
     });
   });
+
   it("normalize null cell", () => {
-    expect(normalizeCell({ value: null })).toEqual({
-      value: "",
-      columnSpan: 1,
-    });
+    expect(() => normalizeCell({ value: null })).toThrowError(
+      "Cell value is null or undefined"
+    );
   });
 
   it("normalize null", () => {
-    expect(normalizeCell(null)).toEqual({ value: "", columnSpan: 1 });
+    expect(() => normalizeCell(null)).toThrowError("Cell is null or undefined");
   });
   it("normalize undefined", () => {
-    expect(normalizeCell(undefined)).toEqual({ value: "", columnSpan: 1 });
+    expect(() => normalizeCell(undefined)).toThrowError(
+      "Cell is null or undefined"
+    );
   });
   it("normalize 0 as number", () => {
     expect(normalizeCell(0)).toEqual({ value: 0, columnSpan: 1 });
@@ -125,12 +142,26 @@ describe("normalizeCell", () => {
       columnSpan: 1,
     });
   });
-
+  it("normalize null text template cell", () => {
+    const cell: TextTemplateCell = {
+      template: null,
+    };
+    expect(() => normalizeCell(cell)).toThrowError(
+      "Cell template is null or undefined"
+    );
+  });
   it("normalize cell override columnSpan", () => {
     expect(normalizeCell({ value: "value", columnSpan: 2 })).toEqual({
       value: "value",
       columnSpan: 2,
     });
+  });
+  it("normalize textTemplateCell", () => {
+    const template = rs`Page {{documentPageNumber}} of {{documentPageCount}}`;
+    const normalizedCell = normalizeCell(template) as TextTemplateCell;
+    expect(normalizedCell.template.renderTemplate(mockVariables)).toEqual(
+      "Page 1 of 3"
+    );
   });
 });
 describe("normalizeRow", () => {
@@ -1440,7 +1471,7 @@ describe("normalizeDocPageNumTimeStamp", () => {
     expect(result).toBe("10:00:00 Page 1 of 1");
   });
 });
-describe("normalizeFooter", () => {
+describe("normalizeDocumentFooter", () => {
   const rows: Row[] = [{ data: ["data"] }];
   let mockDocument;
   beforeEach(() => {
@@ -1467,15 +1498,15 @@ describe("normalizeFooter", () => {
   });
 
   it("return empty row if no footer and template", () => {
-    expect(normalizeFooter(defaultNormalizedFontSetting, mockDocument)).toEqual(
-      {
-        rows: [],
-      }
-    );
+    expect(
+      normalizeDocumentFooter(defaultNormalizedFontSetting, mockDocument)
+    ).toEqual({
+      rows: [],
+    });
   });
   it("return footer with template including default settings and when no footer is set", () => {
     mockDocument.pageNumbers = true;
-    const normalizedFooter = normalizeFooter(
+    const normalizedFooter = normalizeDocumentFooter(
       defaultNormalizedFontSetting,
       mockDocument
     );
@@ -1495,31 +1526,31 @@ describe("normalizeFooter", () => {
 
   it("return footer with default settings", () => {
     mockDocument.footers = { rows: rows };
-    expect(normalizeFooter(defaultNormalizedFontSetting, mockDocument)).toEqual(
-      {
-        rows: [
-          {
-            data: [
-              {
-                value: "data",
-                ...defaultNormalizedCellOptions,
-              },
-            ],
-            options: {
-              ...defaultNormalizedRowOptions,
-              border: false,
+    expect(
+      normalizeDocumentFooter(defaultNormalizedFontSetting, mockDocument)
+    ).toEqual({
+      rows: [
+        {
+          data: [
+            {
+              value: "data",
+              ...defaultNormalizedCellOptions,
             },
+          ],
+          options: {
+            ...defaultNormalizedRowOptions,
+            border: false,
           },
-        ],
-        columns: [defaultNormalizedColumnSetting],
-      }
-    );
+        },
+      ],
+      columns: [defaultNormalizedColumnSetting],
+    });
   });
   it("throw error if both footer and template are set", () => {
     mockDocument.footers = [{ rows: rows }];
     mockDocument.pageNumbers = true;
     expect(() =>
-      normalizeFooter(defaultNormalizedFontSetting, mockDocument)
+      normalizeDocumentFooter(defaultNormalizedFontSetting, mockDocument)
     ).toThrowError(
       "Cannot set footer, and pageNumber || timestamp || sectionPageNumber at the same time. Please use TextTemplateCell to set pageNumber || timestamp || sectionPageNumber"
     );

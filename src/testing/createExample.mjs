@@ -1,6 +1,6 @@
 import fs from "fs";
 import reportscript from "../index.ts";
-const { renderPdf } = reportscript;
+const { renderPdf,rs } = reportscript;
 
 const documentHeader = (image) => ({
   rows: [
@@ -14,11 +14,12 @@ const documentHeader = (image) => ({
           align: "left"
         },
         {
-          value: "Document Header",
+          template:  rs`{{timestamp}} Page {{documentPageNumber}} of {{documentPageCount}}`,
           fontSize: 16,
           underline: true,
           verticalAlign: "center"
         },
+        
         ""
       ],
       options: { underline: true, lineGap: 20 }

@@ -1,10 +1,9 @@
 import {
-  NormalizedCell,
   NormalizedColumnSetting,
   NormalizedDocument,
   NormalizedRow,
 } from "../normalize/types";
-import { Layout, Watermark } from "../types";
+import { Cell, Layout, Watermark } from "../types";
 
 export type MeasuredTable = {
   rows: MeasuredRow[];
@@ -30,7 +29,7 @@ export type VerticalMeasure = {
 };
 
 export type MeasuredRow = Omit<NormalizedRow, "data"> & {
-  data: NormalizedCell[];
+  data: Cell[];
   columnHeights: VerticalMeasure[];
   columnWidths: number[];
   columnStarts: number[];
