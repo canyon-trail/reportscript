@@ -3,7 +3,6 @@ import { UndefinedCellError, VerticalMeasure } from "./types";
 import { PdfKitApi } from "../reportDocument";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
-  NormalizedCell,
   NormalizedDocument,
   NormalizedHeaderFooter,
   NormalizedPageBreakRows,
@@ -169,7 +168,7 @@ export function getRowHeight(
 }
 
 export function getCellHeight(
-  cell: NormalizedCell,
+  cell: Cell,
   width: number,
   doc: PdfKitApi,
   text?: string | number

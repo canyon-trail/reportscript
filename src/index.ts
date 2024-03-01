@@ -8,6 +8,7 @@ import { paginate } from "./paginate";
 import { normalize } from "./normalize";
 import fs from "fs";
 import { Document, SnapshotResult } from "./types";
+export { rs } from "./rs/index";
 export { splitColumn } from "./paginate/splitColumn";
 
 type RenderDocumentResult = {

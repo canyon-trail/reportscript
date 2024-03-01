@@ -1,10 +1,12 @@
 import { MeasuredRow, MeasuredWatermark } from "../measure/types";
-import { Cell, Layout } from "../types";
+import { ChartCell, ImageCell, Layout, TextCell } from "../types";
 
 export type PaginatedRow = Omit<MeasuredRow, "data"> & {
-  data: Cell[];
+  data: PaginatedCell[];
   start: number;
 };
+
+export type PaginatedCell = ImageCell | TextCell | ChartCell;
 
 export type Page = {
   rows: MeasuredRow[];

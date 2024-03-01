@@ -25,7 +25,6 @@ import {
   NormalizedPageBreakRows,
   NormalizedColumnSetting,
   NormalizedDocument,
-  NormalizedCell,
 } from "../normalize/types";
 import { MeasuredDocument, MeasuredWatermark } from "./types";
 import { rs } from "../rs/index";
@@ -209,7 +208,7 @@ describe("measuring functions", () => {
       expect(result).toBe(40 + lineGap + 1);
     });
     it("get text template cell Height ", () => {
-      const cell: NormalizedCell = {
+      const cell: Cell = {
         template: rs`Page {{documentPageNumber}} of {{documentPageCount}}`,
         columnSpan: 1,
         fontSize: 10,
