@@ -1,5 +1,4 @@
 import { TextCell } from "../types";
-import { getPageDimensions, margin } from "../measure";
 import _ from "lodash";
 import {
   MeasuredDocument,
@@ -9,6 +8,8 @@ import {
 } from "../measure/types";
 import { Page, PaginatedDocument } from "./types";
 import { TextTemplateVariables } from "types/textTemplate";
+import { getPageDimensions } from "../measure/measureRowAndCell";
+import { margin } from "../measure/defaultMeasurement";
 export type PaginatingDoc = MeasuredDocument & {
   remaining: MeasuredSection[];
   pages: Page[];

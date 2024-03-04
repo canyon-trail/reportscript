@@ -6,7 +6,6 @@ import {
   MeasuredTable,
   VerticalMeasure,
 } from "../measure/types";
-import { getPageDimensions, margin } from "../measure";
 import { ChartCell, TextCell } from "../types";
 import {
   paginate,
@@ -22,6 +21,8 @@ import { continuedOn, splitColumn } from "./splitColumn";
 import { Page, PaginatedDocument, PaginatedRow } from "./types";
 import { rs } from "../rs";
 import { TextTemplate } from "../types/textTemplate";
+import { margin } from "../measure/defaultMeasurement";
+import { getPageDimensions } from "../measure/measureRowAndCell";
 
 const measureTextHeight = (): VerticalMeasure => ({
   maxHeight: 0,

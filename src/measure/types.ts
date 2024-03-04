@@ -60,3 +60,9 @@ export class UndefinedCellError extends Error {
     Object.setPrototypeOf(this, UndefinedCellError.prototype);
   }
 }
+export type PageDimensions = {
+  pageHeight: number;
+  pageWidth: number;
+  availableWidth: number;
+  pageInnerHeight: number;
+};
