@@ -1,4 +1,4 @@
-import { VerticalMeasure } from "measure/types";
+import { VerticalMeasure } from "../measure/types";
 import { HorizontalAlignment } from "./alignment";
 import { Row, RowOptions } from "./row";
 
