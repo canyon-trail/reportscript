@@ -1,5 +1,5 @@
 import { normalizeWatermark } from ".";
-import { Section, FontSetting, Watermark, Table } from "types";
+import { Section, FontSetting, Watermark, Table } from "../types";
 import { normalizedColumnSetting } from "./normalizeColumnSetting";
 import { normalizeRow } from "./normalizeRow";
 import { NormalizedSection, NormalizedTable } from "./types";

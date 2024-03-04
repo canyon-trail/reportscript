@@ -1,5 +1,5 @@
 import { splitColumn, continuedOn, continuedFrom } from "./splitColumn";
-import { VerticalMeasure } from "measure/types";
+import { VerticalMeasure } from "../measure/types";
 
 const newlineSample = `a short line
 and another short line

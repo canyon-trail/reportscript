@@ -5,7 +5,7 @@ import {
   ColumnSetting,
   Row,
   Table,
-} from "types";
+} from "../types";
 import { normalizeSection, normalizeTable } from "./normalizeSection";
 import { NormalizedTable } from "./types";
 import {

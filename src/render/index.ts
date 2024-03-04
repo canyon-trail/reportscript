@@ -1,6 +1,5 @@
 import { Image, TextCell } from "../types";
 import { PdfKitApi } from "../reportDocument";
-
 import { PaginatedRow } from "../paginate/types";
 import { margin } from "../measure/defaultMeasurement";
 import { writeCellContents } from "./writeCellContents";

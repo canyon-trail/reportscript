@@ -4,7 +4,7 @@ import {
   HeaderFooters,
   TextTemplateCell,
   Document,
-} from "types";
+} from "../types";
 import {
   normalizeDocPageNumTimestamp,
   normalizeDocumentFooter,

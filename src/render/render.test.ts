@@ -1,6 +1,5 @@
 import PDFDocument from "pdfkit";
 import { SnapshottingDocument } from "../reportDocument";
-
 import {
   getCellColor,
   getCellFont,

@@ -1,4 +1,4 @@
-import { VerticalMeasure } from "measure/types";
+import { VerticalMeasure } from "../measure/types";
 
 export const continuedOn = " (continued on next page)";
 export const continuedFrom = "(continued from prev page) ";

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Cell, CellValue } from "types";
+import { Cell, CellValue } from "../types";
 import { TextTemplate } from "types/textTemplate";
 import { CellSettings } from "./types";
 

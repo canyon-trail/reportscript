@@ -1,4 +1,4 @@
-import { HorizontalAlignment } from "types";
+import { HorizontalAlignment } from "../types";
 import { NormalizedColumnSetting } from "./types";
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";

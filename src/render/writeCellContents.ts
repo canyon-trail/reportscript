@@ -7,9 +7,9 @@ import {
 import { getCellHeight, getCellAlign } from "../measure/measureRowAndCell";
 import { PaginatedRow } from "../paginate/types";
 import { PdfKitApi } from "reportDocument";
-import { Cell, ImageCell } from "types";
+import { Cell, ImageCell } from "../types";
 import SVGtoPDF from "svg-to-pdfkit";
-import { Chart } from "types/chart";
+import { Chart } from "../types/chart";
 import { Chart as ChartJS, registerables, ChartConfiguration } from "chart.js";
 export async function writeCellContents(
   index: number,

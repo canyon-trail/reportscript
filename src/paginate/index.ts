@@ -7,7 +7,7 @@ import {
   MeasuredTable,
 } from "../measure/types";
 import { Page, PaginatedDocument } from "./types";
-import { TextTemplateVariables } from "types/textTemplate";
+import { TextTemplateVariables } from "../types/textTemplate";
 import { getPageDimensions } from "../measure/measureRowAndCell";
 import { margin } from "../measure/defaultMeasurement";
 export type PaginatingDoc = MeasuredDocument & {

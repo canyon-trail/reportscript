@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Row, ColumnSetting, Unit } from "types";
+import { Row, ColumnSetting, Unit } from "../types";
 import { NormalizedColumnSetting, NormalizedWidth } from "./types";
 
 export function normalizedColumnSetting(

@@ -1,4 +1,4 @@
-import { RowOptions, Row, Cell, HorizontalAlignment } from "types";
+import { RowOptions, Row, Cell, HorizontalAlignment } from "../types";
 import {
   normalizeRow,
   computeCellAlignments,

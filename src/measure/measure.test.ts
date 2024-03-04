@@ -1,7 +1,6 @@
 import { Table, Watermark } from "../types";
 import PDFDocument from "pdfkit";
 import { measure } from ".";
-
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
   NormalizedPageBreakRows,

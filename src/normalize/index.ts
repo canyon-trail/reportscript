@@ -7,7 +7,6 @@ import {
   DocumentWithSections,
 } from "../types";
 import { NormalizedDocument, NormalizedPageBreakRows } from "./types";
-
 import { normalizeRow } from "./normalizeRow";
 import { normalizedColumnSetting } from "./normalizeColumnSetting";
 import { normalizeSection } from "./normalizeSection";

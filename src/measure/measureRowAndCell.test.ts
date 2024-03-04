@@ -1,12 +1,10 @@
 import { Cell, TextCell } from "../types";
 import PDFDocument from "pdfkit";
 import { Image } from "../types";
-
 import { NormalizedRow } from "../normalize/types";
 import { rs } from "../rs/index";
 import { margin } from "./defaultMeasurement";
 import { lineGap } from "./defaultMeasurement";
-
 import {
   getRowHeight,
   measureCellHeights,

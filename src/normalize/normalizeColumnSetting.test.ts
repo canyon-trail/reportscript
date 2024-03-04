@@ -1,4 +1,4 @@
-import { ColumnSetting } from "types";
+import { ColumnSetting } from "../types";
 import { parseWidth, parseColumnSetting } from "./normalizeColumnSetting";
 
 describe("parseWidth", () => {

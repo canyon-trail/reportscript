@@ -1,5 +1,5 @@
 import { rs } from "../rs";
-import { ImageCell, TextTemplateCell } from "types";
+import { ImageCell, TextTemplateCell } from "../types";
 import { normalizeCell } from "./normalizeCell";
 import { mockVariables } from "./testDefaultVariables";
 
