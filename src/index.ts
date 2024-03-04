@@ -1,13 +1,15 @@
 import PDFDocument from "pdfkit";
 import { PaginatedRow, PaginatedDocument } from "./paginate/types";
 import { PdfKitApi, SnapshottingDocument } from "./reportDocument";
-import { margin, measure } from "./measure";
+import { measure } from "./measure";
 import _ from "lodash";
-import { renderWatermark, writeRow } from "./render";
+import { writeRow } from "./render";
 import { paginate } from "./paginate";
 import { normalize } from "./normalize";
 import fs from "fs";
 import { Document, SnapshotResult } from "./types";
+import { margin } from "./measure/defaultMeasurement";
+import { renderWatermark } from "./render/renderWaterMark";
 export { rs } from "./rs/index";
 export { splitColumn } from "./paginate/splitColumn";
 
