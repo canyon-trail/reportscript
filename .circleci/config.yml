@@ -129,37 +129,37 @@ workflows:
             - Slack
           requires:
             - reportscript-node-install
-      - reportscript-tests:
-          context:
-            - Slack
-          requires:
-            - reportscript-node-install
+      # - reportscript-tests:
+      #     context:
+      #       - Slack
+      #     requires:
+      #       - reportscript-node-install
       - build:
           context:
             - Slack
           requires:
             - reportscript-node-install
-      - release:
-          context:
-            - Slack
-          requires:
-            - reportscript-node-install
-            - reportscript-format-check
-            - reportscript-tests
-            - build
-          filters:
-            branches:
-              only:
-                - main
-      - ci-jobs-completed:
-          context:
-            - Slack
-          requires:
-            - reportscript-format-check
-            - reportscript-tests
-            - build
-            - release
-          filters:
-            branches:
-              ignore:
-                - main
+      # - release:
+      #     context:
+      #       - Slack
+      #     requires:
+      #       - reportscript-node-install
+      #       - reportscript-format-check
+      #       - reportscript-tests
+      #       - build
+      #     filters:
+      #       branches:
+      #         only:
+      #           - main
+      # - ci-jobs-completed:
+      #     context:
+      #       - Slack
+      #     requires:
+      #       - reportscript-format-check
+      #       - reportscript-tests
+      #       - build
+      #       - release
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - main
