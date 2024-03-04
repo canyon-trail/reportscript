@@ -1,6 +1,5 @@
 import { rs } from "../rs";
-import { HeaderFooters, FontSetting, Document } from "types";
-import { TextTemplate } from "../types/textTemplate";
+import { HeaderFooters, FontSetting, Document, TextTemplate } from "../types";
 import { normalizedColumnSetting } from "./normalizeColumnSetting";
 import { normalizeRow } from "./normalizeRow";
 import { NormalizedHeaderFooter, NormalizedColumnSetting } from "./types";

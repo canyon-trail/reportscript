@@ -1,6 +1,5 @@
 import _ from "lodash";
-import { Cell, CellValue } from "../types";
-import { TextTemplate } from "types/textTemplate";
+import { Cell, CellValue, TextTemplate } from "../types";
 import { CellSettings } from "./types";
 
 export function normalizeCell(cell: Cell | CellValue | TextTemplate): Cell {
