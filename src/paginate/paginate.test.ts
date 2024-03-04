@@ -19,7 +19,7 @@ import {
 } from ".";
 import { continuedOn, splitColumn } from "./splitColumn";
 import { Page, PaginatedDocument, PaginatedRow } from "./types";
-import { rs } from "../rs";
+import { rs } from "../rs/index";
 import { TextTemplate } from "../types";
 import { margin } from "../measure/defaultMeasurement";
 import { getPageDimensions } from "../measure/measureRowAndCell";

@@ -1,4 +1,4 @@
-import { rs } from "../rs";
+import { rs } from "../rs/index";
 import { HeaderFooters, FontSetting, Document, TextTemplate } from "../types";
 import { normalizedColumnSetting } from "./normalizeColumnSetting";
 import { normalizeRow } from "./normalizeRow";

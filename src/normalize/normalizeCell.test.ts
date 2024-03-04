@@ -1,4 +1,4 @@
-import { rs } from "../rs";
+import { rs } from "../rs/index";
 import { ImageCell, TextTemplateCell } from "../types";
 import { normalizeCell } from "./normalizeCell";
 import { mockVariables } from "./testDefaultVariables";
