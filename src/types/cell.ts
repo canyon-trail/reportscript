@@ -1,4 +1,4 @@
-import { HorizontalAlignment, VerticalAlignment } from "types/alignment";
+import { HorizontalAlignment, VerticalAlignment } from ".";
 import { FontSetting } from "./font";
 import { Chart } from "./chart";
 import { TextTemplate } from "./textTemplate";

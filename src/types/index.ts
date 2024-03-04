@@ -7,6 +7,7 @@ export * from "./section";
 export * from "./document";
 export * from "./textTemplate";
 export * from "./chart";
+export * from "./alignment";
 
 import { Document } from "./document";
 
