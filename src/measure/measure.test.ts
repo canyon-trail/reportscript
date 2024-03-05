@@ -16,7 +16,7 @@ import { Image } from "../types";
 import {
   defaultBoldFace,
   defaultFontFace,
-  normalizeHeaderFooter,
+  normalizeHeaders,
   normalizeTable,
 } from "../normalize";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
@@ -403,7 +403,7 @@ describe("measuring functions", () => {
     });
 
     it("returns measured document", () => {
-      const headers = normalizeHeaderFooter(
+      const headers = normalizeHeaders(
         {
           rows: [
             {
@@ -446,7 +446,7 @@ describe("measuring functions", () => {
 
       const sections = [
         {
-          headers: normalizeHeaderFooter(
+          headers: normalizeHeaders(
             {
               rows: [
                 { data: [{ value: "A Section" }], options: { fontSize: 10 } },
@@ -458,7 +458,7 @@ describe("measuring functions", () => {
         },
       ];
 
-      const footers = normalizeHeaderFooter(
+      const footers = normalizeHeaders(
         {
           rows: [
             {
@@ -610,7 +610,7 @@ describe("measuring functions", () => {
 
       const sections = [
         {
-          headers: normalizeHeaderFooter(
+          headers: normalizeHeaders(
             {
               rows: [
                 { data: [{ value: "A Section" }], options: { fontSize: 10 } },

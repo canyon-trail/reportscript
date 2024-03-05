@@ -1,7 +1,6 @@
 import _ from "lodash";
 import {
   Cell,
-  CellValue,
   ColumnSetting,
   Row,
   Section,
@@ -29,6 +28,7 @@ import {
 } from "./types";
 import { rs } from "../rs/index";
 import { TextTemplate } from "../types";
+import { normalizeCell } from "./normalizeCell";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";
@@ -48,7 +48,7 @@ export function normalize(document: Document): NormalizedDocument {
 
   return {
     ...documentProps,
-    headers: normalizeHeaderFooter(headers, normalizedFontSetting),
+    headers: normalizeHeaders(headers, normalizedFontSetting),
     sections: sections.map((section) =>
       normalizeSection(section, normalizedFontSetting, tableGap, watermark)
     ),
@@ -192,57 +192,6 @@ export function normalizeAlignment(
   }));
 }
 
-export function normalizeCell(cell: Cell | CellValue | TextTemplate): Cell {
-  const defaultProps: CellSettings = {
-    columnSpan: 1,
-  };
-  if (cell == null || cell === undefined) {
-    throw new Error("Cell is null or undefined");
-  }
-
-  if (_.isString(cell)) {
-    return { value: cell as string, ...defaultProps };
-  } else if (_.isNumber(cell)) {
-    return { value: cell, ...defaultProps };
-  } else if ("renderTemplate" in cell) {
-    return {
-      ...defaultProps,
-      template: cell,
-    };
-  } else if (cell && "image" in cell) {
-    if (!cell.image) {
-      throw new Error("Cell image is null or undefined");
-    }
-    return {
-      ...defaultProps,
-      ...cell,
-    };
-  } else if (cell && "value" in cell) {
-    if (cell.value == null || cell.value === undefined) {
-      throw new Error("Cell value is null or undefined");
-    }
-    return {
-      ...defaultProps,
-      ...cell,
-      value: cell.value,
-    };
-  } else if (cell && "template" in cell) {
-    if (!cell.template) {
-      throw new Error("Cell template is null or undefined");
-    }
-    return {
-      ...defaultProps,
-      ...cell,
-      template: cell.template,
-    };
-  } else {
-    return {
-      ...defaultProps,
-      ...cell,
-      value: "",
-    };
-  }
-}
 export function normalizeRow(
   row: Row,
   tableStyle: RowOptions,
@@ -364,7 +313,7 @@ export function parseWidth(width: string): NormalizedWidth {
   return { value, unit };
 }
 
-export function normalizeHeaderFooter(
+export function normalizeHeaders(
   headerFooter: HeaderFooters,
   normalizedFontSetting: FontSetting
 ): NormalizedHeaderFooter {
@@ -388,7 +337,7 @@ export function normalizeSection(
   return {
     tableGap: tableGap ?? undefined,
     ...section,
-    headers: normalizeHeaderFooter(headers, normalizedFontSetting),
+    headers: normalizeHeaders(headers, normalizedFontSetting),
     tables: tables.map((table) => normalizeTable(table, normalizedFontSetting)),
     watermark: normalizeWatermark(sectionWatermark, normalizedFontSetting),
   };

@@ -13,17 +13,15 @@ import {
   Watermark,
   SimpleDocument,
   TextTemplateCell,
-  ImageCell,
 } from "../types";
 import {
   computeCellAlignments,
   normalizeAlignment,
-  normalizeCell,
   normalize,
   normalizeRow,
   normalizeSection,
   normalizeTable,
-  normalizeHeaderFooter,
+  normalizeHeaders,
   parseWidth,
   parseColumnSetting,
   validateCellSpan,
@@ -44,7 +42,6 @@ import {
   NormalizedSection,
   NormalizedTable,
 } from "./types";
-import { rs } from "../rs/index";
 
 const emptyNormalizedDocument = {
   headers: { rows: [] },
@@ -74,96 +71,13 @@ const defaultNormalizedColumnSetting: NormalizedColumnSetting = {
 const defaultNormalizedColumnSettings: NormalizedColumnSetting[] = [
   defaultNormalizedColumnSetting,
 ];
-const mockVariables = {
+export const mockVariables = {
   documentPageNumber: 1,
   documentPageCount: 3,
   sectionPageNumber: 1,
   sectionPageCount: 1,
   timestamp: "10:00:00",
 };
-describe("normalizeCell", () => {
-  it("normalize string", () => {
-    expect(normalizeCell("value")).toEqual({ value: "value", columnSpan: 1 });
-  });
-  it("normalizes image", () => {
-    const image: ImageCell = {
-      image: { image: "image", height: 100 },
-    };
-    expect(normalizeCell(image)).toEqual({ ...image, columnSpan: 1 });
-  });
-  it("throw errors on invalid image", () => {
-    const image: ImageCell = {
-      image: undefined,
-    };
-    expect(() => normalizeCell(image)).toThrowError(
-      "Cell image is null or undefined"
-    );
-  });
-  it("normalize number", () => {
-    expect(normalizeCell(1)).toEqual({ value: 1, columnSpan: 1 });
-  });
-  it("normalize cell", () => {
-    expect(normalizeCell({ value: "value" })).toEqual({
-      value: "value",
-      columnSpan: 1,
-    });
-  });
-
-  it("normalize null cell", () => {
-    expect(() => normalizeCell({ value: null })).toThrowError(
-      "Cell value is null or undefined"
-    );
-  });
-
-  it("normalize null", () => {
-    expect(() => normalizeCell(null)).toThrowError("Cell is null or undefined");
-  });
-  it("normalize undefined", () => {
-    expect(() => normalizeCell(undefined)).toThrowError(
-      "Cell is null or undefined"
-    );
-  });
-  it("normalize 0 as number", () => {
-    expect(normalizeCell(0)).toEqual({ value: 0, columnSpan: 1 });
-  });
-  it("allows 0 value", () => {
-    expect(normalizeCell({ value: 0 })).toEqual({
-      value: 0,
-      columnSpan: 1,
-    });
-  });
-  it("normalize text template cell", () => {
-    const cell: TextTemplateCell = {
-      template: rs`Page {{documentPageNumber}} of {{documentPageCount}}`,
-    };
-    const normalizedCell = normalizeCell(cell);
-    expect(normalizedCell).toMatchObject({
-      template: cell.template,
-      columnSpan: 1,
-    });
-  });
-  it("normalize null text template cell", () => {
-    const cell: TextTemplateCell = {
-      template: null,
-    };
-    expect(() => normalizeCell(cell)).toThrowError(
-      "Cell template is null or undefined"
-    );
-  });
-  it("normalize cell override columnSpan", () => {
-    expect(normalizeCell({ value: "value", columnSpan: 2 })).toEqual({
-      value: "value",
-      columnSpan: 2,
-    });
-  });
-  it("normalize textTemplateCell", () => {
-    const template = rs`Page {{documentPageNumber}} of {{documentPageCount}}`;
-    const normalizedCell = normalizeCell(template) as TextTemplateCell;
-    expect(normalizedCell.template.renderTemplate(mockVariables)).toEqual(
-      "Page 1 of 3"
-    );
-  });
-});
 describe("normalizeRow", () => {
   const mockTableColumnSetting: NormalizedColumnSetting[] = [
     {
@@ -659,7 +573,7 @@ describe("normalizeTable", () => {
     );
   });
 });
-describe("normalizeHeaderFooter", () => {
+describe("normalizeHeaders", () => {
   const headerStyle: RowOptions = {
     fontSize: 9,
     color: "white",
@@ -671,23 +585,18 @@ describe("normalizeHeaderFooter", () => {
     const header: HeaderFooters = {
       rows: rows,
     };
-    expect(normalizeHeaderFooter(header, defaultNormalizedFontSetting)).toEqual(
-      {
-        rows: [
-          {
-            data: [
-              { ...defaultNormalizedCellOptions, value: "first column" },
-              { ...defaultNormalizedCellOptions, value: "second column" },
-            ],
-            options: defaultNormalizedRowOptions,
-          },
-        ],
-        columns: [
-          defaultNormalizedColumnSetting,
-          defaultNormalizedColumnSetting,
-        ],
-      }
-    );
+    expect(normalizeHeaders(header, defaultNormalizedFontSetting)).toEqual({
+      rows: [
+        {
+          data: [
+            { ...defaultNormalizedCellOptions, value: "first column" },
+            { ...defaultNormalizedCellOptions, value: "second column" },
+          ],
+          options: defaultNormalizedRowOptions,
+        },
+      ],
+      columns: [defaultNormalizedColumnSetting, defaultNormalizedColumnSetting],
+    });
   });
   it("passes down settings to cells", () => {
     const header: HeaderFooters = {
@@ -704,51 +613,47 @@ describe("normalizeHeaderFooter", () => {
       ],
       style: headerStyle,
     };
-    expect(normalizeHeaderFooter(header, defaultNormalizedFontSetting)).toEqual(
-      {
-        rows: [
-          {
-            data: [
-              {
-                ...defaultNormalizedCellOptions,
-                value: "first column",
-                horizontalAlign: "right",
-                fontSize: 9,
-                color: "white",
-              },
-              {
-                ...defaultNormalizedCellOptions,
-                value: "second column",
-                horizontalAlign: "right",
-                fontSize: 9,
-                color: "white",
-              },
-            ],
-            options: {
-              ...defaultNormalizedRowOptions,
-
+    expect(normalizeHeaders(header, defaultNormalizedFontSetting)).toEqual({
+      rows: [
+        {
+          data: [
+            {
+              ...defaultNormalizedCellOptions,
+              value: "first column",
+              horizontalAlign: "right",
               fontSize: 9,
               color: "white",
             },
+            {
+              ...defaultNormalizedCellOptions,
+              value: "second column",
+              horizontalAlign: "right",
+              fontSize: 9,
+              color: "white",
+            },
+          ],
+          options: {
+            ...defaultNormalizedRowOptions,
+
+            fontSize: 9,
+            color: "white",
           },
-        ],
-        columns: [
-          {
-            align: "right",
-            width: { value: 1, unit: "fr" },
-          },
-          {
-            align: "right",
-            width: { value: 1, unit: "fr" },
-          },
-        ],
-      }
-    );
+        },
+      ],
+      columns: [
+        {
+          align: "right",
+          width: { value: 1, unit: "fr" },
+        },
+        {
+          align: "right",
+          width: { value: 1, unit: "fr" },
+        },
+      ],
+    });
   });
   it("returns empty header/footer with empty row if undefined", () => {
-    expect(
-      normalizeHeaderFooter(undefined, defaultNormalizedFontSetting)
-    ).toEqual({
+    expect(normalizeHeaders(undefined, defaultNormalizedFontSetting)).toEqual({
       rows: [],
     });
   });
