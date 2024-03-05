@@ -28,7 +28,7 @@ import {
   NormalizedWidth,
 } from "./types";
 import { rs } from "../rs/index";
-import { TextTemplate } from "../types/textTemplate";
+import { TextTemplate } from "../types";
 
 export const defaultFontFace = "Helvetica";
 export const defaultBoldFace = "Helvetica-Bold";

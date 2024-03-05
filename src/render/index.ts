@@ -11,7 +11,7 @@ import {
 import { PaginatedRow } from "../paginate/types";
 import { MeasuredWatermark } from "../measure/types";
 import SVGtoPDF from "svg-to-pdfkit";
-import { Chart } from "types/chart";
+import { Chart } from "../types";
 import { Chart as ChartJS, registerables, ChartConfiguration } from "chart.js";
 import { createCanvas } from "canvas";
 

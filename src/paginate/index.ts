@@ -8,7 +8,7 @@ import {
   MeasuredTable,
 } from "../measure/types";
 import { Page, PaginatedDocument } from "./types";
-import { TextTemplateVariables } from "types/textTemplate";
+import { TextTemplateVariables } from "../types";
 export type PaginatingDoc = MeasuredDocument & {
   remaining: MeasuredSection[];
   pages: Page[];
