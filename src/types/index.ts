@@ -5,6 +5,8 @@ export * from "./row";
 export * from "./table";
 export * from "./section";
 export * from "./document";
+export * from "./alignment";
+export * from "./textTemplate";
 
 import { Document } from "./document";
 

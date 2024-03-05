@@ -13,12 +13,6 @@ import {
   getPageDimensions,
 } from ".";
 import { Image } from "../types";
-import {
-  defaultBoldFace,
-  defaultFontFace,
-  normalizeHeaderFooter,
-  normalizeTable,
-} from "../normalize";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
   NormalizedRow,
@@ -28,6 +22,9 @@ import {
 } from "../normalize/types";
 import { MeasuredDocument, MeasuredWatermark } from "./types";
 import { rs } from "../rs/index";
+import { defaultBoldFace, defaultFontFace } from "../normalize/";
+import { normalizeHeaders } from "../normalize/normalizeHeaderAndFooter";
+import { normalizeTable } from "../normalize/normalizeSection";
 
 describe("measuring functions", () => {
   describe("getRowHeight", () => {
@@ -403,7 +400,7 @@ describe("measuring functions", () => {
     });
 
     it("returns measured document", () => {
-      const headers = normalizeHeaderFooter(
+      const headers = normalizeHeaders(
         {
           rows: [
             {
@@ -446,7 +443,7 @@ describe("measuring functions", () => {
 
       const sections = [
         {
-          headers: normalizeHeaderFooter(
+          headers: normalizeHeaders(
             {
               rows: [
                 { data: [{ value: "A Section" }], options: { fontSize: 10 } },
@@ -458,7 +455,7 @@ describe("measuring functions", () => {
         },
       ];
 
-      const footers = normalizeHeaderFooter(
+      const footers = normalizeHeaders(
         {
           rows: [
             {
@@ -610,7 +607,7 @@ describe("measuring functions", () => {
 
       const sections = [
         {
-          headers: normalizeHeaderFooter(
+          headers: normalizeHeaders(
             {
               rows: [
                 { data: [{ value: "A Section" }], options: { fontSize: 10 } },
