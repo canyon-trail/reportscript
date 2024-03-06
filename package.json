@@ -11,7 +11,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "semantic-release": "semantic-release --branches main",
     "lint": "npx eslint src",
     "lint:fix": "npm run lint -- --fix --color",
