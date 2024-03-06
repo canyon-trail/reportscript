@@ -2,7 +2,7 @@ import {
   RenderTemplateFn,
   TextTemplate,
   TextTemplateVariables,
-} from "../types/textTemplate";
+} from "../types";
 
 const variableKeys: Record<keyof TextTemplateVariables, boolean> = {
   documentPageCount: true,

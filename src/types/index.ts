@@ -7,7 +7,7 @@ export * from "./section";
 export * from "./document";
 export * from "./alignment";
 export * from "./textTemplate";
-
+export * from "./chart";
 import { Document } from "./document";
 
 export type SnapshotResult = {
