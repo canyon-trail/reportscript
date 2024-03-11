@@ -558,4 +558,33 @@ describe("rendering functions", () => {
       });
     });
   });
+
+  describe("snapshotting", () => {
+    let snapshotDoc: SnapshottingDocument;
+
+    beforeEach(() => {
+      snapshotDoc = new SnapshottingDocument(
+        new PDFDocument({
+          layout: "landscape",
+          margin: 0,
+          bufferPages: true,
+        })
+      );
+    });
+
+    it("uses checksum for image buffer", () => {
+      const buffer = Buffer.from(new Array(1000000).fill(1));
+
+      snapshotDoc.image(buffer, 0, 0, { height: 470 });
+
+      expect(snapshotDoc.documentCalls[0].args[0].length).toBe(32);
+    });
+
+    it("uses image file string as is", () => {
+      const imageFile = "/my-image.jpeg";
+
+      snapshotDoc.image(imageFile, 0, 0, { height: 470 });
+      expect(snapshotDoc.documentCalls[0].args[0]).toBe(imageFile);
+    });
+  });
 });
