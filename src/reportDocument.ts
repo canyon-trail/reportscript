@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import fs from "fs";
 
 export type DocumentCall = {
   functionName: string;
@@ -86,16 +87,17 @@ export class SnapshottingDocument implements PdfKitApi {
   image(...args) {
     let callArgs = [...args];
 
-    if (callArgs[0] instanceof Buffer) {
-      const bufferString = callArgs[0].toString();
+    const bufferString =
+      callArgs[0] instanceof Buffer
+        ? callArgs[0].toString()
+        : fs.readFileSync(callArgs[0]).toString();
 
-      const checksum = crypto
-        .createHash("md5")
-        .update(bufferString, "utf8")
-        .digest("hex");
+    const checksum = crypto
+      .createHash("md5")
+      .update(bufferString, "utf8")
+      .digest("hex");
 
-      callArgs = [checksum, ...args.slice(1)];
-    }
+    callArgs = [checksum, ...args.slice(1)];
 
     return this.doCall("image", callArgs);
   }

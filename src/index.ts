@@ -32,6 +32,8 @@ export async function renderPdf(
  * or returns the existing snapshot at a designated path,
  * as well as returning the current rendering of the document.
  * This is useful for seeing how new changes to a document compare to a previous state.
+ * NOTE: Image data is converted to MD5 hashes in order to limit the size of data in
+ * the snapshot document calls while still tracking changes.
  */
 export async function renderSnapshot(
   path: string,
