@@ -578,13 +578,15 @@ describe("rendering functions", () => {
       expect(snapshotDoc.documentCalls[0].args[0].length).toBe(32);
     });
 
-    it("uses checksum for image loaded from file string arg", () => {
+    it("passes in image checksum as last argument when filepath used", () => {
       const imageFile = "documentation/assets/canyon-mission.jpeg";
 
       snapshotDoc.image(imageFile, 0, 0, { height: 470 });
 
-      expect(snapshotDoc.documentCalls[0].args[0]).not.toBe(imageFile);
-      expect(snapshotDoc.documentCalls[0].args[0].length).toBe(32);
+      const callArgs = snapshotDoc.documentCalls[0].args;
+
+      expect(callArgs[0]).toBe(imageFile);
+      expect(callArgs[callArgs.length - 1].length).toBe(32);
     });
   });
 });
