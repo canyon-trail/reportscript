@@ -415,20 +415,18 @@ describe("rendering functions", () => {
   });
 
   describe("writeRow", () => {
-    let doc: SnapshottingDocument;
+    let doc: typeof PDFDocument;
     const buffer = Buffer.from([1, 2, 3]);
     const start = margin;
     const imageHeight = 100;
     const rowHeight = 130;
 
     beforeEach(async () => {
-      doc = new SnapshottingDocument(
-        new PDFDocument({
-          layout: "landscape",
-          margin: 0,
-          bufferPages: true,
-        })
-      );
+      doc = new PDFDocument({
+        layout: "landscape",
+        margin: 0,
+        bufferPages: true,
+      });
 
       const image = { height: imageHeight, image: buffer };
       const row: NormalizedRow = {
