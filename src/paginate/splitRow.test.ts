@@ -13,14 +13,14 @@ describe("splitRow", () => {
     ],
   } as MeasuredRow;
 
-  it("sets 'rest' minHeight to max column height when less than available space", () => {
+  it("sets 'rest' minHeight to max column minHeight when less than available space", () => {
     const availableSpace = 50;
 
     const result = getSplitRowMinMaxHeights(first, rest, availableSpace);
     expect(result.restMinHeight).toBe(15);
   });
 
-  it("sets 'rest' minHeight to available space when less than available space", () => {
+  it("sets 'rest' minHeight to available space when max column minHeight is greater than available space", () => {
     const availableSpace = 14;
 
     const result = getSplitRowMinMaxHeights(first, rest, availableSpace);
