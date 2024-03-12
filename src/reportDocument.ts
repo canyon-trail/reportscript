@@ -1,3 +1,6 @@
+import crypto from "crypto";
+import fs from "fs";
+
 export type DocumentCall = {
   functionName: string;
   args?: Record<string, any>;
@@ -82,7 +85,12 @@ export class SnapshottingDocument implements PdfKitApi {
     return this.doCall("font", args);
   }
   image(...args) {
-    return this.doCall("image", args);
+    const callArgs =
+      args[0] instanceof Buffer
+        ? [getChecksum(args[0].toString()), ...args.slice(1)]
+        : [...args, getChecksum(fs.readFileSync(args[0]).toString())];
+
+    return this.doCall("image", callArgs);
   }
   strokeColor(...args) {
     return this.doCall("strokeColor", args);
@@ -108,4 +116,13 @@ export class SnapshottingDocument implements PdfKitApi {
   end(...args) {
     return this.doCall("end", args);
   }
+}
+
+function getChecksum(bufferString: string): string {
+  const checksum = crypto
+    .createHash("md5")
+    .update(bufferString, "utf8")
+    .digest("hex");
+
+  return checksum;
 }

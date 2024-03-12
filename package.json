@@ -70,6 +70,7 @@
     "canvas": "^2.11.2",
     "chart.js": "^4.4.1",
     "cross-spawn": "^7.0.3",
+    "crypto": "^1.0.1",
     "lodash": "^4.17.21",
     "pdfkit": "^0.12.1",
     "svg-to-pdfkit": "^0.1.8",

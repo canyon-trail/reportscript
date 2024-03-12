@@ -415,20 +415,18 @@ describe("rendering functions", () => {
   });
 
   describe("writeRow", () => {
-    let doc: SnapshottingDocument;
+    let doc: typeof PDFDocument;
     const buffer = Buffer.from([1, 2, 3]);
     const start = margin;
     const imageHeight = 100;
     const rowHeight = 130;
 
     beforeEach(async () => {
-      doc = new SnapshottingDocument(
-        new PDFDocument({
-          layout: "landscape",
-          margin: 0,
-          bufferPages: true,
-        })
-      );
+      doc = new PDFDocument({
+        layout: "landscape",
+        margin: 0,
+        bufferPages: true,
+      });
 
       const image = { height: imageHeight, image: buffer };
       const row: NormalizedRow = {
@@ -556,6 +554,39 @@ describe("rendering functions", () => {
       expect(mockText).nthCalledWith(1, "watermark", margin, 252, {
         align: "center",
       });
+    });
+  });
+
+  describe("snapshotting", () => {
+    let snapshotDoc: SnapshottingDocument;
+
+    beforeEach(() => {
+      snapshotDoc = new SnapshottingDocument(
+        new PDFDocument({
+          layout: "landscape",
+          margin: 0,
+          bufferPages: true,
+        })
+      );
+    });
+
+    it("uses checksum for image buffer", () => {
+      const buffer = Buffer.from(new Array(1000000).fill(1));
+
+      snapshotDoc.image(buffer, 0, 0, { height: 470 });
+
+      expect(snapshotDoc.documentCalls[0].args[0].length).toBe(32);
+    });
+
+    it("passes in image checksum as last argument when filepath used", () => {
+      const imageFile = "documentation/assets/canyon-mission.jpeg";
+
+      snapshotDoc.image(imageFile, 0, 0, { height: 470 });
+
+      const callArgs = snapshotDoc.documentCalls[0].args;
+
+      expect(callArgs[0]).toBe(imageFile);
+      expect(callArgs[callArgs.length - 1].length).toBe(32);
     });
   });
 });
