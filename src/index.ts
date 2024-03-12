@@ -118,6 +118,8 @@ async function render(
 
 export type {
   Document,
+  DocumentWithSections,
+  DocumentOptions,
   SimpleDocument,
   Image,
   Table,

@@ -387,16 +387,52 @@ function splitRow(
       rest.columnHeights.push(measure(remaining));
     }
   });
-  const firstMinHeights = first.columnHeights.map((x) => x.minHeight);
-  const firstMaxHeights = first.columnHeights.map((x) => x.maxHeight);
-  const restMinHeights = rest.columnHeights.map((x) => x.minHeight);
-  const restMaxHeights = rest.columnHeights.map((x) => x.maxHeight);
+  const { firstMinHeight, firstMaxHeight, restMinHeight, restMaxHeight } =
+    getSplitRowMinMaxHeights(first, rest, availableSpace);
 
-  first.minHeight = Math.max(...firstMinHeights);
-  first.maxHeight = Math.max(...firstMaxHeights);
-  rest.minHeight = Math.max(...restMinHeights);
-  rest.maxHeight = Math.max(...restMaxHeights);
+  first.minHeight = firstMinHeight;
+  first.maxHeight = firstMaxHeight;
+  rest.minHeight = restMinHeight;
+  rest.maxHeight = restMaxHeight;
   return [first, rest];
+}
+
+export function getSplitRowMinMaxHeights(
+  first: MeasuredRow,
+  rest: MeasuredRow,
+  availableSpace: number
+): {
+  firstMinHeight: number;
+  firstMaxHeight: number;
+  restMinHeight: number;
+  restMaxHeight: number;
+} {
+  const firstMinHeight = _.maxBy(
+    first.columnHeights,
+    (x) => x.minHeight
+  ).minHeight;
+  const firstMaxHeight = _.maxBy(
+    first.columnHeights,
+    (x) => x.maxHeight
+  ).maxHeight;
+  const restMaxHeight = _.maxBy(
+    rest.columnHeights,
+    (x) => x.maxHeight
+  ).maxHeight;
+
+  const maxRestMinHeight = _.maxBy(
+    rest.columnHeights,
+    (x) => x.minHeight
+  ).minHeight;
+  const restMinHeight =
+    maxRestMinHeight > availableSpace ? availableSpace : maxRestMinHeight;
+
+  return {
+    firstMinHeight,
+    firstMaxHeight,
+    restMinHeight,
+    restMaxHeight,
+  };
 }
 
 function canFitRow(
