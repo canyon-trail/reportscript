@@ -1,4 +1,3 @@
-import { TextCell } from "../types";
 import { getPageDimensions, margin } from "../measure";
 import _ from "lodash";
 import {
@@ -9,6 +8,7 @@ import {
 } from "../measure/types";
 import { Page, PaginatedDocument } from "./types";
 import { TextTemplateVariables } from "../types";
+import { splitRow } from "./splitRow";
 export type PaginatingDoc = MeasuredDocument & {
   remaining: MeasuredSection[];
   pages: Page[];
@@ -339,100 +339,6 @@ function canSplitRow(
   const minHeight = table.measureTextHeight("X", 0, row);
 
   return availableSpace >= minHeight.maxHeight;
-}
-
-function splitRow(
-  row: MeasuredRow,
-  availableSpace: number,
-  table: MeasuredTable
-): [MeasuredRow, MeasuredRow] {
-  const first: MeasuredRow = {
-    ...row,
-    data: [...row.data.map((x) => ({ ...x }))],
-    columnHeights: [],
-    minHeight: 0,
-    maxHeight: 0,
-  };
-  const rest: MeasuredRow = {
-    ...row,
-    data: [...row.data.map((x) => ({ ...x }))],
-    columnHeights: [],
-    minHeight: 0,
-    maxHeight: 0,
-  };
-
-  row.data.forEach((d, idx) => {
-    const splitFn = table.columns[idx]?.splitFn;
-    if ("chart" in d) {
-      throw new Error("A cell cannot be split with a chart");
-    }
-
-    if (
-      splitFn &&
-      row.columnHeights[idx].maxHeight > availableSpace &&
-      "value" in d
-    ) {
-      if (row.image) {
-        throw new Error("A row cannot be split with an image");
-      }
-
-      const measure = (text: string) => table.measureTextHeight(text, idx, row);
-
-      const [next, remaining] = splitFn(`${d.value}`, measure, availableSpace);
-
-      (first.data[idx] as TextCell).value = next;
-      first.columnHeights.push(measure(next));
-
-      (rest.data[idx] as TextCell).value = remaining;
-      rest.columnHeights.push(measure(remaining));
-    }
-  });
-  const { firstMinHeight, firstMaxHeight, restMinHeight, restMaxHeight } =
-    getSplitRowMinMaxHeights(first, rest, availableSpace);
-
-  first.minHeight = firstMinHeight;
-  first.maxHeight = firstMaxHeight;
-  rest.minHeight = restMinHeight;
-  rest.maxHeight = restMaxHeight;
-  return [first, rest];
-}
-
-export function getSplitRowMinMaxHeights(
-  first: MeasuredRow,
-  rest: MeasuredRow,
-  availableSpace: number
-): {
-  firstMinHeight: number;
-  firstMaxHeight: number;
-  restMinHeight: number;
-  restMaxHeight: number;
-} {
-  const firstMinHeight = _.maxBy(
-    first.columnHeights,
-    (x) => x.minHeight
-  ).minHeight;
-  const firstMaxHeight = _.maxBy(
-    first.columnHeights,
-    (x) => x.maxHeight
-  ).maxHeight;
-  const restMaxHeight = _.maxBy(
-    rest.columnHeights,
-    (x) => x.maxHeight
-  ).maxHeight;
-
-  const maxRestMinHeight = _.maxBy(
-    rest.columnHeights,
-    (x) => x.minHeight
-  ).minHeight;
-  const restMinHeight =
-    maxRestMinHeight > availableSpace ? availableSpace : maxRestMinHeight;
-
-  return {
-    firstMinHeight,
-    firstMaxHeight,
-    restMinHeight,
-    restMaxHeight,
-  };
 }
 
 function canFitRow(
