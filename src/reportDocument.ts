@@ -85,12 +85,13 @@ export class SnapshottingDocument implements PdfKitApi {
     return this.doCall("font", args);
   }
   image(...args) {
-    const callArgs =
+    const logArgs =
       args[0] instanceof Buffer
         ? [getChecksum(args[0].toString()), ...args.slice(1)]
         : [...args, getChecksum(fs.readFileSync(args[0]).toString())];
 
-    return this.doCall("image", callArgs);
+    this.logCall("image", logArgs);
+    return this.#pdfDoc.image.apply(this.#pdfDoc, args);
   }
   strokeColor(...args) {
     return this.doCall("strokeColor", args);
