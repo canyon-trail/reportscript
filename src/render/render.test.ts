@@ -1,13 +1,7 @@
 import PDFDocument from "pdfkit";
 import { Cell, Image, ImageCell } from "../types";
 import { SnapshottingDocument } from "../reportDocument";
-import {
-  calculateCellLeftCoords,
-  defaultFontSize,
-  lineGap,
-  margin,
-  textHPadding,
-} from "../measure";
+import { calculateCellLeftCoords } from "../measure/measuredRows";
 import {
   getCellColor,
   getCellFont,
@@ -26,6 +20,7 @@ import { MeasuredWatermark } from "../measure/types";
 import { NormalizedColumnSetting, NormalizedRow } from "../normalize/types";
 import { PaginatedRow } from "../paginate/types";
 import { defaultBoldFace, defaultFontFace } from "../normalize/index";
+import { defaultFontSize, lineGap, margin, textHPadding } from "../measure";
 
 const mockMoveTo = jest.spyOn(PDFDocument.prototype, "moveTo");
 const mockLineTo = jest.spyOn(PDFDocument.prototype, "lineTo");
