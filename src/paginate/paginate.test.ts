@@ -1472,6 +1472,7 @@ describe("pagination - splitSection(...)", () => {
       splitSection({ ...input, tableGap: 8 }, available, emptyMeasuredDoc)
     ).toEqual(expected);
   });
+
   it("should account for TableGap with Headers", () => {
     const available = 300 + margin;
     const rowHeight = margin;
@@ -1543,6 +1544,90 @@ describe("pagination - splitSection(...)", () => {
         { ...input, tableGap: 8, headers: [sectionHeader] },
         available,
         emptyMeasuredDoc
+      )
+    ).toEqual(expected);
+  });
+
+  it("should account for page break rows", () => {
+    const available = 300 + margin * 2;
+    const rowHeight = margin;
+    const bigRowHeight = 100;
+    const sectionHeader = createRow({
+      rowHeight: bigRowHeight,
+      value: "section header",
+    });
+    const firstTableRow = createRow({
+      rowHeight: bigRowHeight,
+      value: "table 0 row",
+    });
+    const secondTableRow = createRow({
+      rowHeight: bigRowHeight,
+      value: "table 1 row",
+    });
+    const thirdTableRow = createRow({
+      rowHeight: rowHeight,
+      value: "table 3 row",
+    });
+    const input: MeasuredSection = {
+      ...emptySection,
+      tables: [
+        {
+          ...emptyTable,
+          rows: [firstTableRow],
+        },
+        {
+          ...emptyTable,
+          rows: [secondTableRow],
+        },
+        {
+          ...emptyTable,
+          rows: [thirdTableRow],
+        },
+      ],
+    };
+    const expected = {
+      first: {
+        ...input,
+        tables: [
+          {
+            ...emptyTable,
+            rows: [firstTableRow],
+          },
+          {
+            ...emptyTable,
+            rows: [secondTableRow],
+          },
+        ],
+        headers: [sectionHeader],
+        tableGap: 8,
+      },
+      rest: {
+        ...input,
+        headers: [],
+        tables: [
+          {
+            ...emptyTable,
+            rows: [thirdTableRow],
+          },
+        ],
+        tableGap: 8,
+      },
+    };
+
+    const doc = {
+      ...emptyMeasuredDoc,
+      pageBreakRows: [
+        createRow({
+          rowHeight: rowHeight,
+          value: "page break",
+        }),
+      ],
+    };
+    expect(
+      splitSection(
+        { ...input, tableGap: 8, headers: [sectionHeader] },
+        available,
+        doc
       )
     ).toEqual(expected);
   });

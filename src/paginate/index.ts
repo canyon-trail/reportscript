@@ -246,16 +246,19 @@ export function splitSection(
       remainingSpace -= getTableHeight(table);
       fitTables.push(table);
     } else {
-      const { first, rest } = splitTable(table, remainingSpace, doc);
-      if (rest.rows.length > 0) {
-        remainingTables.unshift(rest);
+      if (canSplitTable(table, remainingSpace, doc)) {
+        const { first, rest } = splitTable(table, remainingSpace, doc);
+        if (rest.rows.length > 0) {
+          remainingTables.unshift(rest);
+        }
+        if (first.rows.length > 0) {
+          fitTables.push(first);
+        }
+        break;
+      } else {
+        remainingTables.unshift(table);
+        break;
       }
-
-      if (first.rows.length > 0) {
-        fitTables.push(first);
-      }
-
-      break;
     }
   }
 
@@ -274,6 +277,18 @@ export function splitSection(
       tableGap: section?.tableGap,
     },
   };
+}
+
+function canSplitTable(
+  table: MeasuredTable,
+  availableSpace: number,
+  doc?: MeasuredDocument
+): boolean {
+  let usedSpace = sumOfRowHeights(table.headers);
+  usedSpace += table.measureTextHeight("X", 0, table.rows[0]).maxHeight;
+  usedSpace += doc?.pageBreakRows ? sumOfRowHeights(doc.pageBreakRows) : 0;
+
+  return availableSpace >= usedSpace;
 }
 
 export function splitTable(
