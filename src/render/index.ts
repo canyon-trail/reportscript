@@ -1,13 +1,8 @@
 import { Cell, Image, ImageCell, TextCell } from "../types";
 import { PdfKitApi } from "../reportDocument";
-import {
-  defaultFontSize,
-  getCellHeight,
-  lineGap,
-  margin,
-  textHPadding,
-} from "../measure";
-import { getCellAlign } from "../measure/measuredRows";
+import { defaultFontSize, lineGap, margin, textHPadding } from "../measure";
+import { getCellHeight } from "../measure/measuredRowsAndCells";
+import { getCellAlign } from "../measure/measuredRowsAndCells";
 import { PaginatedRow } from "../paginate/types";
 import { MeasuredWatermark } from "../measure/types";
 import SVGtoPDF from "svg-to-pdfkit";

@@ -1,5 +1,4 @@
-import { Layout, Cell, Watermark } from "../types";
-import { UndefinedCellError, VerticalMeasure } from "./types";
+import { Layout, Watermark } from "../types";
 import { PdfKitApi } from "../reportDocument";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
@@ -17,7 +16,8 @@ import {
   MeasuredTable,
   MeasuredWatermark,
 } from "./types";
-import { measuredRows } from "./measuredRows";
+import { measuredRows } from "./measuredRowsAndCells";
+import { getCellHeightWithText } from "./measuredRowsAndCells";
 export const ptsPerInch = 72;
 export const margin = ptsPerInch / 4;
 export const defaultFontSize = 7;
@@ -115,91 +115,6 @@ export function measureHeaderFooter(
   }
   const columnwidths = calculateColumnWidths(columns, availableWidth);
   return measuredRows(doc, rows, columnwidths);
-}
-
-export function calculateColumnWidthsWithoutPadding(columnwidths: number[]) {
-  return columnwidths.map((x) => x - textHPadding * 2);
-}
-export function getCellHeight(
-  cell: Cell,
-  width: number,
-  doc: PdfKitApi,
-  text?: string | number
-): VerticalMeasure {
-  const gap = lineGap * 0.5;
-  const rowLineGap = cell?.lineGap ?? lineGap;
-
-  const heightOptions = {
-    width,
-    lineGap: rowLineGap,
-    align: cell?.horizontalAlign,
-  };
-
-  if (!cell) {
-    throw new UndefinedCellError("Cell is undefined");
-  }
-
-  if ("image" in cell) {
-    const height = cell.image.height + rowLineGap + lineGap;
-    return {
-      minHeight: height,
-      maxHeight: height,
-    };
-  }
-
-  if ("chart" in cell) {
-    return {
-      minHeight: cell.chart.minHeight + rowLineGap + lineGap,
-      maxHeight: cell.chart.maxHeight
-        ? cell.chart.maxHeight + rowLineGap + lineGap
-        : undefined,
-    };
-  }
-
-  if ("template" in cell) {
-    const highVariable = {
-      documentPageNumber: 1000,
-      documentPageCount: 1000,
-      sectionPageNumber: 1000,
-      sectionPageCount: 1000,
-      timestamp: "Thu Jun 01 2023 19:10:58",
-    };
-    const highBoundTemplate = cell.template.renderTemplate(highVariable);
-    const options = {
-      ...heightOptions,
-      height: cell.noWrap ? cell.fontSize : undefined,
-    };
-    const height = doc.heightOfString(highBoundTemplate, options) + gap;
-    return {
-      minHeight: height,
-      maxHeight: height,
-    };
-  }
-
-  doc.fontSize(cell?.fontSize ?? defaultFontSize);
-
-  const textContent = text ?? cell?.value;
-
-  const textVal = textContent ? (cell?.noWrap ? "X" : `${textContent}`) : "";
-
-  const height =
-    doc.heightOfString(textVal, {
-      ...heightOptions,
-      height: cell.noWrap ? cell.fontSize : undefined,
-    }) + gap;
-
-  return { minHeight: height, maxHeight: height };
-}
-
-export function getCellHeightWithText(
-  row: NormalizedRow,
-  index: number,
-  doc: PdfKitApi,
-  text?: string | number,
-  columnwidths?: number[]
-): VerticalMeasure {
-  const widths = calculateColumnWidthsWithoutPadding(columnwidths);
-  return getCellHeight(row.data[index], widths[index], doc, text);
 }
 
 type PageDimensions = {

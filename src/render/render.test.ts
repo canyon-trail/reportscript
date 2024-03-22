@@ -1,7 +1,7 @@
 import PDFDocument from "pdfkit";
 import { Cell, Image, ImageCell } from "../types";
 import { SnapshottingDocument } from "../reportDocument";
-import { calculateCellLeftCoords } from "../measure/measuredRows";
+import { calculateCellLeftCoords } from "../measure/measuredRowsAndCells";
 import {
   getCellColor,
   getCellFont,
