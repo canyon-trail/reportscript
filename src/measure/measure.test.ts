@@ -1,18 +1,11 @@
-import { Cell, Table, TextCell, Watermark } from "../types";
+import { Table, Watermark } from "../types";
 import PDFDocument from "pdfkit";
-import {
-  getCellHeightWithText,
-  lineGap,
-  margin,
-  measure,
-  getCellHeight,
-  getPageDimensions,
-} from ".";
+import { margin, measure, getPageDimensions } from ".";
 import {
   calculateCellLeftCoords,
   measureCellHeights,
   getRowHeight,
-} from "./measuredRows";
+} from "./measuredRowsAndCells";
 import { calculateColumnWidths } from "../paginate/calculateColumnWidths";
 import {
   NormalizedPageBreakRows,
@@ -20,141 +13,11 @@ import {
   NormalizedDocument,
 } from "../normalize/types";
 import { MeasuredDocument, MeasuredWatermark } from "./types";
-import { rs } from "../rs/index";
 import { defaultBoldFace, defaultFontFace } from "../normalize/";
 import { normalizeHeaders } from "../normalize/normalizeHeaderAndFooter";
 import { normalizeTable } from "../normalize/normalizeSection";
 
 describe("measuring functions", () => {
-  describe("getCellHeightWithText", () => {
-    let doc;
-
-    beforeEach(() => {
-      doc = new PDFDocument({
-        layout: "landscape",
-        margin: 0,
-        bufferPages: true,
-      });
-    });
-
-    it("returns the height of each column", () => {
-      const longString =
-        "this is a really really really really really really long column string";
-
-      const data = [
-        { value: "hello", columnSpan: 1 },
-        { value: longString, columnSpan: 1 },
-        { value: "world", columnSpan: 1 },
-        { value: "d", columnSpan: 1 },
-        { value: "e", columnSpan: 1 },
-        { value: "test", columnSpan: 1 },
-        { value: "hello world", columnSpan: 1 },
-      ];
-
-      const fontSize = 8;
-
-      const row = {
-        data,
-        options: { fontSize },
-      };
-      const columnWidth = new Array(7).fill(756 / 7);
-      const result = measureCellHeights(row, doc, columnWidth);
-
-      const expected = data.map((d, idx) =>
-        getCellHeightWithText(row, idx, doc, d.value, columnWidth)
-      );
-
-      expect(result).toEqual(expected);
-    });
-  });
-
-  describe("getCellHeight", () => {
-    let doc;
-    beforeEach(() => {
-      doc = new PDFDocument({
-        layout: "landscape",
-        margin: 0,
-        bufferPages: true,
-      });
-    });
-
-    it("uses image height if defined", () => {
-      const cell = { image: { height: 40, width: 40 }, lineGap: 1 } as Cell;
-      const result = getCellHeight(cell, 100, doc).maxHeight;
-
-      expect(result).toBe(40 + lineGap + 1);
-    });
-    it("get text template cell Height ", () => {
-      const cell: Cell = {
-        template: rs`Page {{documentPageNumber}} of {{documentPageCount}}`,
-        columnSpan: 1,
-        fontSize: 10,
-      };
-      const options = {
-        width: 50,
-        lineGap,
-        align: cell.horizontalAlign,
-        height: 10,
-      };
-      const result = getCellHeight(cell, 50, doc);
-
-      const highBound =
-        doc.heightOfString("Page 1000 of 1000", options) + lineGap * 0.5;
-      expect(result).toStrictEqual({
-        minHeight: highBound,
-        maxHeight: highBound,
-      });
-    });
-    it("throws for undefined cell", () => {
-      expect(() => getCellHeight(undefined, 100, doc)).toThrow(
-        "Cell is undefined"
-      );
-    });
-
-    it("returns height of single line of text when noWrap true", () => {
-      const longString =
-        "this is a really really really really really really long column string";
-      const cell = {
-        value: longString,
-        noWrap: true,
-        columnSpan: 1,
-        fontSize: 10,
-      } as TextCell;
-      const result = getCellHeight(cell, 20, doc).maxHeight;
-
-      const expected =
-        doc.heightOfString("X", {
-          width: 20,
-          lineGap,
-          align: cell.horizontalAlign,
-          height: 10,
-        }) +
-        lineGap * 0.5;
-
-      expect(result).toBe(expected);
-    });
-    it("returns height of single line of text", () => {
-      const string = "this";
-      const cell = {
-        value: string,
-        columnSpan: 1,
-        fontSize: 10,
-      } as TextCell;
-      const result = getCellHeight(cell, 20, doc).maxHeight;
-
-      const expected =
-        doc.heightOfString("X", {
-          width: 20,
-          lineGap,
-          align: cell.horizontalAlign,
-          height: 10,
-        }) +
-        lineGap * 0.5;
-
-      expect(result).toBe(expected);
-    });
-  });
-
   describe("getPageDimensions", () => {
     it("return default landscape dimensions", () => {
       expect(getPageDimensions()).toEqual({
