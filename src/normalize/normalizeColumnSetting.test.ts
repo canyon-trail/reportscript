@@ -86,4 +86,14 @@ describe("parseColumnSetting", () => {
       Array(3).fill({ width: "1 fr", align: "center" })
     );
   });
+
+  it("handles null value in row", () => {
+    const rowData = [{ data: [null, "column 2", "column 3"] }];
+    expect(parseColumnSetting(rowData, [])).toEqual(
+      Array(3).fill({
+        width: "1fr",
+        align: "center",
+      })
+    );
+  });
 });

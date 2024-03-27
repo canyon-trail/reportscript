@@ -25,6 +25,8 @@ export function parseColumnSetting(
         .map((cell) => {
           return _.isString(cell) ||
             _.isNumber(cell) ||
+            cell === null ||
+            cell === undefined ||
             "renderTemplate" in cell
             ? 1
             : cell?.columnSpan ?? 1;
