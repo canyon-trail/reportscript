@@ -44,3 +44,35 @@ export const defaultTableGapRow: MeasuredRow = {
   minHeight: margin,
   maxHeight: margin,
 };
+
+type rowParam = {
+  rowHeight: number;
+  value: string;
+};
+type rowsParams = {
+  rowHeight: number;
+  length: number;
+  value?: string;
+};
+
+export const createRows = (params: rowsParams) => {
+  const { rowHeight, length: length, value } = params;
+  return [...Array(length).keys()].map((_, index) => {
+    return {
+      ...emptyMeasuredRow,
+      minHeight: rowHeight,
+      maxHeight: rowHeight,
+      data: [{ value: `${value ?? ""}${index}` }],
+    };
+  });
+};
+
+export const createRow = (params: rowParam) => {
+  const { rowHeight, value } = params;
+  return {
+    ...emptyMeasuredRow,
+    minHeight: rowHeight,
+    maxHeight: rowHeight,
+    data: [{ value: `${value}` }],
+  };
+};
