@@ -6,8 +6,7 @@ import _ from "lodash";
 import { renderWatermark, writeRow } from "./render";
 import { paginate } from "./paginate";
 import { normalize } from "./normalize";
-import fs from "fs";
-import { Document, SnapshotResult } from "./types";
+import { Document } from "./types";
 export { rs } from "./rs/index";
 export { splitColumn } from "./paginate/splitColumn";
 
@@ -28,31 +27,18 @@ export async function renderPdf(
 }
 
 /**
- * Creates and returns a new JSON snapshot of a given document rendering
- * or returns the existing snapshot at a designated path,
- * as well as returning the current rendering of the document.
+ * Creates and returns a JSON snapshot of a given document rendering.
  * This is useful for seeing how new changes to a document compare to a previous state.
+ * Use this with built-in snapshot functionality in your favorite testing framework.
  * NOTE: Image data is converted to MD5 hashes in order to limit the size of data in
  * the snapshot document calls while still tracking changes.
  */
-export async function renderSnapshot(
-  path: string,
-  document: Document
-): Promise<SnapshotResult> {
+export async function renderSnapshot(document: Document): Promise<string> {
   const { reportDocument } = await renderDocument(document, true);
   const doc = reportDocument as SnapshottingDocument;
-  let snapshot;
   const rendered = JSON.stringify(doc.documentCalls, null, 2);
 
-  if (!fs.existsSync(path)) {
-    fs.writeFileSync(path, rendered);
-    snapshot = rendered;
-  } else {
-    const rawSnapshot = fs.readFileSync(path, { encoding: "utf8", flag: "r" });
-    const parsedSnapshot = JSON.parse(rawSnapshot);
-    snapshot = JSON.stringify(parsedSnapshot, null, 2);
-  }
-  return { snapshot, rendered };
+  return rendered;
 }
 
 async function renderDocument(

@@ -10,11 +10,6 @@ export * from "./textTemplate";
 export * from "./chart";
 import { Document } from "./document";
 
-export type SnapshotResult = {
-  snapshot: string;
-  rendered: string;
-};
-
 export type RenderPdf = (
   document: Document,
   response: NodeJS.WritableStream
