@@ -129,7 +129,6 @@ export type {
   FontSetting,
   ImageCell,
   TextCell,
-  SnapshotResult,
   TextTemplate,
   TextTemplateCell,
 } from "./types";
