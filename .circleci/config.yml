@@ -120,13 +120,10 @@ jobs:
           # because its aud claim is the org UUID, not npm:registry.npmjs.org;
           # only `circleci run oidc get` can mint a custom-audience token.
           #
-          # The circleci CLI is not bundled in cimg/node and must be installed.
-          # The circleci/circleci-cli orb is NOT used: every published version
-          # (<= 0.1.9) has a broken install command that silently no-ops when
-          # the CLI is not already present - see
-          # https://github.com/CircleCI-Public/circleci-cli-orb/issues/22 - and
-          # the fix on master was never published. This curl is exactly what the
-          # fixed orb runs internally.
+          # The `circleci` binary is injected into the job environment by
+          # CircleCI itself and includes the oidc plugin - it must NOT be
+          # installed/overwritten via install.sh or the circleci-cli orb, as
+          # those provide the public CLI which lacks the oidc plugin.
           #
           # semantic-release only bumps the version in package.json when there
           # is a release to make; if it is still the placeholder, skip publish.
@@ -136,7 +133,6 @@ jobs:
               echo "No release was made by semantic-release; skipping npm publish."
               exit 0
             fi
-            curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
             export NPM_ID_TOKEN=$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')
             echo "Publishing reportscript@$VERSION via OIDC trusted publishing"
             npm publish
