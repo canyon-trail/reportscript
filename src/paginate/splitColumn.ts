@@ -2,6 +2,7 @@ import { VerticalMeasure } from "measure/types";
 
 export const continuedOn = " (continued on next page)";
 export const continuedFrom = "(continued from prev page) ";
+export const truncated = " (truncated)";
 
 /**
  * Use this function for the 'splitFn' {@link ColumnSetting} prop for a
@@ -30,24 +31,72 @@ export function splitColumn(
   measure: (text: string) => VerticalMeasure,
   availableSpace: number
 ): [string, string] {
-  let result = trySplitNewlines(value, measure, availableSpace);
+  let result =
+    trySplitNewlines(value, measure, availableSpace) ??
+    trySplitSpaces(value, measure, availableSpace) ??
+    trySplitCharacters(value, measure, availableSpace);
 
-  if (!result) {
-    result = trySplitSpaces(value, measure, availableSpace);
-  }
-
-  if (!result) {
-    let splitPosition = value.length;
-    do {
-      result = [
-        value.substring(0, splitPosition) + continuedOn,
-        continuedFrom + value.substring(splitPosition),
-      ];
-      splitPosition--;
-    } while (measure(result[0]).maxHeight > availableSpace);
+  // A split only counts if the continued-onto content is strictly shorter
+  // than the input; otherwise pagination would never make progress and loop
+  // forever. Compare undecorated content: result[1] carries a continuedFrom
+  // prefix that would otherwise inflate the length past the original.
+  const carriedForward = result?.[1].startsWith(continuedFrom)
+    ? result[1].substring(continuedFrom.length)
+    : result?.[1];
+  if (!result || carriedForward.length >= value.length) {
+    result = truncate(value, measure, availableSpace);
   }
 
   return result;
+}
+
+/**
+ * Last-resort hard break at a character boundary. Returns null when not even
+ * a single character of content plus the marker fits in availableSpace.
+ */
+function trySplitCharacters(
+  value: string,
+  measure: (text: string) => VerticalMeasure,
+  availableSpace: number
+): [string, string] | null {
+  for (
+    let splitPosition = value.length - 1;
+    splitPosition >= 1;
+    splitPosition--
+  ) {
+    const result: [string, string] = [
+      value.substring(0, splitPosition) + continuedOn,
+      continuedFrom + value.substring(splitPosition),
+    ];
+    if (measure(result[0]).maxHeight <= availableSpace) {
+      return result;
+    }
+  }
+  return null;
+}
+
+/**
+ * When the value cannot be split to fit at all, drop content. Append
+ * '(truncated)' to as much of the value as fits; if even the marker alone
+ * does not fit, fall back to as many periods as fit.
+ */
+function truncate(
+  value: string,
+  measure: (text: string) => VerticalMeasure,
+  availableSpace: number
+): [string, string] {
+  for (let keep = value.length; keep >= 0; keep--) {
+    const candidate = value.substring(0, keep) + truncated;
+    if (measure(candidate).maxHeight <= availableSpace) {
+      return [candidate, ""];
+    }
+  }
+
+  let dots = "";
+  while (measure(dots + ".").maxHeight <= availableSpace) {
+    dots += ".";
+  }
+  return [dots, ""];
 }
 
 function trySplitNewlines(
@@ -83,9 +132,15 @@ function trySplitDelimiter(
   const restParts = [parts.pop()];
 
   while (
+    parts.length > 1 &&
     measure(parts.join(delimiter) + continuedOn).maxHeight > availableSpace
   ) {
     restParts.unshift(parts.pop());
+  }
+
+  // The first part alone still does not fit; let another strategy handle it.
+  if (measure(parts.join(delimiter) + continuedOn).maxHeight > availableSpace) {
+    return null;
   }
 
   return [
