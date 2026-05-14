@@ -134,6 +134,10 @@ jobs:
               exit 0
             fi
             export NPM_ID_TOKEN=$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')
+            # TEMPORARY DIAGNOSTIC: print non-sensitive claims (never the token)
+            # to confirm ssh-rerun is false on real runs. Remove once trusted
+            # publishing is verified working.
+            echo "$NPM_ID_TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{const c=JSON.parse(s);console.log("OIDC claims -> ssh-rerun:",c["oidc.circleci.com/ssh-rerun"],"| pipeline-definition-id:",c["oidc.circleci.com/pipeline-definition-id"],"| org-id:",c["oidc.circleci.com/org-id"],"| project-id:",c["oidc.circleci.com/project-id"],"| vcs-origin:",c["oidc.circleci.com/vcs-origin"])})'
             echo "Publishing reportscript@$VERSION via OIDC trusted publishing"
             npm publish
           working_directory: /home/circleci/workspace/reportscript
