@@ -101,7 +101,28 @@ jobs:
       - attach_workspace:
           at: /home/circleci/workspace
       - run:
-          command: npm run semantic-release
+          name: semantic-release (version, changelog, tag, GitHub release)
+          # @semantic-release/npm runs with npmPublish:false (see .releaserc.json),
+          # so it only writes the computed version into package.json - it does not
+          # publish. semantic-release is run via npx per its install recommendation.
+          command: npx semantic-release@25
+          working_directory: /home/circleci/workspace/reportscript
+      - run:
+          name: npm publish via CircleCI OIDC trusted publishing
+          # @semantic-release/npm only implements OIDC trusted publishing for
+          # GitHub Actions and GitLab, not CircleCI. The npm CLI (>= 11.5.1,
+          # bundled in cimg/node:24.15) does support CircleCI OIDC natively, so
+          # the actual publish runs here. semantic-release only bumps the version
+          # in package.json when there is a release to make; if it is still the
+          # placeholder, there is nothing to publish.
+          command: |
+            VERSION=$(node -p "require('./package.json').version")
+            if [ "$VERSION" = "0.0.0-development" ]; then
+              echo "No release was made by semantic-release; skipping npm publish."
+              exit 0
+            fi
+            echo "Publishing reportscript@$VERSION via OIDC trusted publishing"
+            npm publish
           working_directory: /home/circleci/workspace/reportscript
       - notify-fail
   build:
