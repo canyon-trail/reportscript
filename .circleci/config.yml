@@ -73,12 +73,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v3-deps-{{ checksum "package.json" }}
-            - v3-deps-
+            - v4-deps-{{ checksum "package-lock.json" }}
+            - v4-deps-
       - run:
-          command: npm install
+          # npm ci installs strictly from the committed lockfile for
+          # deterministic, reproducible builds
+          command: npm ci
       - save_cache:
-          key: v3-deps-{{ checksum "package.json" }}
+          key: v4-deps-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
       - run: mkdir /home/circleci/workspace
