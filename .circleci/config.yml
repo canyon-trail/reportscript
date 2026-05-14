@@ -45,12 +45,12 @@ jobs:
     resource_class: large
     steps:
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/workspace
       - run:
           command: |
             npm run lint
             npm run prettier
-          working_directory: /workspace/reportscript
+          working_directory: /home/circleci/workspace/reportscript
       - notify-fail
   reportscript-tests:
     docker:
@@ -58,10 +58,10 @@ jobs:
     resource_class: small
     steps:
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/workspace
       - run:
           command: npm test
-          working_directory: /workspace/reportscript
+          working_directory: /home/circleci/workspace/reportscript
       - notify-fail
   reportscript-node-install:
     docker:
@@ -110,12 +110,12 @@ jobs:
     resource_class: small
     steps:
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/workspace
       - run:
           command: npm run build
-          working_directory: /workspace/reportscript
+          working_directory: /home/circleci/workspace/reportscript
       - persist_to_workspace:
-          root: /workspace
+          root: /home/circleci/workspace
           paths:
             - reportscript/dist
       - notify-fail
