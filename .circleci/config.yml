@@ -134,11 +134,6 @@ jobs:
               exit 0
             fi
             export NPM_ID_TOKEN=$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')
-            # TEMPORARY DIAGNOSTIC: print non-sensitive claims (never the token).
-            # Node decodes the base64url payload internally; `|| true` guarantees
-            # this never aborts the step under `set -eo pipefail`. Remove once
-            # trusted publishing is verified working.
-            node -e 'try{const c=JSON.parse(Buffer.from(process.env.NPM_ID_TOKEN.split(".")[1],"base64").toString());console.log("OIDC claims -> ssh-rerun:",c["oidc.circleci.com/ssh-rerun"],"| pipeline-definition-id:",c["oidc.circleci.com/pipeline-definition-id"],"| org-id:",c["oidc.circleci.com/org-id"],"| project-id:",c["oidc.circleci.com/project-id"],"| vcs-origin:",c["oidc.circleci.com/vcs-origin"])}catch(e){console.log("claim decode skipped:",e.message)}' || true
             echo "Publishing reportscript@$VERSION via OIDC trusted publishing"
             npm publish
           working_directory: /home/circleci/workspace/reportscript
