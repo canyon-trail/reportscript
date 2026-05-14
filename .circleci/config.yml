@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
   slack: circleci/slack@4.4.2
-  circleci-cli: circleci/circleci-cli@0.1.10
 commands:
   notify-fail:
     description: Notify failure via slack
@@ -110,9 +109,6 @@ jobs:
           # publish. semantic-release is run via npx per its install recommendation.
           command: npx semantic-release@25
           working_directory: /home/circleci/workspace/reportscript
-      # circleci CLI is not bundled in cimg/node; needed to mint a
-      # custom-audience OIDC token for npm trusted publishing (below)
-      - circleci-cli/install
       - run:
           name: npm publish via CircleCI OIDC trusted publishing
           # @semantic-release/npm only implements OIDC trusted publishing for
@@ -123,6 +119,15 @@ jobs:
           # publish token. The pre-injected CIRCLE_OIDC_TOKEN_V2 cannot be used
           # because its aud claim is the org UUID, not npm:registry.npmjs.org;
           # only `circleci run oidc get` can mint a custom-audience token.
+          #
+          # The circleci CLI is not bundled in cimg/node and must be installed.
+          # The circleci/circleci-cli orb is NOT used: every published version
+          # (<= 0.1.9) has a broken install command that silently no-ops when
+          # the CLI is not already present - see
+          # https://github.com/CircleCI-Public/circleci-cli-orb/issues/22 - and
+          # the fix on master was never published. This curl is exactly what the
+          # fixed orb runs internally.
+          #
           # semantic-release only bumps the version in package.json when there
           # is a release to make; if it is still the placeholder, skip publish.
           command: |
@@ -131,6 +136,7 @@ jobs:
               echo "No release was made by semantic-release; skipping npm publish."
               exit 0
             fi
+            curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
             export NPM_ID_TOKEN=$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')
             echo "Publishing reportscript@$VERSION via OIDC trusted publishing"
             npm publish
