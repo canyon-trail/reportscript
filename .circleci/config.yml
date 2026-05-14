@@ -41,7 +41,7 @@ commands:
 jobs:
   reportscript-format-check:
     docker:
-      - image: node:20
+      - image: cimg/node:24.15
     resource_class: large
     steps:
       - attach_workspace:
@@ -54,7 +54,7 @@ jobs:
       - notify-fail
   reportscript-tests:
     docker:
-      - image: node:20
+      - image: cimg/node:24.15
     resource_class: small
     steps:
       - attach_workspace:
@@ -65,7 +65,9 @@ jobs:
       - notify-fail
   reportscript-node-install:
     docker:
-      - image: cimg/python:3.12.1-node
+      # python is required for node-gyp to build the native `canvas` dependency;
+      # the -node variant of this tag bundles Node 24 (current LTS)
+      - image: cimg/python:3.13-node
     resource_class: small
     steps:
       - checkout
@@ -93,7 +95,7 @@ jobs:
       - notify-success
   release:
     docker:
-      - image: node:20
+      - image: cimg/node:24.15
     resource_class: small
     steps:
       - attach_workspace:
@@ -104,7 +106,7 @@ jobs:
       - notify-fail
   build:
     docker:
-      - image: node:20
+      - image: cimg/node:24.15
     resource_class: small
     steps:
       - attach_workspace:
