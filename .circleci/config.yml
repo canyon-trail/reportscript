@@ -41,31 +41,33 @@ commands:
 jobs:
   reportscript-format-check:
     docker:
-      - image: node:20
+      - image: cimg/node:24.15
     resource_class: large
     steps:
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/workspace
       - run:
           command: |
             npm run lint
             npm run prettier
-          working_directory: /workspace/reportscript
+          working_directory: /home/circleci/workspace/reportscript
       - notify-fail
   reportscript-tests:
     docker:
-      - image: node:20
+      - image: cimg/node:24.15
     resource_class: small
     steps:
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/workspace
       - run:
           command: npm test
-          working_directory: /workspace/reportscript
+          working_directory: /home/circleci/workspace/reportscript
       - notify-fail
   reportscript-node-install:
     docker:
-      - image: cimg/python:3.12.1-node
+      # python is required for node-gyp to build the native `canvas` dependency;
+      # the -node variant of this tag bundles Node 24 (current LTS)
+      - image: cimg/python:3.13-node
     resource_class: small
     steps:
       - checkout
@@ -93,7 +95,7 @@ jobs:
       - notify-success
   release:
     docker:
-      - image: node:20
+      - image: cimg/node:24.15
     resource_class: small
     steps:
       - attach_workspace:
@@ -104,16 +106,16 @@ jobs:
       - notify-fail
   build:
     docker:
-      - image: node:20
+      - image: cimg/node:24.15
     resource_class: small
     steps:
       - attach_workspace:
-          at: /workspace
+          at: /home/circleci/workspace
       - run:
           command: npm run build
-          working_directory: /workspace/reportscript
+          working_directory: /home/circleci/workspace/reportscript
       - persist_to_workspace:
-          root: /workspace
+          root: /home/circleci/workspace
           paths:
             - reportscript/dist
       - notify-fail
