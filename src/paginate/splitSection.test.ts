@@ -488,4 +488,75 @@ describe("pagination - splitSection(...)", () => {
       )
     ).toEqual(expected);
   });
+
+  // splitSection must propagate splitTable's force-placed oversized row, and
+  // must not let an oversized row get diverted away from splitTable by the
+  // canSplitTable gate. Sibling tables in the same section paginate normally.
+  describe("oversized rows", () => {
+    const { pageInnerHeight } = getPageDimensions();
+
+    const oversizedRow = (value: string) => ({
+      ...emptyMeasuredRow,
+      data: [{ value }],
+      minHeight: pageInnerHeight + 500,
+      maxHeight: pageInnerHeight + 500,
+      isOversized: true,
+    });
+
+    it("force-places an oversized row alone, defers the rest of its table", () => {
+      const over = oversizedRow("oversized");
+      const after = createRow({ rowHeight: margin, value: "after" });
+      const input: MeasuredSection = {
+        ...emptySection,
+        tables: [{ ...emptyTable, rows: [over, after] }],
+      };
+
+      const result = splitSection(input, pageInnerHeight, emptyMeasuredDoc);
+
+      expect(result.first.tables).toEqual([{ ...emptyTable, rows: [over] }]);
+      expect(result.rest.tables).toEqual([{ ...emptyTable, rows: [after] }]);
+    });
+
+    it("does not divert an oversized row away from splitTable", () => {
+      // canSplitTable must still be true on a fresh page (one line fits), so
+      // splitTable runs and force-places the oversized row -- it is never
+      // re-queued unchanged by the canSplitTable=false branch.
+      const over = oversizedRow("oversized");
+      const input: MeasuredSection = {
+        ...emptySection,
+        tables: [{ ...emptyTable, rows: [over] }],
+      };
+
+      const result = splitSection(input, pageInnerHeight, emptyMeasuredDoc);
+
+      expect(result.first.tables).toEqual([{ ...emptyTable, rows: [over] }]);
+      expect(result.rest.tables).toEqual([]);
+    });
+
+    it("leaves sibling tables in the section unaffected", () => {
+      // First table is normal and fits; second table leads with an oversized
+      // row. The normal table is committed; the oversized row is force-placed;
+      // nothing about the first table changes.
+      const normalRow = createRow({ rowHeight: margin, value: "normal" });
+      const over = oversizedRow("oversized");
+      const input: MeasuredSection = {
+        ...emptySection,
+        tables: [
+          { ...emptyTable, rows: [normalRow] },
+          { ...emptyTable, rows: [over] },
+        ],
+      };
+
+      const result = splitSection(input, pageInnerHeight, emptyMeasuredDoc);
+
+      // The normal table is placed; the oversized table is force-placed too,
+      // since one line still fits after the first table.
+      expect(result.first.tables[0]).toEqual({
+        ...emptyTable,
+        rows: [normalRow],
+      });
+      expect(result.first.tables[1]).toEqual({ ...emptyTable, rows: [over] });
+      expect(result.rest.tables).toEqual([]);
+    });
+  });
 });

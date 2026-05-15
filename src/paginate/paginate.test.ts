@@ -1074,10 +1074,13 @@ describe("page numbers and timestamp", () => {
     const section = createSection({ index: 0, rowCount: 2 });
     section.tables[0].rows.push(timestampPageNumRow[2] as PaginatedRow);
 
+    // paginate() stamps table data rows with isOversized via prepareDoc (none
+    // here are oversized -> false). Footer rows are not stamped. Mirror that
+    // distinction in the expected pages.
     const expectedPages = section.tables[0].rows.map((row, index) => ({
       sectionIndex: 0,
       rows: [
-        row,
+        { ...row, isOversized: false },
         { ...defaultTableGapRow, minHeight: rowHeight, maxHeight: rowHeight },
         timestampPageNumRow[index],
       ],

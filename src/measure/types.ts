@@ -35,6 +35,12 @@ export type MeasuredRow = Omit<NormalizedRow, "data"> & {
   columnStarts: number[];
   maxHeight?: number;
   minHeight: number;
+  /**
+   * True when this row cannot fit on any page of the document. Stamped during
+   * prepareDoc; consumed by the splitting layers to force-place the row
+   * instead of looping forever.
+   */
+  isOversized?: boolean;
 };
 export type MeasuredDocument = Omit<
   NormalizedDocument,

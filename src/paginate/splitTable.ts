@@ -29,7 +29,19 @@ export function splitTable(
       fitRows.push(first);
       remainingRows.unshift(rest);
       break;
+    } else if (row.isOversized && fitRows.length === 0) {
+      // The row fits on no page. Re-queueing it unchanged would spin the
+      // paginator forever, so force-place it on its own page and let it
+      // overflow. Only this row overflows; the remaining rows stay queued and
+      // paginate normally.
+      fitRows.push(row);
+      break;
     } else {
+      // Either the row is oversized but other rows already occupy this page
+      // (it must overflow alone, so defer it), or it is merely too tall for
+      // the current page (defer it to a roomier page). Re-queue it and stop;
+      // the caller starts a fresh page. Caller must guarantee forward progress
+      // even when this leaves `first` empty (see splitSection / paginateStep).
       remainingRows.unshift(row);
       break;
     }

@@ -9,6 +9,7 @@ import {
 import { Page, PaginatedDocument } from "./types";
 import { TextTemplateVariables } from "../types";
 import { splitSection } from "./splitSection";
+import { stampOversizedRows } from "./oversized";
 export type PaginatingDoc = MeasuredDocument & {
   remaining: MeasuredSection[];
   pages: Page[];
@@ -24,7 +25,23 @@ export function paginate(
 ): PaginatedDocument {
   const pagingDoc = prepareDoc(doc);
   while (pagingDoc.remaining.length > 0) {
+    // Forward-progress guard. Every paginateStep must make progress: either it
+    // strictly increases the well-founded measure below (rows committed to
+    // pages, plus page count), or it strictly shrinks the queue of remaining
+    // sections. A step that does neither has re-queued its input unchanged and
+    // would loop forever; fail loudly instead of hanging.
+    const progressBefore = paginationProgress(pagingDoc);
+    const remainingBefore = pagingDoc.remaining.length;
     paginateStep(pagingDoc);
+    const stalled =
+      paginationProgress(pagingDoc) <= progressBefore &&
+      pagingDoc.remaining.length >= remainingBefore;
+    if (stalled) {
+      throw new Error(
+        "pagination made no forward progress; aborting to avoid an infinite " +
+          "loop. This is a bug in the pagination layer."
+      );
+    }
   }
 
   handlePages(pagingDoc, creationDate);
@@ -33,6 +50,20 @@ export function paginate(
     layout: doc.layout,
     watermark: doc?.watermark,
   };
+}
+
+/**
+ * Well-founded measure for the paginate loop: total rows committed to pages
+ * plus the page count. Strictly increases on every paginateStep that makes
+ * progress (commit rows and/or start a fresh page), and is bounded above by
+ * the document's total emittable rows, so the loop must terminate.
+ */
+function paginationProgress(doc: PaginatingDoc): number {
+  const committedRows = doc.pages.reduce(
+    (total, page) => total + page.rows.length,
+    0
+  );
+  return committedRows + doc.pages.length;
 }
 
 function paginateStep(doc: PaginatingDoc) {
@@ -49,11 +80,27 @@ function paginateStep(doc: PaginatingDoc) {
   if (sectionHeight > remainingSpace) {
     const { first, rest } = splitSection(currentSection, remainingSpace, doc);
 
-    if (rest.tables.length > 0) {
-      doc.remaining.unshift(rest);
-    }
     if (first.tables.length > 0) {
-      doc.remaining.unshift(first);
+      // `first` is the portion splitSection placed on this page. Commit it
+      // directly rather than re-queueing it: a re-queued `first` that does not
+      // shrink below a page (a force-placed oversized row) would be re-split
+      // forever. Committing here guarantees forward progress every step.
+      const paginated = paginateSection(first, remainingSpace);
+      currentPage.rows = [...currentPage.rows, ...paginated];
+      currentSection?.watermark &&
+        (currentPage.watermark = currentSection.watermark);
+
+      if (rest.tables.length > 0) {
+        doc.remaining.unshift(rest);
+        doc.pages.push({ rows: [], sectionIndex: rest.index });
+      }
+    } else if (rest.tables.length > 0) {
+      // Nothing could be placed on the current page (it is partially full and
+      // not even one line fits). Finalize this page and retry `rest` on a
+      // fresh page, where it gets full / roomier space. The page index
+      // advances every time, so this always terminates.
+      doc.remaining.unshift(rest);
+      doc.pages.push({ rows: [], sectionIndex: rest.index });
     }
   } else {
     const paginated = paginateSection(currentSection, remainingSpace);
@@ -69,6 +116,7 @@ function paginateStep(doc: PaginatingDoc) {
 function prepareDoc(doc: MeasuredDocument): PaginatingDoc {
   const headerSpace = handleHeaderFooterSpace(doc.headers);
   const footerSpace = handleHeaderFooterSpace(doc.footers);
+  stampOversizedRows(doc);
   return {
     ...doc,
     pages: [{ rows: [], sectionIndex: 0 }],

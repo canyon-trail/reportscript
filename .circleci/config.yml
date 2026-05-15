@@ -38,6 +38,43 @@ commands:
                 }
               ]
             }
+  notify-publish-success:
+    description: >
+      Notify Slack of a successful npm publish, including the version.
+      No-op when semantic-release made no release (no /tmp/released-version).
+    steps:
+      - run:
+          name: Notify Slack of successful publish
+          when: on_success
+          command: |
+            if [ ! -f /tmp/released-version ]; then
+              echo "No release was published; skipping Slack notification."
+              exit 0
+            fi
+            VERSION=$(cat /tmp/released-version)
+            # Slack's chat.postMessage returns HTTP 200 even on API errors, so
+            # check the `ok` field. A failed notification must not fail the job:
+            # the publish already succeeded by this point.
+            RESPONSE=$(curl -sS -X POST https://slack.com/api/chat.postMessage \
+              -H "Authorization: Bearer ${SLACK_ACCESS_TOKEN}" \
+              -H "Content-type: application/json; charset=utf-8" \
+              --data "{
+                \"channel\": \"reportscript\",
+                \"blocks\": [
+                  {
+                    \"type\": \"section\",
+                    \"text\": {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \":rocket: Published *reportscript@${VERSION}* to npm! (<${CIRCLE_BUILD_URL}|view job>)\"
+                    }
+                  }
+                ]
+              }")
+            if echo "$RESPONSE" | grep -q '"ok":true'; then
+              echo "Slack notified of reportscript@${VERSION} publish."
+            else
+              echo "WARNING: Slack notification failed: $RESPONSE"
+            fi
 jobs:
   reportscript-format-check:
     docker:
@@ -103,40 +140,30 @@ jobs:
       - attach_workspace:
           at: /home/circleci/workspace
       - run:
-          name: semantic-release (version, changelog, tag, GitHub release)
-          # @semantic-release/npm runs with npmPublish:false (see .releaserc.json),
-          # so it only writes the computed version into package.json - it does not
-          # publish. semantic-release is run via npx per its install recommendation.
+          name: semantic-release (version, changelog, npm publish, tag, GitHub release)
+          # semantic-release runs the whole release: @semantic-release/npm
+          # (npmPublish:false) writes the computed version into package.json,
+          # then @semantic-release/exec's publishCmd does the actual npm publish
+          # via CircleCI OIDC trusted publishing - see .releaserc.json. Running
+          # the publish inside semantic-release's lifecycle means a failed
+          # publish fails the whole release, so the git tag and GitHub release
+          # are not created for a version that never made it to npm.
+          #
+          # npm does not auto-detect CircleCI OIDC the way it does GitHub Actions
+          # and GitLab, so publishCmd mints an OIDC token (aud npm:registry.
+          # npmjs.org) and exports it as NPM_ID_TOKEN. The `circleci` binary used
+          # to mint it is injected into the job environment by CircleCI and
+          # includes the oidc plugin - it must NOT be installed/overwritten via
+          # install.sh or the circleci-cli orb, which provide the public CLI
+          # that lacks the oidc plugin.
+          #
+          # publishCmd writes the released version to /tmp/released-version so
+          # the next step can post a Slack notification only when a release
+          # actually happened (semantic-release is a no-op when there are no
+          # releasable commits).
           command: npx semantic-release@25
           working_directory: /home/circleci/workspace/reportscript
-      - run:
-          name: npm publish via CircleCI OIDC trusted publishing
-          # @semantic-release/npm only implements OIDC trusted publishing for
-          # GitHub Actions and GitLab, not CircleCI, so the actual publish runs
-          # here. Unlike those providers, npm does NOT auto-detect CircleCI OIDC:
-          # we must mint a token with the npm audience and pass it as
-          # NPM_ID_TOKEN, which `npm publish` then exchanges for a short-lived
-          # publish token. The pre-injected CIRCLE_OIDC_TOKEN_V2 cannot be used
-          # because its aud claim is the org UUID, not npm:registry.npmjs.org;
-          # only `circleci run oidc get` can mint a custom-audience token.
-          #
-          # The `circleci` binary is injected into the job environment by
-          # CircleCI itself and includes the oidc plugin - it must NOT be
-          # installed/overwritten via install.sh or the circleci-cli orb, as
-          # those provide the public CLI which lacks the oidc plugin.
-          #
-          # semantic-release only bumps the version in package.json when there
-          # is a release to make; if it is still the placeholder, skip publish.
-          command: |
-            VERSION=$(node -p "require('./package.json').version")
-            if [ "$VERSION" = "0.0.0-development" ]; then
-              echo "No release was made by semantic-release; skipping npm publish."
-              exit 0
-            fi
-            export NPM_ID_TOKEN=$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')
-            echo "Publishing reportscript@$VERSION via OIDC trusted publishing"
-            npm publish
-          working_directory: /home/circleci/workspace/reportscript
+      - notify-publish-success
       - notify-fail
   build:
     docker:
